@@ -10,25 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.8  # Tidak ada pembaruan untuk cupertino_icons
 
 dev_dependencies:
-  flutter_native_splash: ^2.4.6  # Update to latest compatible version
+  flutter_native_splash: ^2.4.6  # Versi terbaru untuk splash screen
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0  # Update to the latest version
-  lints: ^6.0.0  # Add or update this if needed
+  flutter_lints: ^6.0.0  # Pembaruan untuk lints
+  lints: ^6.0.0  # Pembaruan untuk lints
+  test_api: ^0.7.6  # Menurunkan versi test_api ke 0.7.6 untuk kompatibilitas dengan flutter_test
 
-# Optional: Uncomment the assets section if you have any assets (e.g., images, fonts)
-# flutter:
-#   uses-material-design: true
-#   assets:
-#     - assets/splash_screen_image.png
-
-# You can also add custom fonts if needed here as per your requirement.
-# fonts:
-#   - family: CustomFont
-#     fonts:
-#       - asset: fonts/CustomFont-Regular.ttf
-#       - asset: fonts/CustomFont-Bold.ttf
-#         weight: 700
+flutter:
+  uses-material-design: true
