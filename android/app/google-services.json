@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "291047200173",
+    "firebase_url": "https://situntas-7bbff-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "situntas-7bbff",
+    "storage_bucket": "situntas-7bbff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291047200173:android:1d17535997eee59d5abd24",
+        "android_client_info": {
+          "package_name": "com.example.stunting_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_90XiS9P70w2ch0NluxcV73pSXGQZJ8c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

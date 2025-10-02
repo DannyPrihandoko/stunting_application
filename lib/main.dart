@@ -11,16 +11,38 @@ import 'firebase_options.dart'; // File ini dihasilkan oleh 'flutterfire configu
 import 'pages/calculator_page.dart';
 import 'pages/edukasi_page.dart';
 import 'pages/srs_page.dart'; // Ini halaman SRS yang akan mengirim data ke Realtime Database
-import 'pages/cek_perkembangan_kehamilan_page.dart';
+import 'pages/cek_perkembangan_kehamilan_page.dart'; // Import halaman cek kehamilan
+import 'package:stunting_application/pages/srs_history_page.dart'; // Import halaman riwayat SRS
 
 // UBAH main() MENJADI ASYNC DAN TAMBAHKAN INIALISASI FIREBASE
 void main() async {
+  // --- DEBUG LOG MAIN.DART START ---
+  print('DEBUG MAIN: Aplikasi dimulai. WidgetsFlutterBinding.ensureInitialized() dipanggil.');
+  // --- DEBUG LOG MAIN.DART END ---
+
   // Pastikan Flutter siap sebelum menginisialisasi Firebase
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Firebase dengan opsi spesifik untuk platform saat ini
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    // --- DEBUG LOG MAIN.DART START ---
+    print('DEBUG MAIN: Memulai Firebase.initializeApp()...');
+    // --- DEBUG LOG MAIN.DART END ---
+    // Inisialisasi Firebase dengan opsi spesifik untuk platform saat ini
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    // --- DEBUG LOG MAIN.DART START ---
+    print('DEBUG MAIN: Firebase.initializeApp() BERHASIL!');
+    // --- DEBUG LOG MAIN.DART END ---
+  } catch (e) {
+    // --- DEBUG LOG MAIN.DART START ---
+    print('DEBUG MAIN: Firebase.initializeApp() GAGAL dengan error: $e');
+    // --- DEBUG LOG MAIN.DART END ---
+    // Anda mungkin ingin menampilkan error ini di UI untuk debugging cepat
+    // Misalnya, menggunakan sebuah dialog error agar pengguna tahu ada masalah.
+  }
 
+  // --- DEBUG LOG MAIN.DART START ---
+  print('DEBUG MAIN: runApp() dipanggil.');
+  // --- DEBUG LOG MAIN.DART END ---
   runApp(const MyApp());
 }
 
@@ -143,14 +165,26 @@ class HomePage extends StatelessWidget {
       {
         "title": "Cek Kehamilan",
         "icon": Icons.pregnant_woman_outlined,
+        // --- PERBAIKAN: Nama kelas diubah menjadi PascalCase ---
         "page": const CekPerkembanganKehamilanPage(),
+        // --- AKHIR PERBAIKAN ---
         "color": Colors.pink.shade700,
       },
+      // --- TAMBAH BUTTON KE-6 DI SINI ---
+      {
+        "title": "Riwayat Perhitungan SRS", // Judul untuk button keenam
+        "icon": Icons.history, // Ikon untuk riwayat
+        "page": const SrsHistoryPage(), // Arahkan ke halaman riwayat SRS
+        "color": Colors.indigo.shade700, // Warna yang berbeda untuk membedakan
+        "subTitle": "Lihat Hasil Lama", // Sub-judul opsional
+      },
+      // --- AKHIR TAMBAH BUTTON KE-6 ---
       {
         "title": "Ganti Bahasa",
         "icon": Icons.language_outlined,
         "page": null, // Placeholder untuk fitur yang akan datang
         "color": Colors.lightGreen.shade700,
+        "subTitle": "Fitur mendatang",
       },
     ];
 
@@ -243,6 +277,7 @@ class HomePage extends StatelessWidget {
                   item["icon"],
                   item["page"],
                   item["color"],
+                  item["subTitle"], // Meneruskan sub-judul
                 );
               }).toList(),
             ),
@@ -277,14 +312,15 @@ class HomePage extends StatelessWidget {
     IconData icon,
     Widget? page,
     Color color,
+    String? subTitle, // Parameter subTitle baru
   ) {
     return InkWell(
       onTap: () {
         if (page == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Fitur ganti bahasa akan datang!"),
-              duration: Duration(seconds: 1),
+            SnackBar(
+              content: Text("${title} akan datang!"), // Pesan lebih dinamis
+              duration: const Duration(seconds: 1), // Pastikan duration juga const
             ),
           );
         } else {
@@ -321,14 +357,16 @@ class HomePage extends StatelessWidget {
             color: Colors.white, // Background putih di dalam card
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            // --- PERBAIKAN: HILANGKAN 'const' DARI EdgeInsets.all jika error ---
+            padding: const EdgeInsets.all(16.0), // Ini bisa const jika nilai literal
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Ikon dengan warna yang lebih menonjol
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  // --- PERBAIKAN: HILANGKAN 'const' DARI EdgeInsets.all jika error ---
+                  padding: const EdgeInsets.all(12), // Ini bisa const jika nilai literal
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -345,17 +383,18 @@ class HomePage extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                // Sub-judul opsional (dapat ditambahkan jika perlu)
+                // Sub-judul opsional (sekarang menggunakan subTitle jika tersedia)
                 Text(
-                  title.contains("Kalkulator")
-                      ? "Hitung Cepat"
-                      : title.contains("Edukasi")
-                      ? "Panduan Lengkap"
-                      : title.contains("Stunting")
-                      ? "Deteksi Dini"
-                      : title.contains("Kehamilan")
-                      ? "Jurnal Bumil"
-                      : "Pengaturan",
+                  subTitle ?? // Gunakan subTitle yang diberikan, jika tidak ada, gunakan logika default
+                      (title.contains("Kalkulator")
+                          ? "Hitung Cepat"
+                          : title.contains("Edukasi")
+                              ? "Panduan Lengkap"
+                              : title.contains("Stunting")
+                                  ? "Deteksi Dini"
+                                  : title.contains("Kehamilan")
+                                      ? "Jurnal Bumil"
+                                      : "Pengaturan"),
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

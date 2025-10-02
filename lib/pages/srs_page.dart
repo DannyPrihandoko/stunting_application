@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart'; // Tambahkan import ini
+// Import model RiskFactor yang baru kita buat
+// --- PENTING: SESUAIKAN PATH INI DENGAN NAMA PROYEK ANDA ---
+import 'package:stunting_application/models/risk_factor.dart';
+// --- AKHIR PENTING ---
 
 /// Halaman Perhitungan "Skor Risiko Stunting (SRS)"
 /// Catatan:
@@ -9,7 +13,7 @@ import 'package:firebase_database/firebase_database.dart'; // Tambahkan import i
 ///            MPASI_tidakAdekuat, WASH_buruk
 ///   Bobot 1: UsiaIbuRemaja, LILA_kurang, PendidikanIbuRendah, PendapatanRendah,
 ///            ART_banyak, Ayah_pendek, Anak_laki, Diare_berulang/Infeksi,
-///            Imunisasi_tidak_lengkap, PolaAsuh_tidak_adeuat, Pajanan_pestisida
+///            Imunisasi_tidak_lengkap, PolaAsuh_tidak_adekuat, Pajanan_pestisida
 ///   Kategori: 0–4 Rendah, 5–8 Sedang, ≥9 Tinggi
 class SrsPage extends StatefulWidget {
   const SrsPage({super.key});
@@ -20,46 +24,148 @@ class SrsPage extends StatefulWidget {
 
 class _SrsPageState extends State<SrsPage> {
   /// Kelompok variabel bobot 2 (nilai 1 jika "ya/berisiko")
-  final Map<String, bool> _risk2 = {
-    'Ibu_pendek': false,
-    'BBLR': false,
-    'Prematur': false,
-    'PanjangLahirPendek/IUGR': false,
-    'ASI_nonEksklusif': false,
-    'MPASI_tidakAdekuat': false,
-    'WASH_buruk': false,
-  };
+  /// Kini disimpan sebagai Map dengan kunci String dan nilai objek RiskFactor.
+  Map<String, RiskFactor> _riskFactorsWeight2 = {};
 
   /// Kelompok variabel bobot 1 (nilai 1 jika "ya/berisiko")
-  final Map<String, bool> _risk1 = {
-    'UsiaIbuRemaja': false,
-    'LILA_kurang': false,
-    'PendidikanIbuRendah': false,
-    'PendapatanRendah': false,
-    'ART_banyak (≥5)': false,
-    'Ayah_pendek': false,
-    'Anak_laki': false,
-    'Diare_berulang/Infeksi': false,
-    'Imunisasi_tidak_lengkap': false,
-    'PolaAsuh_tidak_adekuat': false, // (label diperbaiki ejaan)
-    'Pajanan_pestisida': false,
-  };
+  /// Kini disimpan sebagai Map dengan kunci String dan nilai objek RiskFactor.
+  Map<String, RiskFactor> _riskFactorsWeight1 = {};
 
   int _score = 0;
   String _kategori = '-';
   String _saran = '—';
+  bool _isLoading = true; // State untuk menunjukkan apakah data faktor risiko sedang dimuat
 
-  // Inisialisasi referensi ke Realtime Database
+  // Inisialisasi referensi ke Realtime Database untuk menyimpan hasil perhitungan SRS
   // Kita akan menyimpan data di jalur "srs_calculations" sesuai rules-mu
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref(
-    "srs_calculations",
-  );
+  final DatabaseReference _dbRefSrsCalculations = FirebaseDatabase.instance.ref("srs_calculations");
+  // Referensi baru ke path "risk_factors" untuk memuat konfigurasi faktor risiko
+  final DatabaseReference _dbRefRiskFactors = FirebaseDatabase.instance.ref("risk_factors");
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRiskFactors(); // Muat faktor risiko dari Firebase saat halaman diinisialisasi
+  }
+
+  /// Fungsi untuk memuat definisi faktor risiko dari Firebase Realtime Database.
+  Future<void> _loadRiskFactors() async {
+    // --- DEBUG LOG START ---
+    print('DEBUG SRS_PAGE: _loadRiskFactors() dimulai. _isLoading = true');
+    // --- DEBUG LOG END ---
+
+    try {
+      final snapshot = await _dbRefRiskFactors.get();
+
+      // --- DEBUG LOG START ---
+      print('DEBUG SRS_PAGE: Snapshot diterima dari Firebase Realtime Database.');
+      print('DEBUG SRS_PAGE: snapshot.exists: ${snapshot.exists}');
+      print('DEBUG SRS_PAGE: snapshot.value: ${snapshot.value != null ? 'Data Ada' : 'Null'}');
+      // --- DEBUG LOG END ---
+
+      if (snapshot.exists && snapshot.value != null) {
+        final Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
+
+        // --- DEBUG LOG START ---
+        print('DEBUG SRS_PAGE: Data dari Firebase berhasil di-cast: $data');
+        // --- DEBUG LOG END ---
+
+        final Map<String, RiskFactor> tempRisk2 = {};
+        final Map<String, RiskFactor> tempRisk1 = {};
+
+        if (data['weight_2'] != null) {
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: Memproses faktor bobot 2...');
+          // --- DEBUG LOG END ---
+          (data['weight_2'] as Map<dynamic, dynamic>).forEach((key, value) {
+            tempRisk2[key.toString()] = RiskFactor.fromMap(key.toString(), value);
+          });
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: Selesai memproses ${tempRisk2.length} faktor bobot 2.');
+          // --- DEBUG LOG END ---
+        } else {
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: Tidak ada data \'weight_2\' di Firebase. Pastikan struktur JSON benar.');
+          // --- DEBUG LOG END ---
+        }
+
+        if (data['weight_1'] != null) {
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: Memproses faktor bobot 1...');
+          // --- DEBUG LOG END ---
+          (data['weight_1'] as Map<dynamic, dynamic>).forEach((key, value) {
+            tempRisk1[key.toString()] = RiskFactor.fromMap(key.toString(), value);
+          });
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: Selesai memproses ${tempRisk1.length} faktor bobot 1.');
+          // --- DEBUG LOG END ---
+        } else {
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: Tidak ada data \'weight_1\' di Firebase. Pastikan struktur JSON benar.');
+          // --- DEBUG LOG END ---
+        }
+
+        setState(() {
+          _riskFactorsWeight2 = tempRisk2;
+          _riskFactorsWeight1 = tempRisk1;
+          _isLoading = false; // Set loading menjadi false karena data sudah dimuat
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: setState() untuk data berhasil. _isLoading sekarang false.');
+          // --- DEBUG LOG END ---
+        });
+      } else {
+        // --- DEBUG LOG START ---
+        print('DEBUG SRS_PAGE: Snapshot tidak ada atau value-nya null. Mengatur _isLoading ke false.');
+        // --- DEBUG LOG END ---
+        setState(() {
+          _isLoading = false; // Set loading ke false meskipun tidak ada data
+          // --- DEBUG LOG START ---
+          print('DEBUG SRS_PAGE: setState() untuk data tidak ada. _isLoading sekarang false.');
+          // --- DEBUG LOG END ---
+        });
+        // Opsional: tampilkan pesan error atau muat data default lokal
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tidak dapat memuat konfigurasi faktor risiko dari Firebase. Pastikan ada data di path `/risk_factors`.')),
+        );
+      }
+    } catch (e) {
+      // --- DEBUG LOG START ---
+      print('DEBUG SRS_PAGE: Terjadi ERROR saat memuat faktor risiko: $e');
+      // --- DEBUG LOG END ---
+      setState(() {
+        _isLoading = false; // Set loading ke false jika ada error
+        // --- DEBUG LOG START ---
+        print('DEBUG SRS_PAGE: setState() untuk error. _isLoading sekarang false.');
+        // --- DEBUG LOG END ---
+      });
+      // Opsional: tampilkan pesan error kepada pengguna
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat konfigurasi faktor risiko: $e')),
+      );
+    }
+  }
+
 
   void _hitungSRS() async {
     // Ubah metode menjadi async karena akan ada operasi I/O (database)
-    final int sum2 = _risk2.values.where((v) => v).length;
-    final int sum1 = _risk1.values.where((v) => v).length;
-    final int srs = 2 * sum2 + 1 * sum1;
+    int sum2 = 0;
+    // Iterasi melalui semua objek RiskFactor di _riskFactorsWeight2
+    _riskFactorsWeight2.forEach((key, rf) {
+      if (rf.isSelected) { // Jika faktor risiko ini dicentang
+        sum2++; // Hitung sebagai 1 (karena bobotnya sudah 2 di perhitungan akhir)
+      }
+    });
+
+    int sum1 = 0;
+    // Iterasi melalui semua objek RiskFactor di _riskFactorsWeight1
+    _riskFactorsWeight1.forEach((key, rf) {
+      if (rf.isSelected) { // Jika faktor risiko ini dicentang
+        sum1++; // Hitung sebagai 1 (karena bobotnya sudah 1 di perhitungan akhir)
+      }
+    });
+
+    // Perhitungan SRS menggunakan bobot yang telah ditentukan
+    final int srs = (2 * sum2) + (1 * sum1);
 
     String kategori;
     String saran;
@@ -85,23 +191,32 @@ class _SrsPageState extends State<SrsPage> {
 
     // --- BAGIAN BARU: Kirim data ke Firebase Realtime Database ---
     try {
+      // Konversi Map<String, RiskFactor> kembali ke Map<String, bool>
+      // untuk menyimpan hanya status pilihan faktor risiko
+      final Map<String, bool> selectedRisk2 = {};
+      _riskFactorsWeight2.forEach((key, rf) {
+        selectedRisk2[key] = rf.isSelected;
+      });
+
+      final Map<String, bool> selectedRisk1 = {};
+      _riskFactorsWeight1.forEach((key, rf) {
+        selectedRisk1[key] = rf.isSelected;
+      });
+
+      // Siapkan data perhitungan SRS untuk disimpan
       final Map<String, dynamic> srsData = {
         'timestamp': ServerValue.timestamp, // Mencatat waktu data dibuat
         'score': _score,
         'category': _kategori,
         'recommendation': _saran,
-        'risk_factors_weight2': _risk2.map(
-          (key, value) => MapEntry(key, value),
-        ), // Kirim semua faktor risiko bobot 2
-        'risk_factors_weight1': _risk1.map(
-          (key, value) => MapEntry(key, value),
-        ), // Kirim semua faktor risiko bobot 1
+        'risk_factors_weight2': selectedRisk2, // Kirim semua faktor risiko bobot 2 yang terpilih
+        'risk_factors_weight1': selectedRisk1, // Kirim semua faktor risiko bobot 1 yang terpilih
         // Kamu bisa menambahkan UID pengguna di sini jika sudah ada autentikasi
         // 'userId': FirebaseAuth.instance.currentUser?.uid,
       };
 
       // Menggunakan .push() untuk membuat ID unik baru, lalu .set() untuk menyimpan data
-      await _dbRef.push().set(srsData);
+      await _dbRefSrsCalculations.push().set(srsData);
 
       // Tampilkan pesan sukses kepada pengguna
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,13 +237,10 @@ class _SrsPageState extends State<SrsPage> {
   }
 
   void _reset() {
-    for (final k in _risk2.keys) {
-      _risk2[k] = false;
-    }
-    for (final k in _risk1.keys) {
-      _risk1[k] = false;
-    }
     setState(() {
+      // Reset semua status isSelected dari objek RiskFactor menjadi false
+      _riskFactorsWeight2.forEach((key, rf) => rf.isSelected = false);
+      _riskFactorsWeight1.forEach((key, rf) => rf.isSelected = false);
       _score = 0;
       _kategori = '-';
       _saran = '—';
@@ -156,55 +268,37 @@ class _SrsPageState extends State<SrsPage> {
             ),
           ),
 
-          // Form checklist
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildGroupCard(
-                    context,
-                    title: "Faktor Bobot 2 (determinasi kuat)",
-                    subtitle:
-                        "Centang jika kondisi TERPENUHI/berisiko. Bobot ×2 per item.",
-                    items: _risk2,
-                    prettyMap: const {
-                      'Ibu_pendek': 'Ibu bertubuh pendek',
-                      'BBLR': 'Berat Badan Lahir Rendah (BBLR)',
-                      'Prematur': 'Prematur',
-                      'PanjangLahirPendek/IUGR': 'Panjang lahir pendek / IUGR',
-                      'ASI_nonEksklusif': 'Tidak ASI eksklusif 0–6 bln',
-                      'MPASI_tidakAdekuat': 'MP-ASI tidak adekuat',
-                      'WASH_buruk':
-                          'WASH buruk (jamban tidak layak/air tidak diolah)',
-                    },
+          // Tampilkan loading spinner jika data faktor risiko sedang dimuat
+          _isLoading
+              ? const Expanded(
+                  child: Center(child: CircularProgressIndicator()))
+              : Expanded( // Setelah data dimuat, tampilkan form checklist
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        // Membangun kartu grup untuk faktor risiko bobot 2
+                        _buildGroupCard(
+                          context,
+                          title: "Faktor Bobot 2 (determinasi kuat)",
+                          subtitle:
+                              "Centang jika kondisi TERPENUHI/berisiko. Bobot ×2 per item.",
+                          items: _riskFactorsWeight2, // Menggunakan map objek RiskFactor
+                        ),
+                        const SizedBox(height: 12),
+                        // Membangun kartu grup untuk faktor risiko bobot 1
+                        _buildGroupCard(
+                          context,
+                          title: "Faktor Bobot 1 (pendukung penting)",
+                          subtitle:
+                              "Centang jika kondisi TERPENUHI/berisiko. Bobot ×1 per item.",
+                          items: _riskFactorsWeight1, // Menggunakan map objek RiskFactor
+                        ),
+                        const SizedBox(height: 90), // ruang untuk tombol bawah
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  _buildGroupCard(
-                    context,
-                    title: "Faktor Bobot 1 (pendukung penting)",
-                    subtitle:
-                        "Centang jika kondisi TERPENUHI/berisiko. Bobot ×1 per item.",
-                    items: _risk1,
-                    prettyMap: const {
-                      'UsiaIbuRemaja': 'Kehamilan usia remaja',
-                      'LILA_kurang': 'LILA ibu kurang',
-                      'PendidikanIbuRendah': 'Pendidikan ibu rendah',
-                      'PendapatanRendah': 'Pendapatan keluarga rendah',
-                      'ART_banyak (≥5)': 'Anggota rumah tangga banyak (≥5)',
-                      'Ayah_pendek': 'Ayah bertubuh pendek',
-                      'Anak_laki': 'Jenis kelamin anak laki-laki',
-                      'Diare_berulang/Infeksi': 'Diare berulang / infeksi',
-                      'Imunisasi_tidak_lengkap': 'Imunisasi tidak lengkap',
-                      'PolaAsuh_tidak_adekuat': 'Pola asuh tidak adekuat',
-                      'Pajanan_pestisida': 'Pajanan pestisida',
-                    },
-                  ),
-                  const SizedBox(height: 90), // ruang untuk tombol bawah
-                ],
-              ),
-            ),
-          ),
+                ),
 
           // Hasil & tombol aksi fixed di bawah
           Container(
@@ -261,12 +355,13 @@ class _SrsPageState extends State<SrsPage> {
     );
   }
 
+  /// Membangun widget Card untuk grup faktor risiko (bobot 1 atau 2).
+  /// Kini menerima Map<String, RiskFactor> sebagai daftar item.
   Widget _buildGroupCard(
     BuildContext context, {
     required String title,
     required String subtitle,
-    required Map<String, bool> items,
-    required Map<String, String> prettyMap,
+    required Map<String, RiskFactor> items, // Tipe diubah menjadi Map objek RiskFactor
   }) {
     return Card(
       elevation: 0,
@@ -281,13 +376,18 @@ class _SrsPageState extends State<SrsPage> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(subtitle),
-          children: items.keys.map((key) {
-            final label = prettyMap[key] ?? key;
-            final value = items[key] ?? false;
+          // Menggunakan items.values untuk mendapatkan list objek RiskFactor
+          children: items.values.map((riskFactor) {
             return CheckboxListTile(
-              value: value,
-              onChanged: (v) => setState(() => items[key] = v ?? false),
-              title: Text(label),
+              value: riskFactor.isSelected, // Menggunakan properti isSelected dari objek RiskFactor
+              onChanged: (v) {
+                setState(() {
+                  riskFactor.isSelected = v ?? false; // Memperbarui status isSelected pada objek RiskFactor
+                  // Opsi: Anda bisa panggil _hitungSRS() di sini jika ingin skor langsung terupdate
+                  // Atau biarkan tombol "Hitung SRS" yang memicu perhitungan, seperti yang sudah ada.
+                });
+              },
+              title: Text(riskFactor.label), // Menggunakan label dari objek RiskFactor
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),

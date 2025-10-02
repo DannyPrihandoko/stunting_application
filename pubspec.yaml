@@ -13,6 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^2.27.0 # Pastikan versi ini adalah yang terbaru atau stabil
   firebase_database: ^10.4.0 # Pastikan versi ini adalah yang terbaru atau stabil
+  intl: ^0.18.1 # Pastikan versi ini adalah yang terbaru atau stabil
 
 dev_dependencies:
   flutter_native_splash: ^2.4.6  # Versi terbaru untuk splash screen
