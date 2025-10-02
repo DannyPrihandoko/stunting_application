@@ -137,7 +137,7 @@ class _CekPerkembanganKehamilanPageState extends State<CekPerkembanganKehamilanP
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: DropdownButtonFormField<String>(
-                          value: _kondisi,
+                          initialValue: _kondisi,
                           items: const [
                             DropdownMenuItem(value: 'Sebelum Hamil', child: Text('Sebelum Hamil')),
                             DropdownMenuItem(value: 'Trimester 1', child: Text('Trimester 1')),
