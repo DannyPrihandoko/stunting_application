@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart'; // Tambahkan import ini
 
 /// Halaman Perhitungan "Skor Risiko Stunting (SRS)"
 /// Catatan:
@@ -48,7 +49,14 @@ class _SrsPageState extends State<SrsPage> {
   String _kategori = '-';
   String _saran = '—';
 
-  void _hitungSRS() {
+  // Inisialisasi referensi ke Realtime Database
+  // Kita akan menyimpan data di jalur "srs_calculations" sesuai rules-mu
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref(
+    "srs_calculations",
+  );
+
+  void _hitungSRS() async {
+    // Ubah metode menjadi async karena akan ada operasi I/O (database)
     final int sum2 = _risk2.values.where((v) => v).length;
     final int sum1 = _risk1.values.where((v) => v).length;
     final int srs = 2 * sum2 + 1 * sum1;
@@ -74,6 +82,43 @@ class _SrsPageState extends State<SrsPage> {
       _kategori = kategori;
       _saran = saran;
     });
+
+    // --- BAGIAN BARU: Kirim data ke Firebase Realtime Database ---
+    try {
+      final Map<String, dynamic> srsData = {
+        'timestamp': ServerValue.timestamp, // Mencatat waktu data dibuat
+        'score': _score,
+        'category': _kategori,
+        'recommendation': _saran,
+        'risk_factors_weight2': _risk2.map(
+          (key, value) => MapEntry(key, value),
+        ), // Kirim semua faktor risiko bobot 2
+        'risk_factors_weight1': _risk1.map(
+          (key, value) => MapEntry(key, value),
+        ), // Kirim semua faktor risiko bobot 1
+        // Kamu bisa menambahkan UID pengguna di sini jika sudah ada autentikasi
+        // 'userId': FirebaseAuth.instance.currentUser?.uid,
+      };
+
+      // Menggunakan .push() untuk membuat ID unik baru, lalu .set() untuk menyimpan data
+      await _dbRef.push().set(srsData);
+
+      // Tampilkan pesan sukses kepada pengguna
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data SRS berhasil disimpan ke database!'),
+        ),
+      );
+    } catch (e) {
+      // Tampilkan pesan error jika gagal
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data SRS: $e')));
+      print(
+        'Error saving SRS data: $e',
+      ); // Cetak error ke konsol untuk debugging
+    }
+    // --- AKHIR BAGIAN BARU ---
   }
 
   void _reset() {
@@ -127,8 +172,7 @@ class _SrsPageState extends State<SrsPage> {
                       'Ibu_pendek': 'Ibu bertubuh pendek',
                       'BBLR': 'Berat Badan Lahir Rendah (BBLR)',
                       'Prematur': 'Prematur',
-                      'PanjangLahirPendek/IUGR':
-                          'Panjang lahir pendek / IUGR',
+                      'PanjangLahirPendek/IUGR': 'Panjang lahir pendek / IUGR',
                       'ASI_nonEksklusif': 'Tidak ASI eksklusif 0–6 bln',
                       'MPASI_tidakAdekuat': 'MP-ASI tidak adekuat',
                       'WASH_buruk':
@@ -166,9 +210,7 @@ class _SrsPageState extends State<SrsPage> {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-              border: Border(
-                top: BorderSide(color: Colors.orange.shade200),
-              ),
+              border: Border(top: BorderSide(color: Colors.orange.shade200)),
             ),
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
             child: Column(
@@ -182,10 +224,7 @@ class _SrsPageState extends State<SrsPage> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(_saran),
-                ),
+                Align(alignment: Alignment.centerLeft, child: Text(_saran)),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -299,7 +338,10 @@ class _ResultBar extends StatelessWidget {
             ),
             child: Text(
               kategori,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
