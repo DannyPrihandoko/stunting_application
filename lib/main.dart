@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-// TAMBAHKAN DUA IMPORT INI UNTUK FIREBASE
+// PENTING: Dua import di bawah ini yang membutuhkan setup Firebase CLI yang benar.
+// Pastikan kamu sudah menjalankan 'flutter pub get' dan 'flutterfire configure'
+// Jika ada error di sini, itu berarti setup Firebase-mu belum selesai/benar.
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // Pastikan path ini benar (biasanya di lib/)
+import 'firebase_options.dart'; // File ini dihasilkan oleh 'flutterfire configure'
 
 // IMPORT FILE TERPISAH (Kelas-kelas ini diaktifkan dan diasumsikan sudah ada di folder pages/)
 import 'pages/calculator_page.dart';
 import 'pages/edukasi_page.dart';
-import 'pages/srs_page.dart';
+import 'pages/srs_page.dart'; // Ini halaman SRS yang akan mengirim data ke Realtime Database
 import 'pages/cek_perkembangan_kehamilan_page.dart';
 
 // UBAH main() MENJADI ASYNC DAN TAMBAHKAN INIALISASI FIREBASE
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Memastikan Flutter siap sebelum inisialisasi Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions
-        .currentPlatform, // Menggunakan konfigurasi Firebase sesuai platform
-  );
+  // Pastikan Flutter siap sebelum menginisialisasi Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi Firebase dengan opsi spesifik untuk platform saat ini
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const MyApp());
 }
 
