@@ -1,10 +1,137 @@
 // lib/pages/srs_history_page.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:stunting_application/models/srs_record.dart'; // Sesuaikan path ini
-import 'package:stunting_application/models/risk_factor.dart'; // Import model RiskFactor
 
-/// Halaman untuk menampilkan riwayat perhitungan Skor Risiko Stunting (SRS) dalam tabel.
+/// ===============================
+/// Data Model Lokal (mandiri)
+/// ===============================
+class SrsRow {
+  final String id;
+  final int score;
+  final String category;
+  final String recommendation;
+  final int timestamp;
+  final Map<String, bool> w2;
+  final Map<String, bool> w1;
+  final String motherName;
+
+  SrsRow({
+    required this.id,
+    required this.score,
+    required this.category,
+    required this.recommendation,
+    required this.timestamp,
+    required this.w2,
+    required this.w1,
+    required this.motherName,
+  });
+
+  factory SrsRow.fromMap(String id, Map<dynamic, dynamic> m) {
+    // FIX: tidak boleh pakai 'final' untuk deklarasi fungsi lokal
+    Map<String, bool> _mapBool(dynamic x) {
+      if (x is Map) {
+        return Map<String, bool>.from(
+          x.map((k, v) => MapEntry("$k", v == true)),
+        );
+      }
+      return {};
+    }
+
+    final mother = (m['mother'] ?? {}) as Map? ?? {};
+    final motherName = (mother['name'] ?? m['motherName'] ?? '').toString();
+
+    int parseInt(dynamic v) {
+      if (v is int) return v;
+      return int.tryParse("$v") ?? 0;
+    }
+
+    return SrsRow(
+      id: id,
+      score: parseInt(m['score']),
+      category: (m['category'] ?? '-').toString(),
+      recommendation: (m['recommendation'] ?? '-').toString(),
+      timestamp: parseInt(m['timestamp'] ?? m['createdAt']),
+      w2: _mapBool(m['risk_factors_weight2']),
+      w1: _mapBool(m['risk_factors_weight1']),
+      motherName: motherName,
+    );
+  }
+
+  String get formattedDate {
+    if (timestamp == 0) return "-";
+    final d = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String two(int n) => n.toString().padLeft(2, '0');
+    return "${two(d.day)}/${two(d.month)}/${d.year} ${two(d.hour)}:${two(d.minute)}";
+  }
+}
+
+class CalculatorRecord {
+  final String id;
+  final int score;
+  final String riskLabel;
+  final String advice;
+  final int timestamp;
+  final Map<String, bool> checked;
+  final Map<String, dynamic> groups;
+  final Map<String, dynamic> meta;
+
+  CalculatorRecord({
+    required this.id,
+    required this.score,
+    required this.riskLabel,
+    required this.advice,
+    required this.timestamp,
+    required this.checked,
+    required this.groups,
+    required this.meta,
+  });
+
+  factory CalculatorRecord.fromMap(String id, Map<dynamic, dynamic> m) {
+    int parseInt(dynamic v) {
+      if (v is int) return v;
+      return int.tryParse("$v") ?? 0;
+    }
+
+    return CalculatorRecord(
+      id: id,
+      score: parseInt(m['score']),
+      riskLabel: (m['riskLabel'] ?? '-').toString(),
+      advice: (m['advice'] ?? '-').toString(),
+      timestamp: parseInt(m['timestamp'] ?? m['createdAt']),
+      checked: (m['checked'] ?? {}) is Map
+          ? Map<String, bool>.from(m['checked'])
+          : {},
+      groups: (m['groups'] ?? {}) is Map
+          ? Map<String, dynamic>.from(m['groups'])
+          : {},
+      meta: (m['meta'] ?? {}) is Map
+          ? Map<String, dynamic>.from(m['meta'])
+          : {},
+    );
+  }
+
+  String get formattedDate {
+    if (timestamp == 0) return "-";
+    final d = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String two(int n) => n.toString().padLeft(2, '0');
+    return "${two(d.day)}/${two(d.month)}/${d.year} ${two(d.hour)}:${two(d.minute)}";
+  }
+
+  String get childLine {
+    final child = (meta['child'] ?? {}) as Map? ?? {};
+    final name = (child['name'] ?? '').toString();
+    final sex = (child['sex'] ?? '').toString();
+    final age = child['ageMonths'];
+    final sexStr = sex == 'L' ? 'L' : (sex == 'P' ? 'P' : '-');
+    final ageStr = (age == null) ? '-' : '$age bln';
+    final nm = name.isEmpty ? '-' : name;
+    return "$nm • $sexStr • $ageStr";
+  }
+}
+
+/// ===============================
+/// Halaman: Riwayat Perhitungan
+/// ===============================
 class SrsHistoryPage extends StatefulWidget {
   const SrsHistoryPage({super.key});
 
@@ -13,131 +140,219 @@ class SrsHistoryPage extends StatefulWidget {
 }
 
 class _SrsHistoryPageState extends State<SrsHistoryPage> {
-  final DatabaseReference _dbRefSrsCalculations =
-      FirebaseDatabase.instance.ref("srs_calculations");
-  final DatabaseReference _dbRefRiskFactorsConfig =
-      FirebaseDatabase.instance.ref("risk_factors");
+  final DatabaseReference _dbRefSrs = FirebaseDatabase.instance.ref(
+    "srs_calculations",
+  );
+  final DatabaseReference _dbRefRiskCfg = FirebaseDatabase.instance.ref(
+    "risk_factors",
+  );
+  final DatabaseReference _dbRefCalc = FirebaseDatabase.instance.ref(
+    "calculator_history",
+  );
 
-  // Untuk menyimpan konfigurasi faktor risiko agar bisa menampilkan label
-  Map<String, RiskFactor> _allRiskFactors = {};
-  bool _isLoadingConfig = true; // State untuk loading konfigurasi
+  /// key → label (gabungan weight_2 dan weight_1)
+  Map<String, String> _rfLabels = {};
+  bool _isLoadingLabels = true;
 
   @override
   void initState() {
     super.initState();
-    _loadRiskFactorsConfig(); // Muat konfigurasi faktor risiko saat halaman diinisialisasi
+    _loadRiskLabels();
   }
 
-  /// Fungsi untuk memuat definisi faktor risiko dari Firebase Realtime Database
-  /// Ini akan digunakan untuk mencari label berdasarkan key faktor risiko yang disimpan.
-  Future<void> _loadRiskFactorsConfig() async {
+  Future<void> _loadRiskLabels() async {
     try {
-      final snapshot = await _dbRefRiskFactorsConfig.get();
-      if (snapshot.exists && snapshot.value != null) {
-        final Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
-        Map<String, RiskFactor> loadedFactors = {};
+      final snap = await _dbRefRiskCfg.get();
+      if (snap.exists && snap.value != null) {
+        final data = snap.value as Map<dynamic, dynamic>;
 
-        if (data['weight_2'] != null) {
-          (data['weight_2'] as Map<dynamic, dynamic>).forEach((key, value) {
-            loadedFactors[key.toString()] = RiskFactor.fromMap(key.toString(), value);
-          });
+        final Map<String, String> labels = {};
+        void absorb(dynamic section) {
+          if (section is Map) {
+            section.forEach((k, v) {
+              if (v is Map && v['label'] != null) {
+                labels["$k"] = "${v['label']}";
+              } else {
+                labels["$k"] = "$k";
+              }
+            });
+          }
         }
-        if (data['weight_1'] != null) {
-          (data['weight_1'] as Map<dynamic, dynamic>).forEach((key, value) {
-            loadedFactors[key.toString()] = RiskFactor.fromMap(key.toString(), value);
-          });
-        }
+
+        absorb(data['weight_2']);
+        absorb(data['weight_1']);
 
         setState(() {
-          _allRiskFactors = loadedFactors;
-          _isLoadingConfig = false;
+          _rfLabels = labels;
+          _isLoadingLabels = false;
         });
       } else {
-        print('Tidak ada data konfigurasi risk_factors di Firebase.');
-        setState(() {
-          _isLoadingConfig = false;
-        });
+        setState(() => _isLoadingLabels = false);
       }
     } catch (e) {
-      print('Error memuat konfigurasi risk_factors: $e');
-      setState(() {
-        _isLoadingConfig = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat konfigurasi faktor risiko: $e')),
-      );
+      setState(() => _isLoadingLabels = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal memuat label faktor risiko: $e")),
+        );
+      }
     }
   }
 
-  // Fungsi helper untuk mendapatkan label dari key faktor risiko
-  String _getRiskFactorLabel(String key) {
-    return _allRiskFactors[key]?.label ?? key.replaceAll('_', ' '); // Fallback ke key jika tidak ditemukan
+  String _labelOf(String key) => _rfLabels[key] ?? key.replaceAll('_', ' ');
+
+  Color _badgeBase(String s) {
+    final x = s.toLowerCase();
+    if (x.contains('tinggi')) return Colors.redAccent;
+    if (x.contains('sedang')) return Colors.amber.shade700;
+    return Colors.green;
   }
 
-  // Fungsi untuk menampilkan dialog detail catatan SRS
-  void _showDetailsDialog(SrsRecord record) {
+  Color _darken(Color c, [double amount = .18]) {
+    final hsl = HSLColor.fromColor(c);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+    return hslDark.toColor();
+  }
+
+  // ===== Dialog detail SRS =====
+  void _showSrsDetails(SrsRow r) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Detail Perhitungan SRS"),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDetailRow("Waktu:", record.formattedDate),
-                _buildDetailRow("Skor:", record.score.toString()),
-                _buildDetailRow("Kategori:", record.category),
-                _buildDetailRow("Rekomendasi:", record.recommendation),
-                const Divider(),
-                const Text(
-                  "Faktor Risiko Bobot 2:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                ...record.riskFactorsWeight2.entries
-                    .where((entry) => entry.value)
-                    .map((entry) => Text("• ${_getRiskFactorLabel(entry.key)}"))
-                    .toList(),
-                if (record.riskFactorsWeight2.entries.every((element) => !element.value))
-                  const Text("Tidak ada faktor bobot 2 yang terpilih."),
-                const SizedBox(height: 10),
-                const Text(
-                  "Faktor Risiko Bobot 1:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                ...record.riskFactorsWeight1.entries
-                    .where((entry) => entry.value)
-                    .map((entry) => Text("• ${_getRiskFactorLabel(entry.key)}"))
-                    .toList(),
-                 if (record.riskFactorsWeight1.entries.every((element) => !element.value))
-                  const Text("Tidak ada faktor bobot 1 yang terpilih."),
-              ],
-            ),
+      builder: (_) => AlertDialog(
+        title: const Text("Detail Perhitungan SRS"),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _detailRow("Waktu", r.formattedDate),
+              _detailRow("Ibu", r.motherName.isEmpty ? "—" : r.motherName),
+              _detailRow("Skor", r.score.toString()),
+              _detailRow("Kategori", r.category),
+              const SizedBox(height: 8),
+              const Text(
+                "Rekomendasi:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(r.recommendation),
+              const Divider(height: 20),
+              const Text(
+                "Faktor Risiko Bobot 2",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...r.w2.entries
+                  .where((e) => e.value)
+                  .map((e) => Text("• ${_labelOf(e.key)}")),
+              if (r.w2.entries.every((e) => !e.value))
+                const Text("Tidak ada faktor bobot 2 yang terpilih."),
+              const SizedBox(height: 10),
+              const Text(
+                "Faktor Risiko Bobot 1",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...r.w1.entries
+                  .where((e) => e.value)
+                  .map((e) => Text("• ${_labelOf(e.key)}")),
+              if (r.w1.entries.every((e) => !e.value))
+                const Text("Tidak ada faktor bobot 1 yang terpilih."),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Tutup"),
-            ),
-          ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
+      ),
     );
   }
 
-  // Helper untuk membangun baris detail di dialog
-  Widget _buildDetailRow(String label, String value) {
+  // ===== Dialog detail Kalkulator =====
+  void _showCalcDetails(CalculatorRecord rec) {
+    String _groupTitle(String k) {
+      switch (k) {
+        case 'directBirth':
+          return 'Penyebab Langsung — Riwayat Lahir';
+        case 'directFeeding':
+          return 'Penyebab Langsung — Pemberian Makan';
+        case 'directInfection':
+          return 'Penyebab Langsung — Infeksi & Imunisasi';
+        case 'maternal':
+          return 'Tidak Langsung — Ibu';
+        case 'householdWASH':
+          return 'Tidak Langsung — Rumah Tangga & WASH';
+        case 'childOther':
+          return 'Faktor Anak Tambahan';
+        default:
+          return k;
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Detail Perhitungan Kalkulator"),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _detailRow("Waktu", rec.formattedDate),
+              _detailRow("Skor", rec.score.toString()),
+              _detailRow("Kategori", rec.riskLabel),
+              const SizedBox(height: 8),
+              const Text(
+                "Saran:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(rec.advice),
+              const Divider(height: 20),
+              ...rec.groups.entries.map((g) {
+                final list = (g.value is List) ? (g.value as List) : const [];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _groupTitle(g.key),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (list.isEmpty)
+                        const Text("— (tidak ada)")
+                      else
+                        ...list.map(
+                          (e) => Text("• ${e.toString().replaceAll('_', ' ')}"),
+                        ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===== Widgets util =====
+  Widget _detailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 100,
-            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           Expanded(child: Text(value)),
         ],
@@ -145,122 +360,287 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
     );
   }
 
+  Widget _scrollableDataTable({
+    required List<DataColumn> columns,
+    required List<DataRow> rows,
+  }) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columnSpacing: 20,
+          dataRowMinHeight: 45,
+          dataRowMaxHeight: 60,
+          headingRowColor: MaterialStateProperty.resolveWith<Color?>(
+            (states) => Colors.indigo.shade50,
+          ),
+          headingTextStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.indigo.shade900,
+            fontSize: 14,
+          ),
+          dataTextStyle: const TextStyle(fontSize: 13, color: Colors.black87),
+          columns: columns,
+          rows: rows,
+        ),
+      ),
+    );
+  }
 
+  // ===== BUILD =====
   @override
   Widget build(BuildContext context) {
+    final titleStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w900,
+      color: Colors.grey.shade900,
+    );
+    final subtitleStyle = TextStyle(color: Colors.grey.shade700);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Riwayat Perhitungan SRS"),
-        backgroundColor: Colors.indigo.shade700, // Warna tema untuk halaman ini
+        title: const Text("Riwayat Perhitungan"),
+        backgroundColor: Colors.indigo.shade700,
         foregroundColor: Colors.white,
         elevation: 4,
       ),
-      body: _isLoadingConfig
-          ? const Center(child: CircularProgressIndicator()) // Tampilkan loading saat memuat konfigurasi
-          : StreamBuilder(
-              stream: _dbRefSrsCalculations.onValue,
-              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  print("Error mengambil riwayat SRS: ${snapshot.error}");
-                  return Center(child: Text('Terjadi kesalahan: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-                  return const Center(child: Text('Belum ada data perhitungan SRS.'));
-                }
+      body: _isLoadingLabels
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(12.0),
+              children: [
+                // ====== SECTION 1: SRS ======
+                Text(
+                  "Tabel Riwayat Perhitungan SRS (Skor Risiko Stunting)",
+                  style: titleStyle,
+                ),
+                const SizedBox(height: 4),
+                Text("Sumber data: /srs_calculations", style: subtitleStyle),
+                const SizedBox(height: 8),
+                _buildSrsTableCard(),
 
-                final Map<dynamic, dynamic> srsMap =
-                    snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-                List<SrsRecord> srsRecords = [];
+                const SizedBox(height: 18),
 
-                srsMap.forEach((key, value) {
-                  srsRecords.add(SrsRecord.fromMap(key.toString(), value));
-                });
+                // ====== SECTION 2: Kalkulator ======
+                Text(
+                  "Tabel Riwayat Kalkulator Gizi/Risiko Stunting",
+                  style: titleStyle,
+                ),
+                const SizedBox(height: 4),
+                Text("Sumber data: /calculator_history", style: subtitleStyle),
+                const SizedBox(height: 8),
+                _buildCalculatorTableCard(),
+              ],
+            ),
+    );
+  }
 
-                srsRecords.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  // ===== Card + Table: SRS =====
+  Widget _buildSrsTableCard() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias,
+      child: StreamBuilder<DatabaseEvent>(
+        stream: _dbRefSrs.onValue,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.hasError) {
+            return SizedBox(
+              height: 140,
+              child: Center(
+                child: Text('Terjadi kesalahan: ${snapshot.error}'),
+              ),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+            return const SizedBox(
+              height: 100,
+              child: Center(child: Text('Belum ada data perhitungan SRS.')),
+            );
+          }
 
-                // Tema DataTable yang lebih menarik
-                return Container(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    clipBehavior: Clip.antiAlias, // Penting untuk border radius pada DataTable
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          columnSpacing: 20, // Jarak antar kolom
-                          dataRowMinHeight: 45,
-                          dataRowMaxHeight: 60,
-                          headingRowColor: MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) => Colors.indigo.shade50), // Warna header
-                          headingTextStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.indigo.shade900,
-                            fontSize: 14,
-                          ),
-                          dataTextStyle: const TextStyle(fontSize: 13, color: Colors.black87),
-                          // Warna latar belakang baris bergantian
-                          dataRowColor: MaterialStateProperty.resolveWith<Color?>(
-                            (Set<MaterialState> states) {
-                              // Ini adalah cara yang benar dan lebih sederhana untuk warna bergantian
-                              if (states.contains(MaterialState.selected)) {
-                                return Colors.indigo.shade100;
-                              }
-                              // Dapatkan indeks baris dari data asli, bukan dari MaterialState.selected
-                              // Kita tidak bisa langsung mendapatkan index dari `states`,
-                              // jadi kita akan mengimplementasikan logika warna bergantian di DataRow.
-                              return null; // Akan dihandle di DataRow
-                            },
-                          ),
-                          columns: const [
-                            DataColumn(label: Text('Waktu')),
-                            DataColumn(label: Text('Skor')),
-                            DataColumn(label: Text('Kategori')),
-                            DataColumn(label: Text('Detail')), // Kolom baru untuk tombol detail
-                          ],
-                          rows: List<DataRow>.generate(srsRecords.length, (index) {
-                            final record = srsRecords[index];
-                            final isEvenRow = index % 2 == 0; // Tentukan apakah baris genap
+          final Map<dynamic, dynamic> srsMap =
+              snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          final List<SrsRow> rows =
+              srsMap.entries
+                  .where((e) => e.value is Map)
+                  .map((e) => SrsRow.fromMap(e.key.toString(), e.value))
+                  .toList()
+                ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
-                            return DataRow(
-                              color: MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.selected)) {
-                                    return Colors.indigo.shade100; // Warna saat dipilih
-                                  }
-                                  return isEvenRow ? Colors.grey.shade50 : null; // Warna bergantian
-                                },
-                              ),
-                              cells: [
-                                DataCell(Text(record.formattedDate)),
-                                DataCell(Text(record.score.toString())),
-                                DataCell(Text(record.category)),
-                                DataCell(
-                                  IconButton(
-                                    icon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
-                                    onPressed: () => _showDetailsDialog(record),
-                                    tooltip: 'Lihat Detail',
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+          return _scrollableDataTable(
+            columns: const [
+              DataColumn(label: Text('Waktu')),
+              DataColumn(label: Text('Ibu')),
+              DataColumn(label: Text('Skor')),
+              DataColumn(label: Text('Kategori')),
+              DataColumn(label: Text('Detail')),
+            ],
+            rows: List<DataRow>.generate(rows.length, (index) {
+              final r = rows[index];
+              final isEven = index % 2 == 0;
+              final base = _badgeBase(r.category);
+              final textColor = base.computeLuminance() > 0.5
+                  ? _darken(base)
+                  : base;
+
+              return DataRow(
+                color: MaterialStateProperty.resolveWith<Color?>(
+                  (states) => isEven ? Colors.grey.shade50 : null,
+                ),
+                cells: [
+                  DataCell(Text(r.formattedDate)),
+                  DataCell(Text(r.motherName.isEmpty ? '—' : r.motherName)),
+                  DataCell(Text(r.score.toString())),
+                  DataCell(
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: base.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: base.withOpacity(0.35)),
+                      ),
+                      child: Text(
+                        r.category,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ),
-                );
-              },
-            ),
+                  DataCell(
+                    IconButton(
+                      icon: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () => _showSrsDetails(r),
+                      tooltip: 'Lihat Detail',
+                    ),
+                  ),
+                ],
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+
+  // ===== Card + Table: Kalkulator =====
+  Widget _buildCalculatorTableCard() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias,
+      child: StreamBuilder<DatabaseEvent>(
+        stream: _dbRefCalc.onValue,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.hasError) {
+            return SizedBox(
+              height: 140,
+              child: Center(
+                child: Text('Terjadi kesalahan: ${snapshot.error}'),
+              ),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+            return const SizedBox(
+              height: 100,
+              child: Center(
+                child: Text('Belum ada data perhitungan dari Kalkulator.'),
+              ),
+            );
+          }
+
+          final Map<dynamic, dynamic> calcMap =
+              snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          final List<CalculatorRecord> recs =
+              calcMap.entries
+                  .where((e) => e.value is Map)
+                  .map(
+                    (e) => CalculatorRecord.fromMap(e.key.toString(), e.value),
+                  )
+                  .toList()
+                ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+          return _scrollableDataTable(
+            columns: const [
+              DataColumn(label: Text('Waktu')),
+              DataColumn(label: Text('Skor')),
+              DataColumn(label: Text('Kategori')),
+              DataColumn(label: Text('Anak (Nama • JK • Usia)')),
+              DataColumn(label: Text('Detail')),
+            ],
+            rows: List<DataRow>.generate(recs.length, (index) {
+              final r = recs[index];
+              final isEven = index % 2 == 0;
+              final base = _badgeBase(r.riskLabel);
+              final textColor = base.computeLuminance() > 0.5
+                  ? _darken(base)
+                  : base;
+
+              return DataRow(
+                color: MaterialStateProperty.resolveWith<Color?>(
+                  (states) => isEven ? Colors.grey.shade50 : null,
+                ),
+                cells: [
+                  DataCell(Text(r.formattedDate)),
+                  DataCell(Text(r.score.toString())),
+                  DataCell(
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: base.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: base.withOpacity(0.35)),
+                      ),
+                      child: Text(
+                        r.riskLabel,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  DataCell(Text(r.childLine)),
+                  DataCell(
+                    IconButton(
+                      icon: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () => _showCalcDetails(r),
+                      tooltip: 'Lihat Detail',
+                    ),
+                  ),
+                ],
+              );
+            }),
+          );
+        },
+      ),
     );
   }
 }

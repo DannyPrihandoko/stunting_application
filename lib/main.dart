@@ -1,58 +1,49 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-// PENTING: Dua import di bawah ini yang membutuhkan setup Firebase CLI yang benar.
-// Pastikan kamu sudah menjalankan 'flutter pub get' dan 'flutterfire configure'
-// Jika ada error di sini, itu berarti setup Firebase-mu belum selesai/benar.
+// Firebase
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // File ini dihasilkan oleh 'flutterfire configure'
+import 'firebase_options.dart';
 
-// IMPORT FILE TERPISAH (Kelas-kelas ini diaktifkan dan diasumsikan sudah ada di folder pages/)
+// Pages
 import 'pages/calculator_page.dart';
 import 'pages/edukasi_page.dart';
-import 'pages/srs_page.dart'; // Ini halaman SRS yang akan mengirim data ke Realtime Database
-import 'pages/cek_perkembangan_kehamilan_page.dart'; // Import halaman cek kehamilan
-import 'package:stunting_application/pages/srs_history_page.dart'; // Import halaman riwayat SRS
+import 'pages/srs_page.dart';
+import 'pages/cek_perkembangan_kehamilan_page.dart';
+import 'package:stunting_application/pages/srs_history_page.dart';
 
-// UBAH main() MENJADI ASYNC DAN TAMBAHKAN INIALISASI FIREBASE
 void main() async {
   // --- DEBUG LOG MAIN.DART START ---
-  print('DEBUG MAIN: Aplikasi dimulai. WidgetsFlutterBinding.ensureInitialized() dipanggil.');
+  print(
+    'DEBUG MAIN: Aplikasi dimulai. WidgetsFlutterBinding.ensureInitialized() dipanggil.',
+  );
   // --- DEBUG LOG MAIN.DART END ---
 
-  // Pastikan Flutter siap sebelum menginisialisasi Firebase
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     // --- DEBUG LOG MAIN.DART START ---
     print('DEBUG MAIN: Memulai Firebase.initializeApp()...');
     // --- DEBUG LOG MAIN.DART END ---
-    // Inisialisasi Firebase dengan opsi spesifik untuk platform saat ini
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     // --- DEBUG LOG MAIN.DART START ---
     print('DEBUG MAIN: Firebase.initializeApp() BERHASIL!');
     // --- DEBUG LOG MAIN.DART END ---
   } catch (e) {
-    // --- DEBUG LOG MAIN.DART START ---
     print('DEBUG MAIN: Firebase.initializeApp() GAGAL dengan error: $e');
-    // --- DEBUG LOG MAIN.DART END ---
-    // Anda mungkin ingin menampilkan error ini di UI untuk debugging cepat
-    // Misalnya, menggunakan sebuah dialog error agar pengguna tahu ada masalah.
   }
 
-  // --- DEBUG LOG MAIN.DART START ---
   print('DEBUG MAIN: runApp() dipanggil.');
-  // --- DEBUG LOG MAIN.DART END ---
   runApp(const MyApp());
 }
 
-// ---------------- APP SETUP ----------------
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Mengubah seedColor menjadi warna oranye/coral yang lebih profesional
     const Color primaryCoral = Color(0xFFFF7043);
 
     return MaterialApp(
@@ -66,14 +57,12 @@ class MyApp extends StatelessWidget {
           'Noto Sans Symbols 2',
           'Noto Sans',
         ],
-        // Tema AppBar untuk halaman selain home
         appBarTheme: const AppBarTheme(
           backgroundColor: primaryCoral,
           foregroundColor: Colors.white,
           centerTitle: true,
-          elevation: 4, // Menambahkan sedikit shadow
+          elevation: 4,
         ),
-        // Menetapkan warna utama untuk aplikasi
         primaryColor: primaryCoral,
       ),
       home: const SplashScreen(),
@@ -81,7 +70,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// ---------------- SPLASH SCREEN (TETAP SAMA) ----------------
+// ---------------- SPLASH SCREEN ----------------
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -94,7 +83,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-      // Durasi dikurangi
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -106,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color(0xFFFF7043), // Menggunakan warna coral
+      backgroundColor: Color(0xFFFF7043),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -137,12 +125,20 @@ class _SplashScreenState extends State<SplashScreen> {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  String _timeGreeting() {
+    final h = DateTime.now().hour;
+    if (h >= 4 && h < 11) return 'Selamat pagi';
+    if (h >= 11 && h < 15) return 'Selamat siang';
+    if (h >= 15 && h < 19) return 'Selamat sore';
+    return 'Selamat malam';
+  }
+
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Data menu dengan ikon dan tujuan yang lebih terstruktur
+    // Data menu
     final List<Map<String, dynamic>> menuItems = [
       {
         "title": "Kalkulator Gizi & BB",
@@ -165,24 +161,20 @@ class HomePage extends StatelessWidget {
       {
         "title": "Cek Kehamilan",
         "icon": Icons.pregnant_woman_outlined,
-        // --- PERBAIKAN: Nama kelas diubah menjadi PascalCase ---
         "page": const CekPerkembanganKehamilanPage(),
-        // --- AKHIR PERBAIKAN ---
         "color": Colors.pink.shade700,
       },
-      // --- TAMBAH BUTTON KE-6 DI SINI ---
       {
-        "title": "Riwayat Perhitungan SRS", // Judul untuk button keenam
-        "icon": Icons.history, // Ikon untuk riwayat
-        "page": const SrsHistoryPage(), // Arahkan ke halaman riwayat SRS
-        "color": Colors.indigo.shade700, // Warna yang berbeda untuk membedakan
-        "subTitle": "Lihat Hasil Lama", // Sub-judul opsional
+        "title": "Riwayat Perhitungan SRS",
+        "icon": Icons.history,
+        "page": const SrsHistoryPage(),
+        "color": Colors.indigo.shade700,
+        "subTitle": "Lihat Hasil Lama",
       },
-      // --- AKHIR TAMBAH BUTTON KE-6 ---
       {
         "title": "Ganti Bahasa",
         "icon": Icons.language_outlined,
-        "page": null, // Placeholder untuk fitur yang akan datang
+        "page": null,
         "color": Colors.lightGreen.shade700,
         "subTitle": "Fitur mendatang",
       },
@@ -192,83 +184,135 @@ class HomePage extends StatelessWidget {
       backgroundColor: Colors.grey.shade50,
       body: CustomScrollView(
         slivers: [
-          // 1. Custom Header / Greeting Area
+          // ======= HEADER / GREETING AREA (lebih menarik) =======
           SliverAppBar(
-            expandedHeight: screenWidth * 0.5,
+            expandedHeight: 280,
             pinned: true,
+            elevation: 0,
+            backgroundColor: primaryColor,
+            title: const Text('Fitur Utama'),
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: EdgeInsets.zero,
               centerTitle: false,
-              title: Container(
-                alignment: Alignment.bottomLeft,
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: const Text(
-                  'Fitur Utama',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
+              titlePadding: const EdgeInsetsDirectional.only(
+                start: 16,
+                bottom: 10,
               ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [primaryColor, primaryColor.withOpacity(0.7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Gradient dasar
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [primaryColor, primaryColor.withOpacity(0.78)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                  // Ikon dekoratif samar
+                  Positioned(
+                    right: -6,
+                    top: 40,
+                    child: Icon(
+                      Icons.pregnant_woman_outlined,
+                      size: 120,
+                      color: Colors.white.withOpacity(0.10),
+                    ),
+                  ),
+                  Positioned(
+                    left: -8,
+                    bottom: 18,
+                    child: Icon(
+                      Icons.local_dining_outlined,
+                      size: 140,
+                      color: Colors.white.withOpacity(0.10),
+                    ),
+                  ),
+                  // Konten sapaan
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.person_pin_circle_outlined,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              "Halo, Pengguna SITUNTAS!",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                          // Baris sapaan + avatar
+                          Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.18),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white24),
+                                ),
+                                child: const Icon(
+                                  Icons.volunteer_activism_outlined,
+                                  color: Colors.white,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${_timeGreeting()},',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    const Text(
+                                      'Halo, Pengguna SITUNTAS 👋',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Pantau tumbuh kembang si kecil—mulai dari gizi, MP-ASI, hingga kebersihan rumah tangga.",
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 14,
                             ),
                           ),
+                          const Spacer(),
+                          // Quick Actions — mengambang di bawah header
+                          _QuickActions(
+                            primaryColor: Colors.white,
+                            accent: Colors.black.withOpacity(0.75),
+                          ),
+                          const SizedBox(height: 16),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "Pantau tumbuh kembang si kecil dengan mudah di sini.",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                      ),
-                      const Spacer(),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
 
-          // 2. Konten (Grid Feature Cards)
+          // ======= GRID MENU =======
           SliverPadding(
             padding: EdgeInsets.all(screenWidth * 0.04),
             sliver: SliverGrid.count(
               crossAxisCount: 2,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
-              // Menggunakan rasio aspek 1.0 (Square) untuk memberi ruang vertikal yang cukup
               childAspectRatio: 1.0,
               children: menuItems.map((item) {
                 return _buildFeatureCard(
@@ -277,13 +321,13 @@ class HomePage extends StatelessWidget {
                   item["icon"],
                   item["page"],
                   item["color"],
-                  item["subTitle"], // Meneruskan sub-judul
+                  item["subTitle"],
                 );
               }).toList(),
             ),
           ),
 
-          // 3. Footer (Diletakkan di bagian bawah scroll view)
+          // ======= FOOTER =======
           SliverFillRemaining(
             hasScrollBody: false,
             child: Align(
@@ -305,22 +349,22 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Widget untuk kartu fitur
+  // -------- Feature Card --------
   Widget _buildFeatureCard(
     BuildContext context,
     String title,
     IconData icon,
     Widget? page,
     Color color,
-    String? subTitle, // Parameter subTitle baru
+    String? subTitle,
   ) {
     return InkWell(
       onTap: () {
         if (page == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("${title} akan datang!"), // Pesan lebih dinamis
-              duration: const Duration(seconds: 1), // Pastikan duration juga const
+              content: Text("$title akan datang!"),
+              duration: const Duration(seconds: 1),
             ),
           );
         } else {
@@ -348,25 +392,21 @@ class HomePage extends StatelessWidget {
         }
       },
       child: Card(
-        // Desain kartu dengan elevasi dan sudut membulat
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: Colors.white, // Background putih di dalam card
+            color: Colors.white,
           ),
           child: Padding(
-            // --- PERBAIKAN: HILANGKAN 'const' DARI EdgeInsets.all jika error ---
-            padding: const EdgeInsets.all(16.0), // Ini bisa const jika nilai literal
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Ikon dengan warna yang lebih menonjol
                 Container(
-                  // --- PERBAIKAN: HILANGKAN 'const' DARI EdgeInsets.all jika error ---
-                  padding: const EdgeInsets.all(12), // Ini bisa const jika nilai literal
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -374,7 +414,6 @@ class HomePage extends StatelessWidget {
                   child: Icon(icon, size: 32, color: color),
                 ),
                 const SizedBox(height: 10),
-                // Judul fitur
                 Text(
                   title,
                   style: const TextStyle(
@@ -383,18 +422,17 @@ class HomePage extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                // Sub-judul opsional (sekarang menggunakan subTitle jika tersedia)
                 Text(
-                  subTitle ?? // Gunakan subTitle yang diberikan, jika tidak ada, gunakan logika default
+                  subTitle ??
                       (title.contains("Kalkulator")
                           ? "Hitung Cepat"
                           : title.contains("Edukasi")
-                              ? "Panduan Lengkap"
-                              : title.contains("Stunting")
-                                  ? "Deteksi Dini"
-                                  : title.contains("Kehamilan")
-                                      ? "Jurnal Bumil"
-                                      : "Pengaturan"),
+                          ? "Panduan Lengkap"
+                          : title.contains("Stunting")
+                          ? "Deteksi Dini"
+                          : title.contains("Kehamilan")
+                          ? "Jurnal Bumil"
+                          : "Pengaturan"),
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -404,6 +442,88 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ---------------- QUICK ACTIONS (di header) ----------------
+class _QuickActions extends StatelessWidget {
+  final Color primaryColor; // warna teks & ikon
+  final Color accent; // warna teks sekunder
+  const _QuickActions({required this.primaryColor, required this.accent});
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = Colors.white.withOpacity(0.15);
+    final border = Colors.white.withOpacity(0.2);
+
+    Widget pill({
+      required IconData icon,
+      required String title,
+      required VoidCallback onTap,
+    }) {
+      return Expanded(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: border),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: primaryColor),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        pill(
+          icon: Icons.calculate_outlined,
+          title: "Kalkulator",
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CalculatorPage()),
+          ),
+        ),
+        const SizedBox(width: 10),
+        pill(
+          icon: Icons.assessment_outlined,
+          title: "SRS",
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SrsPage()),
+          ),
+        ),
+        const SizedBox(width: 10),
+        pill(
+          icon: Icons.menu_book_outlined,
+          title: "Edukasi",
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const EdukasiPage()),
+          ),
+        ),
+      ],
     );
   }
 }
