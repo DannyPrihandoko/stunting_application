@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+// lib/main.dart
 import 'dart:async';
+import 'package:flutter/material.dart';
 
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
@@ -10,15 +11,18 @@ import 'pages/calculator_page.dart';
 import 'pages/edukasi_page.dart';
 import 'pages/srs_page.dart';
 import 'pages/cek_perkembangan_kehamilan_page.dart';
-import 'package:stunting_application/pages/srs_history_page.dart';
+import 'pages/srs_history_page.dart';
+import 'pages/profil_bunda_page.dart';
+import 'pages/data_anak_page.dart'; // <-- TAMBAHAN
 
 void main() async {
-  print('DEBUG MAIN: start');
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    // ignore: avoid_print
     print('DEBUG MAIN: Firebase OK');
   } catch (e) {
+    // ignore: avoid_print
     print('DEBUG MAIN: Firebase error: $e');
   }
   runApp(const MyApp());
@@ -29,7 +33,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryBlue = Color(0xFF64B5F6); // Warna biru pastel lembut
+    const Color primaryBlue = Color(0xFF64B5F6);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -37,11 +41,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: primaryBlue),
         useMaterial3: true,
-        fontFamilyFallback: const [
-          'Roboto',
-          'Noto Sans Symbols 2',
-          'Noto Sans',
-        ],
+        fontFamilyFallback: const ['Roboto', 'Noto Sans Symbols 2', 'Noto Sans'],
         appBarTheme: const AppBarTheme(
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
           elevation: 4,
         ),
         primaryColor: primaryBlue,
-        scaffoldBackgroundColor: Colors.blue.shade50, // Background biru pastel
+        scaffoldBackgroundColor: Colors.blue.shade50,
       ),
       home: const SplashScreen(),
     );
@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color(0xFF64B5F6), // Biru pastel untuk background
+      backgroundColor: Color(0xFF64B5F6),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +92,10 @@ class _SplashScreenState extends State<SplashScreen> {
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             SizedBox(height: 8),
-            Text("Sistem Deteksi Stunting Tuntas", style: TextStyle(fontSize: 18, color: Colors.white70)),
+            Text(
+              "Sistem Deteksi Stunting Tuntas",
+              style: TextStyle(fontSize: 18, color: Colors.white70),
+            ),
           ],
         ),
       ),
@@ -112,6 +115,31 @@ class HomePage extends StatelessWidget {
     return 'Selamat malam';
   }
 
+  // Judul pendek untuk tombol/kartu
+  String shortTitle(String title) {
+    if (title.contains('Profil')) return 'Profil Bunda';
+    if (title.contains('Kalkulator')) return 'Kalkulator';
+    if (title.contains('Edukasi')) return 'Edukasi';
+    if (title.contains('Prediksi') || title.contains('SRS')) return 'Prediksi SRS';
+    if (title.contains('Kehamilan')) return 'Kehamilan';
+    if (title.contains('Riwayat')) return 'Riwayat SRS';
+    if (title.contains('Bahasa')) return 'Bahasa';
+    if (title.contains('Data Anak')) return 'Data Anak';
+    return title;
+  }
+
+  // Deskripsi singkat default bila subTitle null
+  String shortHint(String title) {
+    if (title.contains('Profil')) return 'Data ibu';
+    if (title.contains('Kalkulator')) return 'Hitung cepat';
+    if (title.contains('Edukasi')) return 'Panduan ringkas';
+    if (title.contains('Prediksi') || title.contains('SRS')) return 'Deteksi dini';
+    if (title.contains('Kehamilan')) return 'Jurnal bumil';
+    if (title.contains('Bahasa')) return 'Fitur mendatang';
+    if (title.contains('Data Anak')) return 'Anak per Ibu';
+    return 'Buka fitur';
+  }
+
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
@@ -119,10 +147,16 @@ class HomePage extends StatelessWidget {
 
     final List<Map<String, dynamic>> menuItems = [
       {
+        "title": "Profil Bunda",
+        "icon": Icons.person_outline,
+        "page": const ProfilBundaPage(),
+        "color": Colors.teal.shade700,
+      },
+      {
         "title": "Kalkulator Gizi & BB",
         "icon": Icons.calculate_outlined,
         "page": const CalculatorPage(),
-        "color": primaryColor.withOpacity(0.9),
+        "color": primaryColor.withValues(alpha: 0.90),
       },
       {
         "title": "Edukasi Kesehatan",
@@ -143,11 +177,17 @@ class HomePage extends StatelessWidget {
         "color": Colors.pink.shade700,
       },
       {
+        "title": "Data Anak", // <-- tombol tambahan
+        "icon": Icons.family_restroom_outlined,
+        "page": const DataAnakPage(),
+        "color": Colors.green.shade700,
+      },
+      {
         "title": "Riwayat Perhitungan SRS",
         "icon": Icons.history,
         "page": const SrsHistoryPage(),
         "color": Colors.indigo.shade700,
-        "subTitle": "Lihat Hasil Lama",
+        "subTitle": "Lihat hasil lama",
       },
       {
         "title": "Ganti Bahasa",
@@ -159,15 +199,15 @@ class HomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.blue.shade50, // Background biru muda
+      backgroundColor: Colors.blue.shade50,
       body: Stack(
         children: [
-          // === BACKGROUND AWAN ===
+          // === BACKGROUND GRADIENT ===
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [primaryColor.withOpacity(0.5), Colors.white],
+                  colors: [primaryColor.withValues(alpha: 0.50), Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -177,24 +217,24 @@ class HomePage extends StatelessWidget {
 
           CustomScrollView(
             slivers: [
-              // 1. Header / Greeting
+              // 1) Header / Greeting
               SliverAppBar(
                 expandedHeight: 240,
                 pinned: true,
                 elevation: 0,
                 backgroundColor: primaryColor,
-                title: null, // << hapus tulisan "Fitur Utama"
+                title: null,
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: false,
                   titlePadding: EdgeInsets.zero,
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // Gradient dasar
+                      // Gradient dasar AppBar
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [primaryColor, primaryColor.withOpacity(0.78)],
+                            colors: [primaryColor, primaryColor.withValues(alpha: 0.78)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -207,7 +247,7 @@ class HomePage extends StatelessWidget {
                         child: Icon(
                           Icons.pregnant_woman_outlined,
                           size: 110,
-                          color: Colors.white.withOpacity(0.10),
+                          color: Colors.white.withValues(alpha: 0.10),
                         ),
                       ),
                       Positioned(
@@ -216,10 +256,10 @@ class HomePage extends StatelessWidget {
                         child: Icon(
                           Icons.local_dining_outlined,
                           size: 128,
-                          color: Colors.white.withOpacity(0.10),
+                          color: Colors.white.withValues(alpha: 0.10),
                         ),
                       ),
-                      // Konten sapaan
+                      // Konten sapaan + Quick Actions
                       SafeArea(
                         bottom: false,
                         child: Padding(
@@ -233,7 +273,7 @@ class HomePage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.18),
+                                      color: Colors.white.withValues(alpha: 0.18),
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.white24),
                                     ),
@@ -270,27 +310,46 @@ class HomePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                "Pantau tumbuh kembang si kecil—mulai dari gizi, MP-ASI, hingga kebersihan rumah tangga.",
-                                style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14),
+                                "Pantau tumbuh kembang—gizi, MP-ASI, hingga kebersihan rumah tangga.",
+                                style: TextStyle(color: Colors.white.withValues(alpha: 0.90), fontSize: 14),
                               ),
                               const SizedBox(height: 12),
 
-                              // Quick Actions
-                              Row(
+                              // QUICK ACTIONS (tambahkan "Anak")
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Add your quick action logic here
-                                    },
-                                    child: const Text("Quick Action 1"),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // Add your quick action logic here
-                                    },
-                                    child: const Text("Quick Action 2"),
-                                  ),
+                                  _qa(context,
+                                      label: 'Profil',
+                                      icon: Icons.person_outline,
+                                      color: Colors.white,
+                                      onTap: () => _go(context, const ProfilBundaPage())),
+                                  _qa(context,
+                                      label: 'Kalkulator',
+                                      icon: Icons.calculate_outlined,
+                                      color: Colors.white,
+                                      onTap: () => _go(context, const CalculatorPage())),
+                                  _qa(context,
+                                      label: 'SRS',
+                                      icon: Icons.assessment_outlined,
+                                      color: Colors.white,
+                                      onTap: () => _go(context, const SrsPage())),
+                                  _qa(context,
+                                      label: 'Edukasi',
+                                      icon: Icons.menu_book_outlined,
+                                      color: Colors.white,
+                                      onTap: () => _go(context, const EdukasiPage())),
+                                  _qa(context,
+                                      label: 'Kehamilan',
+                                      icon: Icons.pregnant_woman_outlined,
+                                      color: Colors.white,
+                                      onTap: () => _go(context, const CekPerkembanganKehamilanPage())),
+                                  _qa(context, // <--- QUICK ACTION "Anak"
+                                      label: 'Anak',
+                                      icon: Icons.family_restroom_outlined,
+                                      color: Colors.white,
+                                      onTap: () => _go(context, const DataAnakPage())),
                                 ],
                               ),
                             ],
@@ -302,7 +361,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              // 2. Grid Feature Cards
+              // 2) Grid Feature Cards
               SliverPadding(
                 padding: EdgeInsets.all(screenWidth * 0.04),
                 sliver: SliverGrid.count(
@@ -313,21 +372,21 @@ class HomePage extends StatelessWidget {
                   children: menuItems.map((item) {
                     return _buildFeatureCard(
                       context,
-                      item["title"],
-                      item["icon"],
-                      item["page"],
-                      item["color"],
-                      item["subTitle"],
+                      shortTitle(item["title"] as String),
+                      item["title"] as String,        // original untuk hint
+                      item["icon"] as IconData,
+                      item["page"] as Widget?,
+                      item["color"] as Color,
+                      item["subTitle"] as String?,
                     );
                   }).toList(),
                 ),
               ),
 
-              // 3. Footer
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
+              // 3) Footer aman (tanpa overflow)
+              SliverToBoxAdapter(
+                child: SafeArea(
+                  top: false,
                   child: Container(
                     padding: EdgeInsets.all(screenWidth * 0.03),
                     width: double.infinity,
@@ -347,10 +406,47 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  // -------- Quick Action button kecil, responsif
+  Widget _qa(BuildContext context,
+      {required String label,
+      required IconData icon,
+      required Color color,
+      required VoidCallback onTap}) {
+    return ElevatedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 16, color: Colors.blue.shade800),
+      label: Text(label, style: TextStyle(color: Colors.blue.shade800)),
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: color.withValues(alpha: 0.92),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        minimumSize: const Size(10, 36),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      ),
+    );
+  }
+
+  void _go(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondary) => page,
+        transitionsBuilder: (context, animation, secondary, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeOut;
+          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(position: animation.drive(tween), child: child);
+        },
+      ),
+    );
+  }
+
   // -------- Feature Card --------
   Widget _buildFeatureCard(
     BuildContext context,
-    String title,
+    String shortTitleText,   // judul pendek di kartu
+    String originalTitle,    // judul asli, untuk hint
     IconData icon,
     Widget? page,
     Color color,
@@ -360,26 +456,10 @@ class HomePage extends StatelessWidget {
       onTap: () {
         if (page == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("$title akan datang!"),
-              duration: const Duration(seconds: 1),
-            ),
+            SnackBar(content: Text("$originalTitle akan datang!"), duration: const Duration(seconds: 1)),
           );
         } else {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => page,
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0);
-                const end = Offset.zero;
-                const curve = Curves.easeOut;
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-                return SlideTransition(position: offsetAnimation, child: child);
-              },
-            ),
-          );
+          _go(context, page);
         }
       },
       child: Card(
@@ -395,25 +475,21 @@ class HomePage extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Icon(icon, size: 32, color: color),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  title,
+                  shortTitleText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 Text(
-                  subTitle ??
-                      (title.contains("Kalkulator")
-                          ? "Hitung Cepat"
-                          : title.contains("Edukasi")
-                              ? "Panduan Lengkap"
-                              : title.contains("Stunting")
-                                  ? "Deteksi Dini"
-                                  : title.contains("Kehamilan")
-                                      ? "Jurnal Bumil"
-                                      : "Pengaturan"),
+                  subTitle ?? shortHint(originalTitle),
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

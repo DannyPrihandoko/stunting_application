@@ -1,0 +1,229 @@
+{
+  "calculator_history": {
+    "-OanJ5gNXXTIPn1sQmS2": {
+      "advice": "Perkuat praktik menyusui & MP-ASI (diversitas + frekuensi), lengkapi imunisasi, edukasi WASH, dan pantau pertumbuhan tiap 1–2 bulan.",
+      "checked": {
+        "bblr_prematur": true,
+        "tinggi_ibu_pendek": true
+      },
+      "createdAt": 1759650016359,
+      "groups": {
+        "directBirth": [
+          "bblr_prematur"
+        ],
+        "maternal": [
+          "tinggi_ibu_pendek"
+        ]
+      },
+      "meta": {
+        "appVersion": "1.0.0",
+        "child": {
+          "ageMonths": 12,
+          "name": "aisyah",
+          "sex": "P"
+        },
+        "ownerId": "anonymous",
+        "scoringVersion": "v1"
+      },
+      "riskLabel": "Risiko Sedang",
+      "score": 5,
+      "timestamp": 1759650016359
+    }
+  },
+  "risk_factors": {
+    "weight_1": {
+      "anak_laki": {
+        "label": "Jenis kelamin anak laki-laki",
+        "weight": 1
+      },
+      "art_banyak": {
+        "label": "Anggota rumah tangga banyak (≥5)",
+        "weight": 1
+      },
+      "ayah_pendek": {
+        "label": "Ayah bertubuh pendek",
+        "weight": 1
+      },
+      "diare_berulang_infeksi": {
+        "label": "Diare berulang / infeksi",
+        "weight": 1
+      },
+      "imunisasi_tidak_lengkap": {
+        "label": "Imunisasi tidak lengkap",
+        "weight": 1
+      },
+      "lila_kurang": {
+        "label": "LILA ibu kurang",
+        "weight": 1
+      },
+      "pajanan_pestisida": {
+        "label": "Pajanan pestisida",
+        "weight": 1
+      },
+      "pendapatan_rendah": {
+        "label": "Pendapatan keluarga rendah",
+        "weight": 1
+      },
+      "pendidikan_ibu_rendah": {
+        "label": "Pendidikan ibu rendah",
+        "weight": 1
+      },
+      "pola_asuh_tidak_adekuat": {
+        "label": "Pola asuh tidak adekuat",
+        "weight": 1
+      },
+      "usia_ibu_remaja": {
+        "label": "Kehamilan usia remaja",
+        "weight": 1
+      }
+    },
+    "weight_2": {
+      "asi_non_eksklusif": {
+        "label": "Tidak ASI eksklusif 0–6 bln",
+        "weight": 2
+      },
+      "bblr": {
+        "label": "Berat Badan Lahir Rendah (BBLR)",
+        "weight": 2
+      },
+      "ibu_pendek": {
+        "label": "Ibu bertubuh pendek",
+        "weight": 2
+      },
+      "mpasi_tidak_adekuat": {
+        "label": "MP-ASI tidak adekuat",
+        "weight": 2
+      },
+      "panjang_lahir_pendek_iugr": {
+        "label": "Panjang lahir pendek / IUGR",
+        "weight": 2
+      },
+      "prematur": {
+        "label": "Prematur",
+        "weight": 2
+      },
+      "wash_buruk": {
+        "label": "WASH buruk (jamban tidak layak/air tidak diolah)",
+        "weight": 2
+      }
+    }
+  },
+  "srs_calculations": {
+    "-OanJC6acXbcDYKtESot": {
+      "category": "Rendah",
+      "mother": {
+        "name": "siti",
+        "name_lower": "siti"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": true,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": false
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": true,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 3,
+      "timestamp": 1759650042445
+    },
+    "-SrsCalcIdRendahAlpha": {
+      "category": "Rendah",
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": true,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 3,
+      "timestamp": 1700000000000
+    },
+    "-SrsCalcIdSedangBeta": {
+      "category": "Sedang",
+      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": true,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": true,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": true,
+        "bblr": true,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 7,
+      "timestamp": 1700000060000
+    },
+    "-SrsCalcIdTinggiGamma": {
+      "category": "Tinggi",
+      "recommendation": "Kunjungan rumah mingguan, konseling menyusui & MP-ASI, paket PMT protein hewani, perbaikan WASH prioritas, rujuk bila ada infeksi.",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": true,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": true,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": true,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": true,
+        "bblr": true,
+        "ibu_pendek": true,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 11,
+      "timestamp": 1700000120000
+    }
+  }
+}
