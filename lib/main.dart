@@ -1,12 +1,14 @@
 // lib/main.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // ✅
 
-// Firebase
+/// Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_database/firebase_database.dart'; // ✅
 
-// Pages
+/// Pages
 import 'pages/calculator_page.dart';
 import 'pages/edukasi_page.dart';
 import 'pages/srs_page.dart';
@@ -15,16 +17,31 @@ import 'pages/srs_history_page.dart';
 import 'pages/profil_bunda_page.dart';
 import 'pages/data_anak_page.dart'; // <-- TAMBAHAN
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    // ignore: avoid_print
-    print('DEBUG MAIN: Firebase OK');
+    // Inisialisasi Firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // ✅ Aktifkan cache offline Realtime Database (sebelum ada akses Database di mana pun)
+    if (!kIsWeb) {
+      // Cukup panggil tanpa await, karena setPersistenceEnabled mengembalikan void
+      FirebaseDatabase.instance.setPersistenceEnabled(true); // <-- Hapus await
+      FirebaseDatabase.instance.setPersistenceCacheSizeBytes(
+        20 * 1024 * 1024,
+      ); // 20MB (opsional)
+    }
+
+    // Jika sukses, print
+    print('DEBUG MAIN: Firebase OK + RealtimeDB offline cache aktif');
   } catch (e) {
-    // ignore: avoid_print
+    // Jika terjadi error
     print('DEBUG MAIN: Firebase error: $e');
   }
+
+  // Menjalankan aplikasi
   runApp(const MyApp());
 }
 
@@ -41,7 +58,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: primaryBlue),
         useMaterial3: true,
-        fontFamilyFallback: const ['Roboto', 'Noto Sans Symbols 2', 'Noto Sans'],
+        fontFamilyFallback: const [
+          'Roboto',
+          'Noto Sans Symbols 2',
+          'Noto Sans',
+        ],
         appBarTheme: const AppBarTheme(
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
@@ -89,7 +110,11 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(height: 20),
             Text(
               "SITUNTAS",
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             SizedBox(height: 8),
             Text(
@@ -115,12 +140,12 @@ class HomePage extends StatelessWidget {
     return 'Selamat malam';
   }
 
-  // Judul pendek untuk tombol/kartu
   String shortTitle(String title) {
     if (title.contains('Profil')) return 'Profil Bunda';
     if (title.contains('Kalkulator')) return 'Kalkulator';
     if (title.contains('Edukasi')) return 'Edukasi';
-    if (title.contains('Prediksi') || title.contains('SRS')) return 'Prediksi SRS';
+    if (title.contains('Prediksi') || title.contains('SRS'))
+      return 'Prediksi SRS';
     if (title.contains('Kehamilan')) return 'Kehamilan';
     if (title.contains('Riwayat')) return 'Riwayat SRS';
     if (title.contains('Bahasa')) return 'Bahasa';
@@ -128,12 +153,12 @@ class HomePage extends StatelessWidget {
     return title;
   }
 
-  // Deskripsi singkat default bila subTitle null
   String shortHint(String title) {
     if (title.contains('Profil')) return 'Data ibu';
     if (title.contains('Kalkulator')) return 'Hitung cepat';
     if (title.contains('Edukasi')) return 'Panduan ringkas';
-    if (title.contains('Prediksi') || title.contains('SRS')) return 'Deteksi dini';
+    if (title.contains('Prediksi') || title.contains('SRS'))
+      return 'Deteksi dini';
     if (title.contains('Kehamilan')) return 'Jurnal bumil';
     if (title.contains('Bahasa')) return 'Fitur mendatang';
     if (title.contains('Data Anak')) return 'Anak per Ibu';
@@ -177,7 +202,7 @@ class HomePage extends StatelessWidget {
         "color": Colors.pink.shade700,
       },
       {
-        "title": "Data Anak", // <-- tombol tambahan
+        "title": "Data Anak",
         "icon": Icons.family_restroom_outlined,
         "page": const DataAnakPage(),
         "color": Colors.green.shade700,
@@ -202,7 +227,6 @@ class HomePage extends StatelessWidget {
       backgroundColor: Colors.blue.shade50,
       body: Stack(
         children: [
-          // === BACKGROUND GRADIENT ===
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -214,10 +238,8 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-
           CustomScrollView(
             slivers: [
-              // 1) Header / Greeting
               SliverAppBar(
                 expandedHeight: 240,
                 pinned: true,
@@ -230,17 +252,18 @@ class HomePage extends StatelessWidget {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // Gradient dasar AppBar
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [primaryColor, primaryColor.withValues(alpha: 0.78)],
+                            colors: [
+                              primaryColor,
+                              primaryColor.withValues(alpha: 0.78),
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                         ),
                       ),
-                      // Ikon dekoratif samar
                       Positioned(
                         right: -6,
                         top: 36,
@@ -259,7 +282,6 @@ class HomePage extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.10),
                         ),
                       ),
-                      // Konten sapaan + Quick Actions
                       SafeArea(
                         bottom: false,
                         child: Padding(
@@ -273,16 +295,22 @@ class HomePage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.18),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.18,
+                                      ),
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.white24),
                                     ),
-                                    child: const Icon(Icons.volunteer_activism_outlined, color: Colors.white),
+                                    child: const Icon(
+                                      Icons.volunteer_activism_outlined,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '${_timeGreeting()},',
@@ -311,45 +339,65 @@ class HomePage extends StatelessWidget {
                               const SizedBox(height: 8),
                               Text(
                                 "Pantau tumbuh kembang—gizi, MP-ASI, hingga kebersihan rumah tangga.",
-                                style: TextStyle(color: Colors.white.withValues(alpha: 0.90), fontSize: 14),
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.90),
+                                  fontSize: 14,
+                                ),
                               ),
                               const SizedBox(height: 12),
-
-                              // QUICK ACTIONS (tambahkan "Anak")
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  _qa(context,
-                                      label: 'Profil',
-                                      icon: Icons.person_outline,
-                                      color: Colors.white,
-                                      onTap: () => _go(context, const ProfilBundaPage())),
-                                  _qa(context,
-                                      label: 'Kalkulator',
-                                      icon: Icons.calculate_outlined,
-                                      color: Colors.white,
-                                      onTap: () => _go(context, const CalculatorPage())),
-                                  _qa(context,
-                                      label: 'SRS',
-                                      icon: Icons.assessment_outlined,
-                                      color: Colors.white,
-                                      onTap: () => _go(context, const SrsPage())),
-                                  _qa(context,
-                                      label: 'Edukasi',
-                                      icon: Icons.menu_book_outlined,
-                                      color: Colors.white,
-                                      onTap: () => _go(context, const EdukasiPage())),
-                                  _qa(context,
-                                      label: 'Kehamilan',
-                                      icon: Icons.pregnant_woman_outlined,
-                                      color: Colors.white,
-                                      onTap: () => _go(context, const CekPerkembanganKehamilanPage())),
-                                  _qa(context, // <--- QUICK ACTION "Anak"
-                                      label: 'Anak',
-                                      icon: Icons.family_restroom_outlined,
-                                      color: Colors.white,
-                                      onTap: () => _go(context, const DataAnakPage())),
+                                  _qa(
+                                    context,
+                                    label: 'Profil',
+                                    icon: Icons.person_outline,
+                                    color: Colors.white,
+                                    onTap: () =>
+                                        _go(context, const ProfilBundaPage()),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'Kalkulator',
+                                    icon: Icons.calculate_outlined,
+                                    color: Colors.white,
+                                    onTap: () =>
+                                        _go(context, const CalculatorPage()),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'SRS',
+                                    icon: Icons.assessment_outlined,
+                                    color: Colors.white,
+                                    onTap: () => _go(context, const SrsPage()),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'Edukasi',
+                                    icon: Icons.menu_book_outlined,
+                                    color: Colors.white,
+                                    onTap: () =>
+                                        _go(context, const EdukasiPage()),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'Kehamilan',
+                                    icon: Icons.pregnant_woman_outlined,
+                                    color: Colors.white,
+                                    onTap: () => _go(
+                                      context,
+                                      const CekPerkembanganKehamilanPage(),
+                                    ),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'Anak',
+                                    icon: Icons.family_restroom_outlined,
+                                    color: Colors.white,
+                                    onTap: () =>
+                                        _go(context, const DataAnakPage()),
+                                  ),
                                 ],
                               ),
                             ],
@@ -360,8 +408,6 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // 2) Grid Feature Cards
               SliverPadding(
                 padding: EdgeInsets.all(screenWidth * 0.04),
                 sliver: SliverGrid.count(
@@ -373,7 +419,7 @@ class HomePage extends StatelessWidget {
                     return _buildFeatureCard(
                       context,
                       shortTitle(item["title"] as String),
-                      item["title"] as String,        // original untuk hint
+                      item["title"] as String,
                       item["icon"] as IconData,
                       item["page"] as Widget?,
                       item["color"] as Color,
@@ -382,8 +428,6 @@ class HomePage extends StatelessWidget {
                   }).toList(),
                 ),
               ),
-
-              // 3) Footer aman (tanpa overflow)
               SliverToBoxAdapter(
                 child: SafeArea(
                   top: false,
@@ -406,12 +450,13 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // -------- Quick Action button kecil, responsif
-  Widget _qa(BuildContext context,
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _qa(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return ElevatedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, size: 16, color: Colors.blue.shade800),
@@ -435,18 +480,23 @@ class HomePage extends StatelessWidget {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
           const curve = Curves.easeOut;
-          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          return SlideTransition(position: animation.drive(tween), child: child);
+          final tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
         },
       ),
     );
   }
 
-  // -------- Feature Card --------
   Widget _buildFeatureCard(
     BuildContext context,
-    String shortTitleText,   // judul pendek di kartu
-    String originalTitle,    // judul asli, untuk hint
+    String shortTitleText,
+    String originalTitle,
     IconData icon,
     Widget? page,
     Color color,
@@ -456,7 +506,10 @@ class HomePage extends StatelessWidget {
       onTap: () {
         if (page == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("$originalTitle akan datang!"), duration: const Duration(seconds: 1)),
+            SnackBar(
+              content: Text("$originalTitle akan datang!"),
+              duration: const Duration(seconds: 1),
+            ),
           );
         } else {
           _go(context, page);
@@ -466,7 +519,10 @@ class HomePage extends StatelessWidget {
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.white),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -486,7 +542,11 @@ class HomePage extends StatelessWidget {
                   shortTitleText,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
                 Text(
                   subTitle ?? shortHint(originalTitle),

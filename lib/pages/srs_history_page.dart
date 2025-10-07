@@ -159,7 +159,11 @@ class PregCheckRow {
     required this.recommendation,
   });
 
-  factory PregCheckRow.fromMap(String id, String motherId, Map<dynamic, dynamic> m) {
+  factory PregCheckRow.fromMap(
+    String id,
+    String motherId,
+    Map<dynamic, dynamic> m,
+  ) {
     T? asNum<T extends num>(dynamic v) {
       if (v == null) return null;
       if (v is T) return v;
@@ -206,10 +210,18 @@ class SrsHistoryPage extends StatefulWidget {
 }
 
 class _SrsHistoryPageState extends State<SrsHistoryPage> {
-  final DatabaseReference _dbRefSrs = FirebaseDatabase.instance.ref("srs_calculations");
-  final DatabaseReference _dbRefRiskCfg = FirebaseDatabase.instance.ref("risk_factors");
-  final DatabaseReference _dbRefCalc = FirebaseDatabase.instance.ref("calculator_history");
-  final DatabaseReference _dbRefPreg = FirebaseDatabase.instance.ref("pregnancy_checks");
+  final DatabaseReference _dbRefSrs = FirebaseDatabase.instance.ref(
+    "srs_calculations",
+  );
+  final DatabaseReference _dbRefRiskCfg = FirebaseDatabase.instance.ref(
+    "risk_factors",
+  );
+  final DatabaseReference _dbRefCalc = FirebaseDatabase.instance.ref(
+    "calculator_history",
+  );
+  final DatabaseReference _dbRefPreg = FirebaseDatabase.instance.ref(
+    "pregnancy_checks",
+  );
 
   final _motherRepo = MotherProfileRepository();
   String? _motherId;
@@ -309,22 +321,40 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               _detailRow("Skor", r.score.toString()),
               _detailRow("Kategori", r.category),
               const SizedBox(height: 8),
-              const Text("Rekomendasi:", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                "Rekomendasi:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(r.recommendation),
               const Divider(height: 20),
-              const Text("Faktor Risiko Bobot 2", style: TextStyle(fontWeight: FontWeight.bold)),
-              ...r.w2.entries.where((e) => e.value).map((e) => Text("• ${_labelOf(e.key)}")),
+              const Text(
+                "Faktor Risiko Bobot 2",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...r.w2.entries
+                  .where((e) => e.value)
+                  .map((e) => Text("• ${_labelOf(e.key)}")),
               if (r.w2.entries.every((e) => !e.value))
                 const Text("Tidak ada faktor bobot 2 yang terpilih."),
               const SizedBox(height: 10),
-              const Text("Faktor Risiko Bobot 1", style: TextStyle(fontWeight: FontWeight.bold)),
-              ...r.w1.entries.where((e) => e.value).map((e) => Text("• ${_labelOf(e.key)}")),
+              const Text(
+                "Faktor Risiko Bobot 1",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...r.w1.entries
+                  .where((e) => e.value)
+                  .map((e) => Text("• ${_labelOf(e.key)}")),
               if (r.w1.entries.every((e) => !e.value))
                 const Text("Tidak ada faktor bobot 1 yang terpilih."),
             ],
           ),
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Tutup"))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
       ),
     );
   }
@@ -361,7 +391,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               _detailRow("Skor", rec.score.toString()),
               _detailRow("Kategori", rec.riskLabel),
               const SizedBox(height: 8),
-              const Text("Saran:", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                "Saran:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(rec.advice),
               const Divider(height: 20),
               ...rec.groups.entries.map((g) {
@@ -371,9 +404,16 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_groupTitle(g.key), style: const TextStyle(fontWeight: FontWeight.bold)),
-                      if (list.isEmpty) const Text("— (tidak ada)")
-                      else ...list.map((e) => Text("• ${e.toString().replaceAll('_', ' ')}")),
+                      Text(
+                        _groupTitle(g.key),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (list.isEmpty)
+                        const Text("— (tidak ada)")
+                      else
+                        ...list.map(
+                          (e) => Text("• ${e.toString().replaceAll('_', ' ')}"),
+                        ),
                     ],
                   ),
                 );
@@ -381,7 +421,12 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             ],
           ),
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Tutup"))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
       ),
     );
   }
@@ -396,7 +441,14 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _detailRow("Waktu", r.formattedDate),
-              _detailRow("Ibu", (r.motherId == _motherId && _motherName != null && _motherName!.isNotEmpty) ? _motherName! : "—"),
+              _detailRow(
+                "Ibu",
+                (r.motherId == _motherId &&
+                        _motherName != null &&
+                        _motherName!.isNotEmpty)
+                    ? _motherName!
+                    : "—",
+              ),
               _detailRow("Kondisi", r.conditionLabel),
               _detailRow("Tinggi (cm)", r.heightCm?.toStringAsFixed(1) ?? "-"),
               _detailRow("Berat (kg)", r.weightKg?.toStringAsFixed(1) ?? "-"),
@@ -406,12 +458,20 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               _detailRow("SRI", r.sri.toString()),
               _detailRow("Kategori", r.category),
               const SizedBox(height: 8),
-              const Text("Rekomendasi:", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                "Rekomendasi:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(r.recommendation),
             ],
           ),
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Tutup"))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
       ),
     );
   }
@@ -424,7 +484,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
         children: [
           SizedBox(
             width: 140,
-            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           Expanded(child: Text(value)),
         ],
@@ -484,7 +547,9 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                 // ===== Banner Ibu Aktif =====
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -504,7 +569,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                 const SizedBox(height: 8),
 
                 // ====== SECTION 1: SRS ======
-                Text("Tabel Riwayat Perhitungan SRS (Skor Risiko Stunting)", style: titleStyle),
+                Text(
+                  "Tabel Riwayat Perhitungan SRS (Skor Risiko Stunting)",
+                  style: titleStyle,
+                ),
                 const SizedBox(height: 4),
                 Text("Sumber data: /srs_calculations", style: subtitleStyle),
                 const SizedBox(height: 8),
@@ -513,7 +581,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                 const SizedBox(height: 18),
 
                 // ====== SECTION 2: Kalkulator ======
-                Text("Tabel Riwayat Kalkulator Gizi/Risiko Stunting", style: titleStyle),
+                Text(
+                  "Tabel Riwayat Kalkulator Gizi/Risiko Stunting",
+                  style: titleStyle,
+                ),
                 const SizedBox(height: 4),
                 Text("Sumber data: /calculator_history", style: subtitleStyle),
                 const SizedBox(height: 8),
@@ -541,13 +612,24 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
         stream: _dbRefSrs.onValue,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox(height: 180, child: Center(child: CircularProgressIndicator()));
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            );
           }
           if (snapshot.hasError) {
-            return SizedBox(height: 140, child: Center(child: Text('Terjadi kesalahan: ${snapshot.error}')));
+            return SizedBox(
+              height: 140,
+              child: Center(
+                child: Text('Terjadi kesalahan: ${snapshot.error}'),
+              ),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const SizedBox(height: 100, child: Center(child: Text('Belum ada data perhitungan SRS.')));
+            return const SizedBox(
+              height: 100,
+              child: Center(child: Text('Belum ada data perhitungan SRS.')),
+            );
           }
 
           final Map<dynamic, dynamic> srsMap =
@@ -571,7 +653,9 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               final r = rows[index];
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.category);
-              final textColor = base.computeLuminance() > 0.5 ? _darken(base) : base;
+              final textColor = base.computeLuminance() > 0.5
+                  ? _darken(base)
+                  : base;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -583,18 +667,30 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                   DataCell(Text(r.score.toString())),
                   DataCell(
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: base.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: base.withOpacity(0.35)),
                       ),
-                      child: Text(r.category, style: TextStyle(color: textColor, fontWeight: FontWeight.w700)),
+                      child: Text(
+                        r.category,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                   DataCell(
                     IconButton(
-                      icon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
+                      icon: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       onPressed: () => _showSrsDetails(r),
                       tooltip: 'Lihat Detail',
                     ),
@@ -617,13 +713,26 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
         stream: _dbRefCalc.onValue,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox(height: 180, child: Center(child: CircularProgressIndicator()));
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            );
           }
           if (snapshot.hasError) {
-            return SizedBox(height: 140, child: Center(child: Text('Terjadi kesalahan: ${snapshot.error}')));
+            return SizedBox(
+              height: 140,
+              child: Center(
+                child: Text('Terjadi kesalahan: ${snapshot.error}'),
+              ),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const SizedBox(height: 100, child: Center(child: Text('Belum ada data perhitungan dari Kalkulator.')));
+            return const SizedBox(
+              height: 100,
+              child: Center(
+                child: Text('Belum ada data perhitungan dari Kalkulator.'),
+              ),
+            );
           }
 
           final Map<dynamic, dynamic> calcMap =
@@ -631,7 +740,9 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           final List<CalculatorRecord> recs =
               calcMap.entries
                   .where((e) => e.value is Map)
-                  .map((e) => CalculatorRecord.fromMap(e.key.toString(), e.value))
+                  .map(
+                    (e) => CalculatorRecord.fromMap(e.key.toString(), e.value),
+                  )
                   .toList()
                 ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
@@ -647,7 +758,9 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               final r = recs[index];
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.riskLabel);
-              final textColor = base.computeLuminance() > 0.5 ? _darken(base) : base;
+              final textColor = base.computeLuminance() > 0.5
+                  ? _darken(base)
+                  : base;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -658,19 +771,31 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                   DataCell(Text(r.score.toString())),
                   DataCell(
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: base.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: base.withOpacity(0.35)),
                       ),
-                      child: Text(r.riskLabel, style: TextStyle(color: textColor, fontWeight: FontWeight.w700)),
+                      child: Text(
+                        r.riskLabel,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                   DataCell(Text(r.childLine)),
                   DataCell(
                     IconButton(
-                      icon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
+                      icon: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       onPressed: () => _showCalcDetails(r),
                       tooltip: 'Lihat Detail',
                     ),
@@ -690,31 +815,63 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: StreamBuilder<DatabaseEvent>(
-        stream: _dbRefPreg.onValue,
+        stream: _dbRefPreg
+            .onValue, // Mengambil semua data pregnancy_checks tanpa validasi ibu
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox(height: 180, child: Center(child: CircularProgressIndicator()));
+            return const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            );
           }
           if (snapshot.hasError) {
-            return SizedBox(height: 140, child: Center(child: Text('Terjadi kesalahan: ${snapshot.error}')));
-          }
-          if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const SizedBox(height: 100, child: Center(child: Text('Belum ada data pemeriksaan kehamilan.')));
+            return SizedBox(
+              height: 140,
+              child: Center(
+                child: Text('Terjadi kesalahan: ${snapshot.error}'),
+              ),
+            );
           }
 
-          final root = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          final raw = snapshot.data?.snapshot.value;
+          if (raw == null) {
+            return const SizedBox(
+              height: 100,
+              child: Center(
+                child: Text('Belum ada data pemeriksaan kehamilan.'),
+              ),
+            );
+          }
+          if (raw is! Map || raw.isEmpty) {
+            return const SizedBox(
+              height: 100,
+              child: Center(child: Text('Data kosong.')),
+            );
+          }
+
           final List<PregCheckRow> items = [];
-
-          // pregnancy_checks/{motherId}/{id} = record
-          root.forEach((motherId, node) {
+          raw.forEach((motherId, node) {
             if (node is Map) {
               node.forEach((id, rec) {
                 if (rec is Map) {
-                  items.add(PregCheckRow.fromMap(id.toString(), motherId.toString(), Map<dynamic, dynamic>.from(rec)));
+                  items.add(
+                    PregCheckRow.fromMap(
+                      '$id',
+                      motherId.toString(),
+                      Map<dynamic, dynamic>.from(rec),
+                    ),
+                  );
                 }
               });
             }
           });
+
+          if (items.isEmpty) {
+            return const SizedBox(
+              height: 100,
+              child: Center(child: Text('Data kosong.')),
+            );
+          }
 
           items.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
@@ -732,12 +889,9 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               final r = items[index];
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.category);
-              final textColor = base.computeLuminance() > 0.5 ? _darken(base) : base;
-
-              // Tampilkan nama ibu aktif untuk record milik ibu ini; selain itu "—"
-              final ibuCell = (r.motherId == _motherId && _motherName != null && _motherName!.isNotEmpty)
-                  ? _motherName!
-                  : '—';
+              final textColor = base.computeLuminance() > 0.5
+                  ? _darken(base)
+                  : base;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -745,24 +899,40 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                 ),
                 cells: [
                   DataCell(Text(r.formattedDate)),
-                  DataCell(Text(ibuCell)),
+                  DataCell(
+                    Text(r.motherId.isNotEmpty ? r.motherId : '—'),
+                  ), // Menampilkan ID ibu
                   DataCell(Text(r.conditionLabel)),
-                  DataCell(Text(r.bmi == null ? '-' : r.bmi!.toStringAsFixed(1))),
+                  DataCell(
+                    Text(r.bmi == null ? '-' : r.bmi!.toStringAsFixed(1)),
+                  ),
                   DataCell(Text(r.sri.toString())),
                   DataCell(
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: base.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: base.withOpacity(0.35)),
                       ),
-                      child: Text(r.category, style: TextStyle(color: textColor, fontWeight: FontWeight.w700)),
+                      child: Text(
+                        r.category,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                   DataCell(
                     IconButton(
-                      icon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
+                      icon: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       onPressed: () => _showPregDetails(r),
                       tooltip: 'Lihat Detail',
                     ),
