@@ -15,7 +15,7 @@ import 'pages/cek_perkembangan_kehamilan_page.dart';
 import 'pages/srs_history_page.dart';
 import 'pages/profil_bunda_page.dart';
 import 'pages/data_anak_page.dart';
-import 'pages/rekap_menu_page.dart'; // <-- BARU: Import halaman Rekap Data
+import 'pages/rekap_menu_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,7 +144,7 @@ class HomePage extends StatelessWidget {
       return 'Prediksi SRS';
     if (title.contains('Kehamilan')) return 'Kehamilan';
     if (title.contains('Riwayat')) return 'Riwayat SRS';
-    if (title.contains('Rekap')) return 'Rekap Data'; // <-- BARU
+    if (title.contains('Rekap')) return 'Rekap Data';
     if (title.contains('Bahasa')) return 'Bahasa';
     if (title.contains('Data Anak')) return 'Data Anak';
     return title;
@@ -157,7 +157,7 @@ class HomePage extends StatelessWidget {
     if (title.contains('Prediksi') || title.contains('SRS'))
       return 'Deteksi dini';
     if (title.contains('Kehamilan')) return 'Jurnal bumil';
-    if (title.contains('Rekap')) return 'Ringkasan Statistik'; // <-- BARU
+    if (title.contains('Rekap')) return 'Ringkasan Statistik';
     if (title.contains('Bahasa')) return 'Fitur mendatang';
     if (title.contains('Data Anak')) return 'Anak per Ibu';
     return 'Buka fitur';
@@ -168,56 +168,70 @@ class HomePage extends StatelessWidget {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
 
+    // --- DAFTAR MENU DENGAN PATH GAMBAR ---
     final List<Map<String, dynamic>> menuItems = [
       {
         "title": "Profil Bunda",
         "icon": Icons.person_outline,
         "page": const ProfilBundaPage(),
         "color": Colors.teal.shade700,
+        "assetPath": "assets/Illustrations/rekap_pregnancy.jpg",
+        "subTitle": "Data ibu",
       },
       {
         "title": "Kalkulator Gizi & BB",
         "icon": Icons.calculate_outlined,
         "page": const CalculatorPage(),
         "color": primaryColor.withValues(alpha: 0.90),
+        "assetPath": "assets/Illustrations/rekap_weight.jpg",
+        "subTitle": "Hitung cepat",
       },
       {
         "title": "Edukasi Kesehatan",
         "icon": Icons.menu_book_outlined,
         "page": const EdukasiPage(),
         "color": Colors.blueGrey.shade700,
+        "assetPath": null, 
+        "subTitle": "Panduan ringkas",
       },
       {
         "title": "Prediksi Stunting (SRS)",
         "icon": Icons.assessment_outlined,
         "page": const SrsPage(),
         "color": Colors.deepOrange.shade800,
+        "assetPath": null, 
+        "subTitle": "Deteksi dini",
       },
       {
         "title": "Cek Kehamilan",
         "icon": Icons.pregnant_woman_outlined,
         "page": const CekPerkembanganKehamilanPage(),
         "color": Colors.pink.shade700,
+        "assetPath": "assets/Illustrations/rekap_pregnancy.jpg", 
+        "subTitle": "Jurnal bumil",
       },
       {
         "title": "Data Anak",
         "icon": Icons.family_restroom_outlined,
         "page": const DataAnakPage(),
         "color": Colors.green.shade700,
+        "assetPath": "assets/Illustrations/rekap_height.jpg", 
+        "subTitle": "Anak per Ibu",
       },
-      // <-- BARU: Tombol Rekap Data
       {
         "title": "Rekap Data",
         "icon": Icons.donut_large_outlined,
         "page": const RekapMenuPage(),
         "color": Colors.purple.shade700,
+        "assetPath": "assets/Illustrations/rekap_height.jpg", 
+        "subTitle": "Ringkasan Statistik",
       },
-      // -->
       {
         "title": "Riwayat Perhitungan SRS",
         "icon": Icons.history,
         "page": const SrsHistoryPage(),
         "color": Colors.indigo.shade700,
+        "assetPath": null,
         "subTitle": "Lihat hasil lama",
       },
       {
@@ -225,6 +239,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.language_outlined,
         "page": null,
         "color": Colors.lightGreen.shade700,
+        "assetPath": null,
         "subTitle": "Fitur mendatang",
       },
     ];
@@ -422,7 +437,7 @@ class HomePage extends StatelessWidget {
                   crossAxisSpacing: 16,
                   childAspectRatio: 1.0,
                   children: menuItems.map((item) {
-                    return _buildFeatureCard(
+                    return _buildAssetMenuCard(
                       context,
                       shortTitle(item["title"] as String),
                       item["title"] as String,
@@ -430,6 +445,7 @@ class HomePage extends StatelessWidget {
                       item["page"] as Widget?,
                       item["color"] as Color,
                       item["subTitle"] as String?,
+                      item["assetPath"] as String?, // Pass the asset path
                     );
                   }).toList(),
                 ),
@@ -456,27 +472,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _qa(
-    BuildContext context, {
-    required String label,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 16, color: Colors.blue.shade800),
-      label: Text(label, style: TextStyle(color: Colors.blue.shade800)),
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        backgroundColor: color.withValues(alpha: 0.92),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        minimumSize: const Size(10, 36),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-      ),
-    );
-  }
-
+  // --- Fungsi Navigasi ---
   void _go(BuildContext context, Widget page) {
     Navigator.push(
       context,
@@ -499,7 +495,30 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(
+  // --- Card Kecil (Quick Action) di Header ---
+  Widget _qa(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 16, color: Colors.blue.shade800),
+      label: Text(label, style: TextStyle(color: Colors.blue.shade800)),
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: color.withValues(alpha: 0.92),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        minimumSize: const Size(10, 36),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      ),
+    );
+  }
+
+  // --- Card Menu Utama (menggunakan Gambar) ---
+  Widget _buildAssetMenuCard(
     BuildContext context,
     String shortTitleText,
     String originalTitle,
@@ -507,58 +526,99 @@ class HomePage extends StatelessWidget {
     Widget? page,
     Color color,
     String? subTitle,
+    String? assetPath, // Parameter baru
   ) {
-    return InkWell(
-      onTap: () {
-        if (page == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("$originalTitle akan datang!"),
-              duration: const Duration(seconds: 1),
-            ),
-          );
-        } else {
-          _go(context, page);
-        }
-      },
-      child: Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.white,
-          ),
+    final radius = BorderRadius.circular(16);
+
+    // Warna fallback untuk icon/background jika tidak ada assetPath
+    final fallbackColor = color.withValues(alpha: 0.85);
+
+    return Material(
+      elevation: 6,
+      borderRadius: radius,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          if (page == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("$originalTitle akan datang!"),
+                duration: const Duration(seconds: 1),
+              ),
+            );
+          } else {
+            _go(context, page);
+          }
+        },
+        child: Ink(
+          decoration: assetPath != null
+              ? BoxDecoration(
+                  borderRadius: radius,
+                  image: DecorationImage(
+                    // Memastikan path aset benar
+                    image: AssetImage(assetPath), 
+                    fit: BoxFit.cover,
+                    // Dark overlay for readability
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.35), 
+                      BlendMode.darken,
+                    ),
+                  ),
+                )
+              : BoxDecoration(
+                  borderRadius: radius,
+                  color: fallbackColor, // Fallback color if no asset
+                  gradient: LinearGradient(
+                    colors: [
+                      fallbackColor,
+                      fallbackColor.withOpacity(0.85),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Icon (tetap dipertahankan untuk identifikasi cepat, dengan background putih)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.10),
+                    color: Colors.white.withOpacity(0.92),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, size: 32, color: color),
+                  child: Icon(icon, size: 32, 
+                  // Menggunakan warna langsung (Color) yang telah ditentukan
+                  color: color), 
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  shortTitleText,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                Text(
-                  subTitle ?? shortHint(originalTitle),
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                // Text Konten
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      shortTitleText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white, // Text warna putih agar kontras dengan gambar gelap
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subTitle ?? shortHint(originalTitle),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ],
             ),

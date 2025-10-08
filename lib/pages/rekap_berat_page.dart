@@ -115,15 +115,23 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
     final last = ages.last;
     final targetStart = last - 3;
     int ageStart = ages.first;
-    for (final a in ages) {
-      if (a >= targetStart) {
-        ageStart = a;
+    
+    // Cari titik data yang terdekat (termasuk) atau sebelum targetStart
+    for (int i = ages.length - 1; i >= 0; i--) {
+      if (ages[i] <= targetStart) {
+        ageStart = ages[i];
         break;
       }
     }
+    
+    // Jika tidak ada data 3 bulan lalu, ambil data kedua terakhir
     if (ageStart == last && ages.length >= 2) {
       ageStart = ages[ages.length - 2];
     }
+    
+    // Pastikan titik awal berbeda dari titik akhir
+    if (ageStart == last) return (v: null, spanMonths: 0);
+
 
     final span = last - ageStart;
     if (span <= 0) return (v: null, spanMonths: 0);
@@ -136,56 +144,125 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
 
   /// Kisaran laju kenaikan berat "lazim" (kg/bln) (heuristik non-klinis).
   ({double min, double max}) _expectedVelocityBandForAge(int ageMonth) {
-    if (ageMonth < 3) return (min: 0.6, max: 1.1); // 0–3 bln
-    if (ageMonth < 6) return (min: 0.5, max: 0.8); // 3–6 bln
-    if (ageMonth < 12) return (min: 0.3, max: 0.6); // 6–12 bln
-    if (ageMonth < 24) return (min: 0.20, max: 0.35); // 12–24 bln
-    if (ageMonth <= 60) return (min: 0.10, max: 0.25); // 24–60 bln
-    return (min: 0.08, max: 0.20); // >5 th
+    // Pastikan usia tidak di bawah 0
+    if (ageMonth < 0) ageMonth = 0;
+
+    // Menyesuaikan rentang usia untuk band kecepatan
+    if (ageMonth < 3) return (min: 0.6, max: 1.1); // 0–2 bln
+    if (ageMonth < 6) return (min: 0.5, max: 0.8); // 3–5 bln
+    if (ageMonth < 12) return (min: 0.3, max: 0.6); // 6–11 bln
+    if (ageMonth < 24) return (min: 0.20, max: 0.35); // 12–23 bln
+    if (ageMonth < 60) return (min: 0.10, max: 0.25); // 24–59 bln
+    return (min: 0.08, max: 0.20); // >= 60 bln
   }
 
-  ({String label, Color color}) _riskHeuristic({
+  /// Menghitung risiko gizi berdasarkan laju pertumbuhan dan kelengkapan data.
+  /// Output: label, color, summaryText (untuk ditampilkan)
+  ({String label, Color color, String summaryText}) _riskHeuristic({
     required int ageNow,
     required int? lastRecordedAge,
+    required double? lastWeight, 
     required double? recentVelocity,
     required int spanMonths,
     required double coverage,
   }) {
-    if (_weights.isEmpty || lastRecordedAge == null) {
-      return (label: 'Data terbatas', color: Colors.blueGrey);
+    // ----------------------------------------------------
+    // Cek Data Awal
+    // ----------------------------------------------------
+    if (_weights.isEmpty || lastRecordedAge == null || lastWeight == null) {
+      return (
+        label: 'Data terbatas',
+        color: Colors.blueGrey,
+        summaryText:
+            'Data berat badan masih sangat terbatas. Segera input berat badan anak secara rutin setiap bulan untuk memantau risiko. Saat ini, risiko tidak dapat dinilai secara akurat.',
+      );
     }
 
     final monthsSinceLast = ageNow - lastRecordedAge;
     final band = _expectedVelocityBandForAge(lastRecordedAge);
-    int score = 0;
+    int score = 0; // Skor risiko: 0=Hijau, 1-3=Kuning, >=4=Merah
+    String velocityNote = '';
+    String recencyNote = '';
+    bool isGagalTumbuh = false;
 
+    // ----------------------------------------------------
+    // Penilaian Kecepatan Pertumbuhan (Velocity)
+    // ----------------------------------------------------
     if (recentVelocity == null || spanMonths == 0) {
-      score += 1;
+      score += 1; // Data velocity tidak memadai
+      velocityNote =
+          'Laju pertumbuhan belum dapat dihitung karena data berat hanya ada 1 titik atau kurang dari 2 bulan.';
     } else {
-      if (recentVelocity <= 0.0)
+      if (recentVelocity <= 0.0) {
+        // Berat stagnan atau turun: Bahaya!
         score += 3;
-      else if (recentVelocity < band.min * 0.6)
+        isGagalTumbuh = true;
+        velocityNote =
+            '⚠️ **Gagal Tumbuh:** Rata-rata berat stagnan atau turun (${NumberFormat('0.00').format(recentVelocity)} kg/bln). Ini adalah indikasi risiko gizi buruk dan stunting. Evaluasi dan intervensi gizi segera dibutuhkan.';
+      } else if (recentVelocity < band.min * 0.6) {
+        // Laju sangat lambat (<60% dari minimum lazim)
         score += 2;
-      else if (recentVelocity < band.min * 0.9)
+        velocityNote =
+            '⚠️ Laju kenaikan berat sangat lambat, hanya ${NumberFormat('0.00').format(recentVelocity)} kg/bln. Ini jauh di bawah minimum lazim ${NumberFormat('0.00').format(band.min)} kg/bln, menandakan perlambatan pertumbuhan yang signifikan.';
+      } else if (recentVelocity < band.min * 0.9) {
+        // Laju lambat (60% - 90% dari minimum lazim)
         score += 1;
+        velocityNote =
+            'Laju kenaikan berat melambat (${NumberFormat('0.00').format(recentVelocity)} kg/bln), mendekati batas bawah lazim. Diperlukan pemantauan ketat dan perbaikan asupan gizi.';
+      } else {
+        velocityNote =
+            'Laju kenaikan berat (${NumberFormat('0.00').format(recentVelocity)} kg/bln) dalam batas yang diharapkan (minimum ${NumberFormat('0.00').format(band.min)} kg/bln). Pertumbuhan berat badan baik.';
+      }
     }
 
-    if (monthsSinceLast >= 3)
+    // ----------------------------------------------------
+    // Penilaian Keterbaruan & Cakupan Data
+    // ----------------------------------------------------
+    if (monthsSinceLast >= 3) {
       score += 2;
-    else if (monthsSinceLast == 2)
+      recencyNote =
+          'Terakhir diukur **${monthsSinceLast} bulan lalu**. Periode pertumbuhan yang lama tidak terpantau. Ini sangat meningkatkan risiko deteksi terlambat.';
+    } else if (monthsSinceLast == 2) {
       score += 1;
-
-    if (coverage < 0.3)
-      score += 2;
-    else if (coverage < 0.6)
-      score += 1;
-
-    if (score >= 4) {
-      return (label: 'Merah (butuh evaluasi)', color: Colors.red.shade600);
-    } else if (score >= 2) {
-      return (label: 'Kuning (pantau ketat)', color: Colors.orange.shade700);
+      recencyNote =
+          'Terakhir diukur 2 bulan lalu. Pemantauan bulanan disarankan.';
     } else {
-      return (label: 'Hijau (sesuai harapan)', color: Colors.green.shade700);
+      recencyNote = 'Data terakhir bulan ini atau bulan lalu. Pemantauan baik.';
+    }
+
+    // Penyesuaian score berdasarkan coverage (dari total usia anak, dibatasi 5 tahun)
+    if (coverage < 0.3)
+      score += 2; // Cakupan <30%
+    else if (coverage < 0.6)
+      score += 1; // Cakupan 30-60%
+
+    // ----------------------------------------------------
+    // Finalisasi Kesimpulan
+    // ----------------------------------------------------
+    String finalSummary =
+        '$velocityNote\n\n**Keterbaruan Data:** $recencyNote\n\n';
+
+    if (isGagalTumbuh || score >= 4) {
+      return (
+        label: 'Merah (Risiko Tinggi)',
+        color: Colors.red.shade600,
+        summaryText:
+            '${finalSummary}Kesimpulan: Pertumbuhan berat badan anak berisiko tinggi terhadap masalah gizi, berpotensi mengarah ke stunting/gizi buruk. **Wajib segera konsultasi dan evaluasi medis/gizi.**',
+      );
+    } else if (score >= 2) {
+      return (
+        label: 'Kuning (Pantau Ketat)',
+        color: Colors.orange.shade700,
+        summaryText:
+            '${finalSummary}Kesimpulan: Pertumbuhan berat badan anak perlu dipantau ketat. Ada indikasi perlambatan laju pertumbuhan atau data yang kurang terbarukan. **Tingkatkan frekuensi pemantauan dan pastikan asupan gizi optimal.**',
+      );
+    } else {
+      return (
+        label: 'Hijau (Sesuai Harapan)',
+        color: Colors.green.shade700,
+        summaryText:
+            '${finalSummary}Kesimpulan: Perkembangan berat badan anak saat ini terpantau sesuai harapan. Laju pertumbuhan berat badan baik. Pertahankan pola makan, stimulasi, dan pemantauan kesehatan rutin.',
+      );
     }
   }
 
@@ -217,15 +294,20 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
     final ages = _sortedAges();
     final lastAge = ages.isEmpty ? null : ages.last;
     final lastWeight = (lastAge == null) ? null : _weights[lastAge];
-    final coverage = (ageNow <= 0)
+    
+    // Batasi maks usia 5 tahun (60 bulan) untuk coverage
+    final maxAgeForCoverage = math.min(ageNow, 60); 
+    final coverage = (maxAgeForCoverage <= 0)
         ? 0.0
-        : (_weights.length / ageNow).clamp(0.0, 1.0);
+        : (_weights.length / maxAgeForCoverage).clamp(0.0, 1.0);
+    
     final rv = _recentVelocity();
     final band = _expectedVelocityBandForAge(lastAge ?? ageNow);
 
     final risk = _riskHeuristic(
       ageNow: ageNow,
       lastRecordedAge: lastAge,
+      lastWeight: lastWeight,
       recentVelocity: rv.v,
       spanMonths: rv.spanMonths,
       coverage: coverage,
@@ -249,7 +331,7 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
                 const Icon(Icons.monitor_weight_outlined, color: Colors.indigo),
                 const SizedBox(width: 8),
                 const Text(
-                  'Kesimpulan (konteks gizi/stunting)',
+                  'Kesimpulan (Risiko Gizi & Stunting)',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 const Spacer(),
@@ -275,7 +357,24 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
               ],
             ),
             const SizedBox(height: 12),
+            // Ringkasan Teks Risiko
+            Text(
+              risk.summaryText,
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.black87,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Divider(height: 20),
+            const Text(
+              'Detail Pemantauan',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
             Wrap(
+              spacing: 12,
               runSpacing: 6,
               children: [
                 _kv(
@@ -294,7 +393,7 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
                 ),
                 _kv(
                   'Cakupan data',
-                  '${_weights.length} dari ${ageNow < 0 ? 0 : ageNow} bln (${NumberFormat.percentPattern('id').format(coverage)})',
+                  '${_weights.length} dari ${maxAgeForCoverage} bln (${NumberFormat.percentPattern('id').format(coverage)})',
                 ),
                 _kv(
                   'Rata-rata laju terakhir',
@@ -304,20 +403,19 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
                 ),
                 _kv(
                   'Kisaran laju lazim (heuristik)',
-                  '${NumberFormat('0.00').format(band.min)}–${NumberFormat('0.00').format(band.max)} kg/bln',
+                  '${NumberFormat('0.00').format(band.min)}–${NumberFormat('0.00').format(band.max)} kg/bln (usia $lastAge bln)',
                 ),
               ],
             ),
             const SizedBox(height: 10),
             const Divider(height: 20),
             const Text(
-              'Catatan penting',
+              'Catatan Penting',
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             const Text(
-              'Penilaian di atas bersifat orientatif. Untuk klasifikasi gizi yang akurat dibutuhkan z-score WHO '
-              'seperti WAZ (berat-menurut-umur) dan WHZ/WLZ (berat-menurut-tinggi/panjang) serta asesmen tenaga kesehatan.',
+              'Penilaian di atas bersifat orientatif dan berfokus pada **Gagal Tumbuh**. Untuk klasifikasi gizi yang akurat dan penentuan status stunting, dibutuhkan z-score WHO (WAZ, WHZ/WLZ) dan asesmen tenaga kesehatan.',
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
           ],
@@ -419,7 +517,8 @@ class _ChildWeightRecapPageState extends State<ChildWeightRecapPage> {
     }
 
     final rows = <DataRow>[];
-    for (int m = 1; m <= ageNow; m++) {
+    // Tampilkan data dari usia sekarang hingga 1 bulan (terbaru di atas)
+    for (int m = ageNow; m >= 1; m--) { 
       final w = _weights[m];
       rows.add(
         DataRow(

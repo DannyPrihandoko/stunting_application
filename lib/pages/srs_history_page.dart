@@ -133,6 +133,7 @@ class CalculatorRecord {
 class PregCheckRow {
   final String id;
   final String motherId;
+  final String motherName; // Nama ibu dari payload
   final int timestamp;
   final String conditionLabel;
   final double? bmi;
@@ -147,6 +148,7 @@ class PregCheckRow {
   PregCheckRow({
     required this.id,
     required this.motherId,
+    required this.motherName,
     required this.timestamp,
     required this.conditionLabel,
     required this.bmi,
@@ -175,9 +177,13 @@ class PregCheckRow {
     String label = (m['condition']?['label'] ?? '-').toString();
     final derived = m['derived'] ?? {};
     final input = m['input'] ?? {};
+    // Extract motherName from the record itself
+    final motherName = (m['motherName'] ?? '').toString(); 
+
     return PregCheckRow(
       id: id,
       motherId: motherId,
+      motherName: motherName, // Assign extracted name
       timestamp: asNum<int>(m['timestamp']) ?? 0,
       conditionLabel: label,
       bmi: asNum<double>(derived['bmi']),
@@ -294,17 +300,12 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
 
   String _labelOf(String key) => _rfLabels[key] ?? key.replaceAll('_', ' ');
 
+  // Menggunakan warna Material untuk kepastian shade
   Color _badgeBase(String s) {
     final x = s.toLowerCase();
-    if (x.contains('tinggi')) return Colors.redAccent;
-    if (x.contains('sedang')) return Colors.amber.shade700;
+    if (x.contains('tinggi')) return Colors.red;
+    if (x.contains('sedang')) return Colors.amber;
     return Colors.green;
-  }
-
-  Color _darken(Color c, [double amount = .18]) {
-    final hsl = HSLColor.fromColor(c);
-    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
-    return hslDark.toColor();
   }
 
   void _showSrsDetails(SrsRow r) {
@@ -441,14 +442,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _detailRow("Waktu", r.formattedDate),
-              _detailRow(
-                "Ibu",
-                (r.motherId == _motherId &&
-                        _motherName != null &&
-                        _motherName!.isNotEmpty)
-                    ? _motherName!
-                    : "—",
-              ),
+              _detailRow("Ibu", r.motherName.isNotEmpty ? r.motherName : r.motherId), // Display name or ID
               _detailRow("Kondisi", r.conditionLabel),
               _detailRow("Tinggi (cm)", r.heightCm?.toStringAsFixed(1) ?? "-"),
               _detailRow("Berat (kg)", r.weightKg?.toStringAsFixed(1) ?? "-"),
@@ -558,7 +552,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'Ibu aktif: ${_loadingMother ? "…" : (_motherName?.trim().isNotEmpty == true ? _motherName! : "—")}',
+                            'Ibu aktif perangkat: ${_loadingMother ? "…" : (_motherName?.trim().isNotEmpty == true ? _motherName! : "—")}',
                             style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
@@ -595,7 +589,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                 // ====== SECTION 3: Pemeriksaan Kehamilan ======
                 Text("Tabel Riwayat Pemeriksaan Kehamilan", style: titleStyle),
                 const SizedBox(height: 4),
-                Text("Sumber data: /pregnancy_checks/*", style: subtitleStyle),
+                // Keterangan bahwa ID ibu yang tampil adalah kunci Firebase jika nama tidak tersedia
+                Text(
+                    "Sumber data: /pregnancy_checks/* (Menampilkan ID ibu jika nama ibu tidak tersimpan di record)",
+                    style: subtitleStyle),
                 const SizedBox(height: 8),
                 _buildPregnancyTableCard(),
               ],
@@ -634,12 +631,11 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
 
           final Map<dynamic, dynamic> srsMap =
               snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-          final List<SrsRow> rows =
-              srsMap.entries
-                  .where((e) => e.value is Map)
-                  .map((e) => SrsRow.fromMap(e.key.toString(), e.value))
-                  .toList()
-                ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          final List<SrsRow> rows = srsMap.entries
+              .where((e) => e.value is Map)
+              .map((e) => SrsRow.fromMap(e.key.toString(), e.value))
+              .toList()
+            ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
           return _scrollableDataTable(
             columns: const [
@@ -653,9 +649,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               final r = rows[index];
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.category);
-              final textColor = base.computeLuminance() > 0.5
-                  ? _darken(base)
-                  : base;
+              final textColor = base;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -737,14 +731,13 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
 
           final Map<dynamic, dynamic> calcMap =
               snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-          final List<CalculatorRecord> recs =
-              calcMap.entries
-                  .where((e) => e.value is Map)
-                  .map(
-                    (e) => CalculatorRecord.fromMap(e.key.toString(), e.value),
-                  )
-                  .toList()
-                ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          final List<CalculatorRecord> recs = calcMap.entries
+              .where((e) => e.value is Map)
+              .map(
+                (e) => CalculatorRecord.fromMap(e.key.toString(), e.value),
+              )
+              .toList()
+            ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
           return _scrollableDataTable(
             columns: const [
@@ -758,9 +751,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               final r = recs[index];
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.riskLabel);
-              final textColor = base.computeLuminance() > 0.5
-                  ? _darken(base)
-                  : base;
+              final textColor = base;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -815,8 +806,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: StreamBuilder<DatabaseEvent>(
-        stream: _dbRefPreg
-            .onValue, // Mengambil semua data pregnancy_checks tanpa validasi ibu
+        stream: _dbRefPreg.onValue,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(
@@ -834,33 +824,39 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           }
 
           final raw = snapshot.data?.snapshot.value;
-          if (raw == null) {
+          // Pastikan raw adalah Map<dynamic, dynamic> yang valid
+          if (raw == null || raw is! Map) {
             return const SizedBox(
               height: 100,
-              child: Center(
-                child: Text('Belum ada data pemeriksaan kehamilan.'),
-              ),
-            );
-          }
-          if (raw is! Map || raw.isEmpty) {
-            return const SizedBox(
-              height: 100,
-              child: Center(child: Text('Data kosong.')),
+              child: Center(child: Text('Belum ada data pemeriksaan kehamilan.')),
             );
           }
 
+          final Map<dynamic, dynamic> checksByMother = raw;
           final List<PregCheckRow> items = [];
-          raw.forEach((motherId, node) {
-            if (node is Map) {
-              node.forEach((id, rec) {
-                if (rec is Map) {
-                  items.add(
-                    PregCheckRow.fromMap(
-                      '$id',
-                      motherId.toString(),
-                      Map<dynamic, dynamic>.from(rec),
-                    ),
-                  );
+          
+          // Iterasi semua node motherId di bawah /pregnancy_checks
+          checksByMother.forEach((motherId, motherNode) {
+            final String mId = motherId.toString();
+            // Pastikan node anak adalah Map (berisi recordId: recordData)
+            if (motherNode is Map) {
+              final Map<dynamic, dynamic> records = motherNode;
+              
+              // Iterasi semua record di bawah motherId
+              records.forEach((recordId, recordData) {
+                if (recordData is Map) {
+                  try {
+                     items.add(
+                      PregCheckRow.fromMap(
+                        recordId.toString(),
+                        mId,
+                        Map<dynamic, dynamic>.from(recordData),
+                      ),
+                    );
+                  } catch (e) {
+                    // Cetak error parsing, tapi jangan crash
+                    print("Error parsing PregCheckRow for ID $mId/$recordId: $e");
+                  }
                 }
               });
             }
@@ -869,7 +865,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           if (items.isEmpty) {
             return const SizedBox(
               height: 100,
-              child: Center(child: Text('Data kosong.')),
+              child: Center(child: Text('Belum ada data pemeriksaan kehamilan.')),
             );
           }
 
@@ -878,7 +874,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           return _scrollableDataTable(
             columns: const [
               DataColumn(label: Text('Waktu')),
-              DataColumn(label: Text('Ibu')),
+              DataColumn(label: Text('Ibu')), // Menampilkan nama atau ID
               DataColumn(label: Text('Kondisi')),
               DataColumn(label: Text('BMI')),
               DataColumn(label: Text('SRI')),
@@ -889,9 +885,14 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
               final r = items[index];
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.category);
-              final textColor = base.computeLuminance() > 0.5
-                  ? _darken(base)
-                  : base;
+              final textColor = base; 
+
+              // Penentuan nama ibu untuk ditampilkan: Nama di record > Nama Ibu Aktif (jika ID cocok) > ID terpotong
+              final displayMother = r.motherName.isNotEmpty
+                  ? r.motherName
+                  : (r.motherId == _motherId && _motherName != null && _motherName!.isNotEmpty) 
+                    ? _motherName!
+                    : r.motherId.length > 8 ? '${r.motherId.substring(0, 8)}...' : r.motherId;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -900,8 +901,12 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                 cells: [
                   DataCell(Text(r.formattedDate)),
                   DataCell(
-                    Text(r.motherId.isNotEmpty ? r.motherId : '—'),
-                  ), // Menampilkan ID ibu
+                    Text(
+                      displayMother,
+                      // Highlight jika motherId cocok dengan ibu aktif
+                      style: (r.motherId == _motherId) ? const TextStyle(fontWeight: FontWeight.bold) : null,
+                    ),
+                  ), 
                   DataCell(Text(r.conditionLabel)),
                   DataCell(
                     Text(r.bmi == null ? '-' : r.bmi!.toStringAsFixed(1)),

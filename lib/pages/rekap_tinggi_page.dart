@@ -115,16 +115,16 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
     final last = ages.last;
     final targetStart = last - 3;
     int ageStart = ages.first;
-    for (final a in ages) {
-      if (a >= targetStart) {
-        ageStart = a;
+    for (int i = ages.length - 1; i >= 0; i--) {
+      if (ages[i] <= targetStart) {
+        ageStart = ages[i];
         break;
       }
     }
     if (ageStart == last && ages.length >= 2) {
       ageStart = ages[ages.length - 2];
     }
-
+    
     final span = last - ageStart;
     if (span <= 0) return (v: null, spanMonths: 0);
 
@@ -136,57 +136,131 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
 
   /// Kisaran laju "lazim" (cm/bln) per kelompok usia (heuristik non-klinis).
   ({double min, double max}) _expectedVelocityBandForAge(int ageMonth) {
-    if (ageMonth < 6) return (min: 1.5, max: 2.5);
-    if (ageMonth < 12) return (min: 1.0, max: 1.5);
-    if (ageMonth < 24) return (min: 0.6, max: 1.0);
-    if (ageMonth <= 60) return (min: 0.4, max: 0.7);
-    return (min: 0.3, max: 0.5);
+    if (ageMonth < 0) ageMonth = 0;
+    
+    // Rentang laju kenaikan TB/PB yang direvisi (sesuai anjuran umum)
+    if (ageMonth < 6) return (min: 1.5, max: 2.8); // 0-5 bln
+    if (ageMonth < 12) return (min: 1.0, max: 1.8); // 6-11 bln
+    if (ageMonth < 24) return (min: 0.8, max: 1.5); // 12-23 bln
+    if (ageMonth < 60) return (min: 0.5, max: 1.0); // 24-59 bln
+    return (min: 0.3, max: 0.6); // >= 60 bln
   }
 
-  ({String label, Color color}) _riskHeuristic({
+  /// Menghitung risiko stunting berdasarkan laju pertumbuhan dan kelengkapan data.
+  /// Output: label, color, summaryText (untuk ditampilkan)
+  ({String label, Color color, String summaryText}) _riskHeuristic({
     required int ageNow,
     required int? lastRecordedAge,
+    required double? lastHeight,
     required double? recentVelocity,
     required int spanMonths,
     required double coverage,
   }) {
-    if (_heights.isEmpty || lastRecordedAge == null) {
-      return (label: 'Data terbatas', color: Colors.blueGrey);
+    // ----------------------------------------------------
+    // Cek Data Awal
+    // ----------------------------------------------------
+    if (_heights.isEmpty || lastRecordedAge == null || lastHeight == null) {
+      return (
+        label: 'Data terbatas',
+        color: Colors.blueGrey,
+        summaryText:
+            'Data tinggi/panjang badan masih sangat terbatas. Pengukuran rutin setiap bulan (sampai usia 2 tahun) sangat penting untuk mendeteksi risiko stunting. Saat ini, risiko tidak dapat dinilai secara akurat.',
+      );
     }
 
     final monthsSinceLast = ageNow - lastRecordedAge;
     final band = _expectedVelocityBandForAge(lastRecordedAge);
-    int score = 0;
+    int score = 0; // Skor risiko: 0=Hijau, 1-3=Kuning, >=4=Merah
+    String velocityNote = '';
+    String recencyNote = '';
+    bool isGagalTumbuhLinear = false;
 
+    // ----------------------------------------------------
+    // Penilaian Kecepatan Pertumbuhan Linear (Velocity)
+    // ----------------------------------------------------
     if (recentVelocity == null || spanMonths == 0) {
       score += 1;
+      velocityNote =
+          'Laju pertumbuhan linear belum dapat dihitung karena data hanya ada 1 titik atau kurang dari 2 bulan.';
     } else {
-      if (recentVelocity <= 0.0)
+      if (recentVelocity <= 0.0) {
+        // Tinggi stagnan atau turun: Bahaya!
+        score += 4; // Skor tinggi untuk bahaya pertumbuhan linear
+        isGagalTumbuhLinear = true;
+        velocityNote =
+            '⚠️ **Gagal Tumbuh Linear:** Rata-rata tinggi stagnan atau turun (${NumberFormat('0.00').format(recentVelocity)} cm/bln). Ini adalah **indikasi risiko stunting tertinggi**. Evaluasi dan intervensi gizi segera dibutuhkan.';
+      } else if (recentVelocity < band.min * 0.6) {
+        // Laju sangat lambat (<60% dari minimum lazim)
         score += 3;
-      else if (recentVelocity < band.min * 0.6)
-        score += 2;
-      else if (recentVelocity < band.min * 0.9)
+        velocityNote =
+            '⚠️ Laju kenaikan tinggi badan sangat lambat, hanya ${NumberFormat('0.00').format(recentVelocity)} cm/bln. Ini jauh di bawah minimum lazim ${NumberFormat('0.00').format(band.min)} cm/bln, menandakan perlambatan pertumbuhan linear yang signifikan.';
+      } else if (recentVelocity < band.min * 0.9) {
+        // Laju lambat (60% - 90% dari minimum lazim)
         score += 1;
+        velocityNote =
+            'Laju kenaikan tinggi badan melambat (${NumberFormat('0.00').format(recentVelocity)} cm/bln), mendekati batas bawah lazim. Diperlukan pemantauan ketat dan perbaikan asupan gizi.';
+      } else {
+        velocityNote =
+            'Laju kenaikan tinggi badan (${NumberFormat('0.00').format(recentVelocity)} cm/bln) dalam batas yang diharapkan (minimum ${NumberFormat('0.00').format(band.min)} cm/bln). Pertumbuhan linear baik.';
+      }
     }
 
-    if (monthsSinceLast >= 3)
+    // ----------------------------------------------------
+    // Penilaian Keterbaruan & Cakupan Data
+    // ----------------------------------------------------
+    if (monthsSinceLast >= 3) {
       score += 2;
-    else if (monthsSinceLast == 2)
+      recencyNote =
+          'Terakhir diukur **${monthsSinceLast} bulan lalu**. Periode pertumbuhan yang lama tidak terpantau. Pemantauan bulanan wajib untuk deteksi dini stunting.';
+    } else if (monthsSinceLast == 2) {
       score += 1;
-
-    if (coverage < 0.3)
-      score += 2;
-    else if (coverage < 0.6)
-      score += 1;
-
-    if (score >= 4) {
-      return (label: 'Merah (butuh evaluasi)', color: Colors.red.shade600);
-    } else if (score >= 2) {
-      return (label: 'Kuning (pantau ketat)', color: Colors.orange.shade700);
+      recencyNote =
+          'Terakhir diukur 2 bulan lalu. Pemantauan bulanan disarankan.';
     } else {
-      return (label: 'Hijau (sesuai harapan)', color: Colors.green.shade700);
+      recencyNote = 'Data terakhir bulan ini atau bulan lalu. Pemantauan baik.';
+    }
+
+    // Penyesuaian score berdasarkan coverage (dari total usia anak, dibatasi 5 tahun)
+    final maxAgeForCoverage = math.min(ageNow, 60); 
+    final adjustedCoverage = (maxAgeForCoverage <= 0)
+        ? 0.0
+        : (_heights.length / maxAgeForCoverage).clamp(0.0, 1.0);
+        
+    if (adjustedCoverage < 0.3)
+      score += 2; // Cakupan <30%
+    else if (adjustedCoverage < 0.6)
+      score += 1; // Cakupan 30-60%
+
+    // ----------------------------------------------------
+    // Finalisasi Kesimpulan
+    // ----------------------------------------------------
+    String finalSummary =
+        '$velocityNote\n\n**Keterbaruan Data:** $recencyNote\n\n';
+
+    if (isGagalTumbuhLinear || score >= 4) {
+      return (
+        label: 'Merah (Risiko Stunting Tinggi)',
+        color: Colors.red.shade600,
+        summaryText:
+            '${finalSummary}Kesimpulan: Pertumbuhan tinggi/panjang badan anak berisiko tinggi terhadap masalah linear (stunting). Kegagalan tumbuh linear seringkali bersifat ireversibel. **Wajib segera konsultasi dan evaluasi medis/gizi.**',
+      );
+    } else if (score >= 2) {
+      return (
+        label: 'Kuning (Pantau Ketat)',
+        color: Colors.orange.shade700,
+        summaryText:
+            '${finalSummary}Kesimpulan: Pertumbuhan tinggi/panjang badan anak perlu dipantau ketat. Ada indikasi perlambatan laju pertumbuhan atau data yang kurang terbarukan. **Tingkatkan asupan protein hewani dan pastikan pemantauan rutin.**',
+      );
+    } else {
+      return (
+        label: 'Hijau (Sesuai Harapan)',
+        color: Colors.green.shade700,
+        summaryText:
+            '${finalSummary}Kesimpulan: Perkembangan tinggi/panjang badan anak saat ini terpantau sesuai harapan. Pertahankan pola makan, stimulasi, dan pemantauan kesehatan rutin.',
+      );
     }
   }
+
 
   Widget _buildSummaryCard({required DateTime? dob, required int ageNow}) {
     if (dob == null) {
@@ -216,15 +290,20 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
     final ages = _sortedAges();
     final lastAge = ages.isEmpty ? null : ages.last;
     final lastHeight = (lastAge == null) ? null : _heights[lastAge];
-    final coverage = (ageNow <= 0)
+    
+    // Batasi maks usia 5 tahun (60 bulan) untuk coverage
+    final maxAgeForCoverage = math.min(ageNow, 60); 
+    final coverage = (maxAgeForCoverage <= 0)
         ? 0.0
-        : (_heights.length / ageNow).clamp(0.0, 1.0);
+        : (_heights.length / maxAgeForCoverage).clamp(0.0, 1.0);
+    
     final rv = _recentVelocity();
     final band = _expectedVelocityBandForAge(lastAge ?? ageNow);
 
     final risk = _riskHeuristic(
       ageNow: ageNow,
       lastRecordedAge: lastAge,
+      lastHeight: lastHeight,
       recentVelocity: rv.v,
       spanMonths: rv.spanMonths,
       coverage: coverage,
@@ -248,7 +327,7 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
                 const Icon(Icons.insights_outlined, color: Colors.indigo),
                 const SizedBox(width: 8),
                 const Text(
-                  'Kesimpulan (konteks stunting)',
+                  'Kesimpulan (Risiko Stunting)',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 const Spacer(),
@@ -274,7 +353,24 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
               ],
             ),
             const SizedBox(height: 12),
+            // Ringkasan Teks Risiko
+            Text(
+              risk.summaryText,
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.black87,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Divider(height: 20),
+            const Text(
+              'Detail Pemantauan',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
             Wrap(
+              spacing: 12,
               runSpacing: 6,
               children: [
                 _kv(
@@ -293,7 +389,7 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
                 ),
                 _kv(
                   'Cakupan data',
-                  '${_heights.length} dari ${ageNow < 0 ? 0 : ageNow} bln (${NumberFormat.percentPattern('id').format(coverage)})',
+                  '${_heights.length} dari ${maxAgeForCoverage} bln (${NumberFormat.percentPattern('id').format(coverage)})',
                 ),
                 _kv(
                   'Rata-rata laju terakhir',
@@ -303,20 +399,20 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
                 ),
                 _kv(
                   'Kisaran laju lazim (heuristik)',
-                  '${NumberFormat('0.0').format(band.min)}–${NumberFormat('0.0').format(band.max)} cm/bln',
+                  '${NumberFormat('0.00').format(band.min)}–${NumberFormat('0.00').format(band.max)} cm/bln (usia $lastAge bln)',
                 ),
               ],
             ),
             const SizedBox(height: 10),
             const Divider(height: 20),
             const Text(
-              'Catatan penting',
+              'Catatan Penting',
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             const Text(
-              'Indikasi di atas bersifat orientatif. Untuk menilai stunting secara akurat diperlukan perhitungan z-score tinggi-menurut-umur (HAZ) '
-              'berdasarkan standar WHO dan jenis kelamin anak, serta penilaian tenaga kesehatan.',
+              'Indikasi di atas bersifat orientatif dan berfokus pada **Gagal Tumbuh Linear**. Untuk menilai stunting secara akurat dibutuhkan perhitungan z-score tinggi-menurut-umur (HAZ) '
+              'berdasarkan standar WHO, jenis kelamin anak, serta penilaian tenaga kesehatan.',
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
           ],
@@ -418,32 +514,68 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
     }
 
     final rows = <DataRow>[];
-    for (int m = 1; m <= ageNow; m++) {
+    // Tampilkan data dari usia sekarang hingga 1 bulan (terbaru di atas)
+    for (int m = ageNow; m >= 1; m--) { 
       final h = _heights[m];
+      
+      final bool dataExists = h != null;
+      final Color? rowColor = dataExists
+          ? (m.isEven ? Colors.indigo.shade50 : Colors.white)
+          : Colors.red.shade50.withOpacity(0.5); // Baris tanpa data
+
       rows.add(
         DataRow(
+          color: MaterialStateProperty.resolveWith<Color?>((states) => rowColor),
           cells: [
-            DataCell(Text('$m')),
-            DataCell(Text(h == null ? '—' : NumberFormat('0.0').format(h))),
+            DataCell(
+              Text(
+                '$m',
+                style: TextStyle(
+                  fontWeight: dataExists ? FontWeight.bold : FontWeight.normal,
+                  color: dataExists ? Colors.black87 : Colors.red.shade700,
+                ),
+              ),
+            ),
+            DataCell(
+              Text(
+                h == null ? '— (Belum diukur)' : NumberFormat('0.0').format(h),
+                style: TextStyle(
+                  fontWeight: dataExists ? FontWeight.w600 : FontWeight.w500,
+                  color: dataExists ? Colors.black87 : Colors.red.shade700,
+                ),
+              ),
+            ),
           ],
         ),
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias,
       child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columnSpacing: 24,
-          headingRowColor: MaterialStateProperty.resolveWith<Color?>(
-            (states) => Colors.blueGrey.shade50,
+        scrollDirection: Axis.vertical,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columnSpacing: 30,
+            dataRowMinHeight: 40,
+            dataRowMaxHeight: 40,
+            headingRowHeight: 48,
+            headingRowColor: MaterialStateProperty.resolveWith<Color?>(
+              (states) => Colors.indigo.shade100,
+            ),
+            headingTextStyle: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: Colors.indigo.shade900,
+            ),
+            columns: const [
+              DataColumn(label: Text('Usia (bln)')),
+              DataColumn(label: Text('Tinggi (cm)')),
+            ],
+            rows: rows,
           ),
-          columns: const [
-            DataColumn(label: Text('Usia (bln)')),
-            DataColumn(label: Text('Tinggi (cm)')),
-          ],
-          rows: rows,
         ),
       ),
     );
