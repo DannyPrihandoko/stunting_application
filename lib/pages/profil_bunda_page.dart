@@ -2,13 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import '../models/mother_profile_repository.dart';
 
-// COMPAT: jika MotherProfileRepository belum punya ensureSignedIn(),
-// extension ini jadi pengganti sementara (no-op). Jika method asli ada,
-// yang asli akan dipakai dan extension ini tidak mengganggu.
-extension _CompatEnsureSignIn on MotherProfileRepository {
-}
+import '../models/mother_profile_repository.dart';
 
 class ProfilBundaPage extends StatefulWidget {
   const ProfilBundaPage({super.key});
@@ -38,8 +33,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
   }
 
   Future<void> _bootstrap() async {
-    // Tetap aman: jika repo punya ensureSignedIn() asli, ini akan login anon;
-    // kalau tidak ada, extension no-op di atas akan mencegah error.
+    // login anon bila tersedia; kalau disabled di server, akan graceful fallback
     await _repo.ensureSignedIn();
     await _loadCurrent();
   }
@@ -51,8 +45,9 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
         _namaC.text = data.nama;
         _tempatLahirC.text = data.tempatLahir;
         _tgl = data.tanggalLahir;
-        _tanggalLahirC.text =
-            _tgl != null ? DateFormat('dd/MM/yyyy').format(_tgl!) : '';
+        _tanggalLahirC.text = _tgl != null
+            ? DateFormat('dd/MM/yyyy').format(_tgl!)
+            : '';
         _noHpC.text = data.noHp;
         _alamatC.text = data.alamat;
         _desaKelurahanC.text = data.desaKelurahan;
@@ -127,9 +122,15 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
       // gunakan toMap() agar turunannya (nama_lower, noHp_norm, updatedAt, ownerId) terjaga
       await _repo.update(curId, profile.toMap());
     }
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profil ibu tersimpan.')),
+        // Pesan berlaku untuk online maupun offline, karena SDK akan auto-queue
+        const SnackBar(
+          content: Text(
+            'Profil ibu tersimpan. Akan tersinkron otomatis saat online.',
+          ),
+        ),
       );
     }
   }
@@ -141,7 +142,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text('Hapus Profil?'),
-        content: const Text('Data profil ibu akan dihapus permanen.'),
+        content: const Text('Data profil ibu akan dihapus.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
@@ -167,9 +168,9 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
         _desaKelurahanC.clear();
         _kecamatanC.clear();
         _posyanduC.clear();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil ibu dihapus.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profil ibu dihapus.')));
       }
     }
   }
@@ -234,7 +235,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
                 controller: _noHpC,
                 keyboardType: TextInputType.phone,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+\-\s]'))
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+\-\s]')),
                 ],
                 decoration: _dec('No. HP', hint: '0812… atau +62812…'),
                 validator: _validPhone,
@@ -253,8 +254,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
                     child: TextFormField(
                       controller: _desaKelurahanC,
                       decoration: _dec('Desa/Kelurahan'),
-                      validator: (v) =>
-                          _required(v, label: 'Desa/Kelurahan'),
+                      validator: (v) => _required(v, label: 'Desa/Kelurahan'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -292,7 +292,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

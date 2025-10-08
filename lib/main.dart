@@ -1,12 +1,11 @@
-// lib/main.dart
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb; // ✅
+import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_database/firebase_database.dart'; // ✅
+import 'package:firebase_database/firebase_database.dart';
 
 /// Pages
 import 'pages/calculator_page.dart';
@@ -15,29 +14,26 @@ import 'pages/srs_page.dart';
 import 'pages/cek_perkembangan_kehamilan_page.dart';
 import 'pages/srs_history_page.dart';
 import 'pages/profil_bunda_page.dart';
-import 'pages/data_anak_page.dart'; // <-- TAMBAHAN
+import 'pages/data_anak_page.dart';
+import 'pages/rekap_menu_page.dart'; // <-- BARU: Import halaman Rekap Data
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     // Inisialisasi Firebase
+    // NOTE: DefaultFirebaseOptions.currentPlatform harus ada di file firebase_options.dart
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    // ✅ Aktifkan cache offline Realtime Database (sebelum ada akses Database di mana pun)
+    // Aktifkan cache offline Realtime Database
     if (!kIsWeb) {
-      // Cukup panggil tanpa await, karena setPersistenceEnabled mengembalikan void
-      FirebaseDatabase.instance.setPersistenceEnabled(true); // <-- Hapus await
-      FirebaseDatabase.instance.setPersistenceCacheSizeBytes(
-        20 * 1024 * 1024,
-      ); // 20MB (opsional)
+      FirebaseDatabase.instance.setPersistenceEnabled(true);
+      FirebaseDatabase.instance.setPersistenceCacheSizeBytes(20 * 1024 * 1024);
     }
 
-    // Jika sukses, print
     print('DEBUG MAIN: Firebase OK + RealtimeDB offline cache aktif');
   } catch (e) {
-    // Jika terjadi error
     print('DEBUG MAIN: Firebase error: $e');
   }
 
@@ -148,6 +144,7 @@ class HomePage extends StatelessWidget {
       return 'Prediksi SRS';
     if (title.contains('Kehamilan')) return 'Kehamilan';
     if (title.contains('Riwayat')) return 'Riwayat SRS';
+    if (title.contains('Rekap')) return 'Rekap Data'; // <-- BARU
     if (title.contains('Bahasa')) return 'Bahasa';
     if (title.contains('Data Anak')) return 'Data Anak';
     return title;
@@ -160,6 +157,7 @@ class HomePage extends StatelessWidget {
     if (title.contains('Prediksi') || title.contains('SRS'))
       return 'Deteksi dini';
     if (title.contains('Kehamilan')) return 'Jurnal bumil';
+    if (title.contains('Rekap')) return 'Ringkasan Statistik'; // <-- BARU
     if (title.contains('Bahasa')) return 'Fitur mendatang';
     if (title.contains('Data Anak')) return 'Anak per Ibu';
     return 'Buka fitur';
@@ -207,6 +205,14 @@ class HomePage extends StatelessWidget {
         "page": const DataAnakPage(),
         "color": Colors.green.shade700,
       },
+      // <-- BARU: Tombol Rekap Data
+      {
+        "title": "Rekap Data",
+        "icon": Icons.donut_large_outlined,
+        "page": const RekapMenuPage(),
+        "color": Colors.purple.shade700,
+      },
+      // -->
       {
         "title": "Riwayat Perhitungan SRS",
         "icon": Icons.history,
