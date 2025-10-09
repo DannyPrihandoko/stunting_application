@@ -1,3 +1,4 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -182,7 +183,7 @@ class HomePage extends StatelessWidget {
         "title": "Kalkulator Gizi & BB",
         "icon": Icons.calculate_outlined,
         "page": const CalculatorPage(),
-        "color": primaryColor.withValues(alpha: 0.90),
+        "color": primaryColor.withOpacity(0.90),
         "assetPath": "assets/Illustrations/rekap_weight.jpg",
         "subTitle": "Hitung cepat",
       },
@@ -252,7 +253,7 @@ class HomePage extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [primaryColor.withValues(alpha: 0.50), Colors.white],
+                  colors: [primaryColor.withOpacity(0.50), Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -278,7 +279,7 @@ class HomePage extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: [
                               primaryColor,
-                              primaryColor.withValues(alpha: 0.78),
+                              primaryColor.withOpacity(0.78),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -291,7 +292,7 @@ class HomePage extends StatelessWidget {
                         child: Icon(
                           Icons.pregnant_woman_outlined,
                           size: 110,
-                          color: Colors.white.withValues(alpha: 0.10),
+                          color: Colors.white.withOpacity(0.10),
                         ),
                       ),
                       Positioned(
@@ -300,7 +301,7 @@ class HomePage extends StatelessWidget {
                         child: Icon(
                           Icons.local_dining_outlined,
                           size: 128,
-                          color: Colors.white.withValues(alpha: 0.10),
+                          color: Colors.white.withOpacity(0.10),
                         ),
                       ),
                       SafeArea(
@@ -316,8 +317,8 @@ class HomePage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.18,
+                                      color: Colors.white.withOpacity(
+                                        0.18,
                                       ),
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.white24),
@@ -361,7 +362,7 @@ class HomePage extends StatelessWidget {
                               Text(
                                 "Pantau tumbuh kembang—gizi, MP-ASI, hingga kebersihan rumah tangga.",
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.90),
+                                  color: Colors.white.withOpacity(0.90),
                                   fontSize: 14,
                                 ),
                               ),
@@ -509,7 +510,7 @@ class HomePage extends StatelessWidget {
       label: Text(label, style: TextStyle(color: Colors.blue.shade800)),
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        backgroundColor: color.withValues(alpha: 0.92),
+        backgroundColor: color.withOpacity(0.92),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         minimumSize: const Size(10, 36),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
@@ -531,7 +532,7 @@ class HomePage extends StatelessWidget {
     final radius = BorderRadius.circular(16);
 
     // Warna fallback untuk icon/background jika tidak ada assetPath
-    final fallbackColor = color.withValues(alpha: 0.85);
+    final fallbackColor = color.withOpacity(0.85);
 
     return Material(
       elevation: 6,
@@ -558,9 +559,9 @@ class HomePage extends StatelessWidget {
                     // Memastikan path aset benar
                     image: AssetImage(assetPath), 
                     fit: BoxFit.cover,
-                    // Dark overlay for readability
+                    // DIUBAH: Mengurangi kegelapan pada gambar
                     colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.35), 
+                      Colors.black.withOpacity(0.05), 
                       BlendMode.darken,
                     ),
                   ),
@@ -605,7 +606,7 @@ class HomePage extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white, // Text warna putih agar kontras dengan gambar gelap
+                        color: Colors.white, // Text warna putih agar kontras
                       ),
                     ),
                     const SizedBox(height: 4),

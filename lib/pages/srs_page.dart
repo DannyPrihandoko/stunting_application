@@ -1,3 +1,4 @@
+// lib/pages/srs_page.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -11,35 +12,44 @@ import 'package:stunting_application/pages/profil_bunda_page.dart';
 // (Opsional) fallback kalau repo belum punya getCurrentId(); tidak akan bentrok jika sudah ada.
 extension _CompatGetCurrentId on MotherProfileRepository {}
 
-/// --- DATA FAKTOR RISIKO STATIS (FALLBACK LURING) ---
-/// Digunakan jika Firebase GAGAL dimuat (misal: OFFLINE total).
-/// Struktur ini meniru output yang diharapkan dari Realtime DB.
-const Map<String, dynamic> _fallbackRiskFactors = {
-  'weight_2': {
-    'riwayat_stunting': {
-      'label': 'Riwayat anak stunting/berat lahir rendah',
-      'weight': 2,
-    },
-    'komplikasi_kehamilan': {
-      'label': 'Kehamilan dengan komplikasi perdarahan',
-      'weight': 2,
-    },
-    'penyakit_kronis_ibu': {
-      'label': 'Ibu menderita penyakit kronis (Diabetes, HIV, dll)',
-      'weight': 2,
-    },
+/// ==========================================================
+/// DATA FALLBACK (LURING/OFFLINE)
+/// Data ini akan digunakan jika GAGAL memuat dari Firebase
+/// ==========================================================
+
+/// Fungsi pembantu untuk membuat RiskFactor dari map statis.
+Map<String, RiskFactor> _mapToRiskFactors(Map<String, String> data, int weight) {
+  final Map<String, RiskFactor> result = {};
+  data.forEach((key, label) {
+    result[key] = RiskFactor(key: key, label: label, weight: weight);
+  });
+  return result;
+}
+
+// Data cadangan (sesuai struktur Firebase Anda)
+final Map<String, dynamic> _fallbackRiskFactors = {
+  "weight_2": {
+    "asi_non_eksklusif": "Tidak ASI eksklusif 0–6 bln",
+    "bblr": "Berat Badan Lahir Rendah (BBLR)",
+    "ibu_pendek": "Ibu bertubuh pendek",
+    "mpasi_tidak_adekuat": "MP-ASI tidak adekuat",
+    "panjang_lahir_pendek_iugr": "Panjang lahir pendek / IUGR",
+    "prematur": "Prematur",
+    "wash_buruk": "WASH buruk (jamban tidak layak/air tidak diolah)",
   },
-  'weight_1': {
-    'tb_ibu_kurang': {'label': 'Tinggi badan ibu < 150 cm', 'weight': 1},
-    'usia_ibu_risiko': {
-      'label': 'Ibu usia < 20 tahun atau > 35 tahun',
-      'weight': 1,
-    },
-    'jarak_kehamilan_dekat': {
-      'label': 'Jarak kehamilan terlalu dekat (< 2 tahun)',
-      'weight': 1,
-    },
-  },
+  "weight_1": {
+    "anak_laki": "Jenis kelamin anak laki-laki",
+    "art_banyak": "Anggota rumah tangga banyak (≥5)",
+    "ayah_pendek": "Ayah bertubuh pendek",
+    "diare_berulang_infeksi": "Diare berulang / infeksi",
+    "imunisasi_tidak_lengkap": "Imunisasi tidak lengkap",
+    "lila_kurang": "LILA ibu kurang",
+    "pajanan_pestisida": "Pajanan pestisida",
+    "pendapatan_rendah": "Pendapatan keluarga rendah",
+    "pendidikan_ibu_rendah": "Pendidikan ibu rendah",
+    "pola_asuh_tidak_adekuat": "Pola asuh tidak adekuat",
+    "usia_ibu_remaja": "Kehamilan usia remaja",
+  }
 };
 
 /// Halaman Perhitungan "Skor Risiko Stunting (SRS)"
@@ -69,15 +79,12 @@ class _SrsPageState extends State<SrsPage> {
   bool _loadingMother = true;
 
   // DB refs
-  final DatabaseReference _dbRefSrsCalculations = FirebaseDatabase.instance.ref(
-    "srs_calculations",
-  );
-  final DatabaseReference _dbRefRiskFactors = FirebaseDatabase.instance.ref(
-    "risk_factors",
-  );
-  final DatabaseReference _dbRefMothers = FirebaseDatabase.instance.ref(
-    "mothers",
-  );
+  final DatabaseReference _dbRefSrsCalculations =
+      FirebaseDatabase.instance.ref("srs_calculations");
+  final DatabaseReference _dbRefRiskFactors =
+      FirebaseDatabase.instance.ref("risk_factors");
+  final DatabaseReference _dbRefMothers =
+      FirebaseDatabase.instance.ref("mothers");
 
   @override
   void initState() {
@@ -92,7 +99,10 @@ class _SrsPageState extends State<SrsPage> {
   }
 
   Future<void> _bootstrap() async {
-    await Future.wait<void>([_loadRiskFactors(), _prefillMotherFromProfile()]);
+    await Future.wait<void>([
+      _loadRiskFactors(),
+      _prefillMotherFromProfile(),
+    ]);
   }
 
   /// Ambil nama ibu dari profil yang dipilih/tersimpan di device:
@@ -104,6 +114,7 @@ class _SrsPageState extends State<SrsPage> {
         if (mounted) setState(() => _loadingMother = false);
         return;
       }
+      // Membaca data ibu dari cache atau online
       final snap = await _dbRefMothers.child(currentId).get();
       if (snap.exists && snap.value is Map) {
         final map = Map<dynamic, dynamic>.from(snap.value as Map);
@@ -111,77 +122,80 @@ class _SrsPageState extends State<SrsPage> {
         if (mounted) _motherNameCtrl.text = nama;
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal memuat profil ibu: $e')));
-      }
+      // Jika gagal memuat (terutama saat offline), biarkan nama kosong,
+      // tetapi jangan tampilkan SnackBar yang mengganggu jika ini hanya karena offline.
+      print('DEBUG: Gagal memuat profil ibu (mungkin offline): $e');
     } finally {
       if (mounted) setState(() => _loadingMother = false);
     }
   }
 
-  /// Muat definisi faktor risiko (dengan fallback luring)
+  /// Muat definisi faktor risiko (dengan mekanisme fallback luring)
   Future<void> _loadRiskFactors() async {
-    Map<dynamic, dynamic> dataToUse = _fallbackRiskFactors;
-    bool usingFallback = true;
-    String statusMessage = 'Menggunakan kriteria SRS luring (default statis).';
-
-    // 1. Coba ambil dari Firebase (akan menggunakan persistence/cache jika ada)
     try {
       final snapshot = await _dbRefRiskFactors.get();
-      if (snapshot.exists && snapshot.value != null) {
-        dataToUse = snapshot.value as Map<dynamic, dynamic>;
-        usingFallback = false;
-        statusMessage = 'Kriteria SRS berhasil dimuat dari server/cache.';
+      final Map<dynamic, dynamic>? data = snapshot.value as Map<dynamic, dynamic>?;
+      bool loadedFromFirebase = false;
+
+      if (snapshot.exists && data != null) {
+        final Map<String, RiskFactor> tempRisk2 = {};
+        final Map<String, RiskFactor> tempRisk1 = {};
+
+        // Proses data dari Firebase
+        if (data['weight_2'] != null) {
+          (data['weight_2'] as Map<dynamic, dynamic>).forEach((key, value) {
+            tempRisk2[key.toString()] =
+                RiskFactor.fromMap(key.toString(), value);
+          });
+        }
+        if (data['weight_1'] != null) {
+          (data['weight_1'] as Map<dynamic, dynamic>).forEach((key, value) {
+            tempRisk1[key.toString()] =
+                RiskFactor.fromMap(key.toString(), value);
+          });
+        }
+
+        if (tempRisk2.isNotEmpty || tempRisk1.isNotEmpty) {
+          if (mounted) {
+            setState(() {
+              _riskFactorsWeight2 = tempRisk2;
+              _riskFactorsWeight1 = tempRisk1;
+            });
+          }
+          loadedFromFirebase = true;
+        }
+      }
+
+      // Jika gagal memuat dari Firebase atau data kosong, gunakan fallback
+      if (!loadedFromFirebase) {
+        _loadFallbackRiskFactors(isError: false); // Tidak ada error, hanya data kosong/tidak ada
       }
     } catch (e) {
-      // Jika terjadi error koneksi/timeout (offline total), gunakan fallback.
-      statusMessage = 'Koneksi gagal: Menggunakan kriteria SRS LURING.';
+      // Jika terjadi error (seperti timeout saat offline), gunakan fallback
+      _loadFallbackRiskFactors(isError: true); // Terjadi error
+      print('DEBUG: Gagal memuat faktor risiko dari Firebase: $e');
+    } finally {
+      if (mounted) setState(() => _loadingRisk = false);
     }
+  }
 
-    // 2. Proses data yang sudah dipilih (Firebase/Cache atau Fallback)
-    final Map<String, RiskFactor> tempRisk2 = {};
-    final Map<String, RiskFactor> tempRisk1 = {};
-
-    // Helper function untuk memproses map data
-    void processRiskMap(
-      Map<String, RiskFactor> map,
-      Map<dynamic, dynamic>? source,
-    ) {
-      if (source != null) {
-        source.forEach((key, value) {
-          // Asumsi RiskFactor.fromMap ada dan berfungsi
-          map[key.toString()] = RiskFactor.fromMap(key.toString(), value);
-        });
-      }
-    }
-
+  void _loadFallbackRiskFactors({required bool isError}) {
     if (mounted) {
-      processRiskMap(
-        tempRisk2,
-        dataToUse['weight_2'] as Map<dynamic, dynamic>?,
-      );
-      processRiskMap(
-        tempRisk1,
-        dataToUse['weight_1'] as Map<dynamic, dynamic>?,
-      );
-
       setState(() {
-        _riskFactorsWeight2 = tempRisk2;
-        _riskFactorsWeight1 = tempRisk1;
-        _loadingRisk = false;
+        _riskFactorsWeight2 = _mapToRiskFactors(
+            _fallbackRiskFactors["weight_2"] as Map<String, String>, 2);
+        _riskFactorsWeight1 = _mapToRiskFactors(
+            _fallbackRiskFactors["weight_1"] as Map<String, String>, 1);
       });
-
-      // Tampilkan status hanya jika menggunakan data luring (fallback)
-      if (usingFallback) {
-        Future.delayed(const Duration(milliseconds: 100), () {
-          if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(statusMessage)));
-          }
-        });
+      if (isError && mounted) {
+        // Tampilkan pesan hanya jika terjadi error (berarti gagal koneksi/timeout)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Gagal memuat faktor risiko. Menggunakan data luring (offline) cadangan.',
+            ),
+          ),
+        );
       }
     }
   }
@@ -196,17 +210,10 @@ class _SrsPageState extends State<SrsPage> {
         builder: (c) => AlertDialog(
           title: const Text('Profil Ibu Belum Ada'),
           content: const Text(
-            'Nama ibu diambil dari Profil Bunda milik perangkat ini.\n\nIsi/ pilih profil ibu sekarang?',
-          ),
+              'Nama ibu diambil dari Profil Bunda milik perangkat ini.\n\nIsi/ pilih profil ibu sekarang?'),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(c, false),
-              child: const Text('Nanti'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(c, true),
-              child: const Text('Isi Profil Ibu'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Nanti')),
+            FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Isi Profil Ibu')),
           ],
         ),
       );
@@ -217,7 +224,8 @@ class _SrsPageState extends State<SrsPage> {
         );
         await _prefillMotherFromProfile();
       }
-      return;
+      // Cek lagi setelah kembali
+      if (_motherNameCtrl.text.trim().isEmpty) return;
     }
 
     int sum2 = 0;
@@ -255,10 +263,10 @@ class _SrsPageState extends State<SrsPage> {
     });
 
     final Map<String, bool> selectedRisk2 = {
-      for (final e in _riskFactorsWeight2.entries) e.key: e.value.isSelected,
+      for (final e in _riskFactorsWeight2.entries) e.key: e.value.isSelected
     };
     final Map<String, bool> selectedRisk1 = {
-      for (final e in _riskFactorsWeight1.entries) e.key: e.value.isSelected,
+      for (final e in _riskFactorsWeight1.entries) e.key: e.value.isSelected
     };
 
     final Map<String, dynamic> srsData = {
@@ -273,7 +281,7 @@ class _SrsPageState extends State<SrsPage> {
     };
 
     try {
-      // Simpan data (akan di-queue oleh Realtime DB persistence jika offline)
+      // Penyimpanan akan di-cache oleh Firebase SDK jika offline
       await _dbRefSrsCalculations.push().set(srsData);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -282,9 +290,9 @@ class _SrsPageState extends State<SrsPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data SRS: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan data SRS: $e')),
+        );
       }
     }
   }
@@ -330,10 +338,9 @@ class _SrsPageState extends State<SrsPage> {
               textAlign: TextAlign.center,
             ),
           ),
+          // Perbaikan Luring: Loading hanya tampil selama bootstrap (sangat singkat/hanya sekali)
           loading
-              ? const Expanded(
-                  child: Center(child: CircularProgressIndicator()),
-                )
+              ? const Expanded(child: Center(child: CircularProgressIndicator()))
               : Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
@@ -466,16 +473,12 @@ class _SrsPageState extends State<SrsPage> {
         child: ExpansionTile(
           tilePadding: const EdgeInsets.symmetric(horizontal: 12),
           initiallyExpanded: true,
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text(subtitle),
           children: items.values.map((riskFactor) {
             return CheckboxListTile(
               value: riskFactor.isSelected,
-              onChanged: (v) =>
-                  setState(() => riskFactor.isSelected = v ?? false),
+              onChanged: (v) => setState(() => riskFactor.isSelected = v ?? false),
               title: Text(riskFactor.label),
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
@@ -526,10 +529,7 @@ class _ResultBar extends StatelessWidget {
             ),
             child: Text(
               kategori,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         ],

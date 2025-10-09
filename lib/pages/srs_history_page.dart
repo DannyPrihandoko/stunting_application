@@ -178,7 +178,7 @@ class PregCheckRow {
     final derived = m['derived'] ?? {};
     final input = m['input'] ?? {};
     // Extract motherName from the record itself
-    final motherName = (m['motherName'] ?? '').toString(); 
+    final motherName = (m['motherName'] ?? '').toString();
 
     return PregCheckRow(
       id: id,
@@ -216,34 +216,45 @@ class SrsHistoryPage extends StatefulWidget {
 }
 
 class _SrsHistoryPageState extends State<SrsHistoryPage> {
-  final DatabaseReference _dbRefSrs = FirebaseDatabase.instance.ref(
-    "srs_calculations",
-  );
-  final DatabaseReference _dbRefRiskCfg = FirebaseDatabase.instance.ref(
-    "risk_factors",
-  );
-  final DatabaseReference _dbRefCalc = FirebaseDatabase.instance.ref(
-    "calculator_history",
-  );
-  final DatabaseReference _dbRefPreg = FirebaseDatabase.instance.ref(
-    "pregnancy_checks",
-  );
+  // --- Referensi Database (tetap sama) ---
+  final DatabaseReference _dbRefSrs = FirebaseDatabase.instance.ref("srs_calculations");
+  final DatabaseReference _dbRefRiskCfg = FirebaseDatabase.instance.ref("risk_factors");
+  final DatabaseReference _dbRefCalc = FirebaseDatabase.instance.ref("calculator_history");
+  final DatabaseReference _dbRefPreg = FirebaseDatabase.instance.ref("pregnancy_checks");
 
+  // --- State lainnya (tetap sama) ---
   final _motherRepo = MotherProfileRepository();
   String? _motherId;
   String? _motherName;
   bool _loadingMother = true;
-
   Map<String, String> _rfLabels = {};
   bool _isLoadingLabels = true;
+  
+  // ===================== PERUBAHAN DI SINI =====================
+  // Deklarasikan stream sebagai variabel state
+  late Stream<DatabaseEvent> _srsStream;
+  late Stream<DatabaseEvent> _calculatorStream;
+  late Stream<DatabaseEvent> _pregnancyStream;
+  // =============================================================
 
   @override
   void initState() {
     super.initState();
+    
+    // ===================== PERUBAHAN DI SINI =====================
+    // Inisialisasi stream sekali saja di initState
+    _srsStream = _dbRefSrs.onValue;
+    _calculatorStream = _dbRefCalc.onValue;
+    _pregnancyStream = _dbRefPreg.onValue;
+    // =============================================================
+
     _loadRiskLabels();
     _loadMother();
   }
 
+  // ... (semua method lain seperti _loadMother, _loadRiskLabels, _showSrsDetails, dll. tetap sama)
+  // ... (Pastikan semua method dari kode sebelumnya ada di sini)
+  
   Future<void> _loadMother() async {
     final mid = await _motherRepo.getCurrentId();
     String? name;
@@ -300,11 +311,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
 
   String _labelOf(String key) => _rfLabels[key] ?? key.replaceAll('_', ' ');
 
-  // Menggunakan warna Material untuk kepastian shade
   Color _badgeBase(String s) {
     final x = s.toLowerCase();
     if (x.contains('tinggi')) return Colors.red;
-    if (x.contains('sedang')) return Colors.amber;
+    if (x.contains('sedang')) return Colors.orange;
     return Colors.green;
   }
 
@@ -442,7 +452,8 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _detailRow("Waktu", r.formattedDate),
-              _detailRow("Ibu", r.motherName.isNotEmpty ? r.motherName : r.motherId), // Display name or ID
+              _detailRow(
+                  "Ibu", r.motherName.isNotEmpty ? r.motherName : r.motherId),
               _detailRow("Kondisi", r.conditionLabel),
               _detailRow("Tinggi (cm)", r.heightCm?.toStringAsFixed(1) ?? "-"),
               _detailRow("Berat (kg)", r.weightKg?.toStringAsFixed(1) ?? "-"),
@@ -519,6 +530,74 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Riwayat Perhitungan"),
+          backgroundColor: Colors.indigo.shade700,
+          foregroundColor: Colors.white,
+          elevation: 4,
+          bottom: const TabBar(
+            indicatorColor: Colors.white,
+            indicatorWeight: 3,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            tabs: [
+              Tab(text: "SRS"),
+              Tab(text: "Kalkulator"),
+              Tab(text: "Kehamilan"),
+            ],
+          ),
+        ),
+        body: _isLoadingLabels
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Container(
+                    color: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.person_outline,
+                                color: Colors.indigo),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Ibu aktif perangkat: ${_loadingMother ? "…" : (_motherName?.trim().isNotEmpty == true ? _motherName! : "—")}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _buildSrsTabView(),
+                        _buildCalculatorTabView(),
+                        _buildPregnancyTabView(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Widget _buildSrsTabView() {
     final titleStyle = TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.w900,
@@ -526,77 +605,63 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
     );
     final subtitleStyle = TextStyle(color: Colors.grey.shade700);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Riwayat Perhitungan"),
-        backgroundColor: Colors.indigo.shade700,
-        foregroundColor: Colors.white,
-        elevation: 4,
-      ),
-      body: _isLoadingLabels
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(12.0),
-              children: [
-                // ===== Banner Ibu Aktif =====
-                Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person_outline, color: Colors.indigo),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Ibu aktif perangkat: ${_loadingMother ? "…" : (_motherName?.trim().isNotEmpty == true ? _motherName! : "—")}',
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
+    return ListView(
+      padding: const EdgeInsets.all(12.0),
+      children: [
+        Text(
+          "Tabel Riwayat Perhitungan SRS (Skor Risiko Stunting)",
+          style: titleStyle,
+        ),
+        const SizedBox(height: 4),
+        Text("Sumber data: /srs_calculations", style: subtitleStyle),
+        const SizedBox(height: 8),
+        _buildSrsTableCard(),
+      ],
+    );
+  }
 
-                // ====== SECTION 1: SRS ======
-                Text(
-                  "Tabel Riwayat Perhitungan SRS (Skor Risiko Stunting)",
-                  style: titleStyle,
-                ),
-                const SizedBox(height: 4),
-                Text("Sumber data: /srs_calculations", style: subtitleStyle),
-                const SizedBox(height: 8),
-                _buildSrsTableCard(),
+  Widget _buildCalculatorTabView() {
+    final titleStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w900,
+      color: Colors.grey.shade900,
+    );
+    final subtitleStyle = TextStyle(color: Colors.grey.shade700);
 
-                const SizedBox(height: 18),
+    return ListView(
+      padding: const EdgeInsets.all(12.0),
+      children: [
+        Text(
+          "Tabel Riwayat Kalkulator Gizi/Risiko Stunting",
+          style: titleStyle,
+        ),
+        const SizedBox(height: 4),
+        Text("Sumber data: /calculator_history", style: subtitleStyle),
+        const SizedBox(height: 8),
+        _buildCalculatorTableCard(),
+      ],
+    );
+  }
 
-                // ====== SECTION 2: Kalkulator ======
-                Text(
-                  "Tabel Riwayat Kalkulator Gizi/Risiko Stunting",
-                  style: titleStyle,
-                ),
-                const SizedBox(height: 4),
-                Text("Sumber data: /calculator_history", style: subtitleStyle),
-                const SizedBox(height: 8),
-                _buildCalculatorTableCard(),
+  Widget _buildPregnancyTabView() {
+    final titleStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w900,
+      color: Colors.grey.shade900,
+    );
+    final subtitleStyle = TextStyle(color: Colors.grey.shade700);
 
-                const SizedBox(height: 18),
-
-                // ====== SECTION 3: Pemeriksaan Kehamilan ======
-                Text("Tabel Riwayat Pemeriksaan Kehamilan", style: titleStyle),
-                const SizedBox(height: 4),
-                // Keterangan bahwa ID ibu yang tampil adalah kunci Firebase jika nama tidak tersedia
-                Text(
-                    "Sumber data: /pregnancy_checks/* (Menampilkan ID ibu jika nama ibu tidak tersimpan di record)",
-                    style: subtitleStyle),
-                const SizedBox(height: 8),
-                _buildPregnancyTableCard(),
-              ],
-            ),
+    return ListView(
+      padding: const EdgeInsets.all(12.0),
+      children: [
+        Text("Tabel Riwayat Pemeriksaan Kehamilan", style: titleStyle),
+        const SizedBox(height: 4),
+        Text(
+            "Sumber data: /pregnancy_checks/* (Menampilkan ID ibu jika nama ibu tidak tersimpan di record)",
+            style: subtitleStyle),
+        const SizedBox(height: 8),
+        _buildPregnancyTableCard(),
+      ],
     );
   }
 
@@ -606,9 +671,11 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: StreamBuilder<DatabaseEvent>(
-        stream: _dbRefSrs.onValue,
+        // ===================== PERUBAHAN DI SINI =====================
+        stream: _srsStream, // Gunakan stream dari state
+        // =============================================================
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
             return const SizedBox(
               height: 180,
               child: Center(child: CircularProgressIndicator()),
@@ -647,6 +714,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             ],
             rows: List<DataRow>.generate(rows.length, (index) {
               final r = rows[index];
+              // ... (sisa logic baris data sama)
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.category);
               final textColor = base;
@@ -704,9 +772,11 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: StreamBuilder<DatabaseEvent>(
-        stream: _dbRefCalc.onValue,
+        // ===================== PERUBAHAN DI SINI =====================
+        stream: _calculatorStream, // Gunakan stream dari state
+        // =============================================================
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
             return const SizedBox(
               height: 180,
               child: Center(child: CircularProgressIndicator()),
@@ -749,7 +819,8 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             ],
             rows: List<DataRow>.generate(recs.length, (index) {
               final r = recs[index];
-              final isEven = index % 2 == 0;
+              // ... (sisa logic baris data sama)
+               final isEven = index % 2 == 0;
               final base = _badgeBase(r.riskLabel);
               final textColor = base;
 
@@ -806,9 +877,11 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: StreamBuilder<DatabaseEvent>(
-        stream: _dbRefPreg.onValue,
+        // ===================== PERUBAHAN DI SINI =====================
+        stream: _pregnancyStream, // Gunakan stream dari state
+        // =============================================================
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
             return const SizedBox(
               height: 180,
               child: Center(child: CircularProgressIndicator()),
@@ -824,29 +897,25 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           }
 
           final raw = snapshot.data?.snapshot.value;
-          // Pastikan raw adalah Map<dynamic, dynamic> yang valid
           if (raw == null || raw is! Map) {
             return const SizedBox(
               height: 100,
-              child: Center(child: Text('Belum ada data pemeriksaan kehamilan.')),
+              child:
+                  Center(child: Text('Belum ada data pemeriksaan kehamilan.')),
             );
           }
 
           final Map<dynamic, dynamic> checksByMother = raw;
           final List<PregCheckRow> items = [];
-          
-          // Iterasi semua node motherId di bawah /pregnancy_checks
+
           checksByMother.forEach((motherId, motherNode) {
             final String mId = motherId.toString();
-            // Pastikan node anak adalah Map (berisi recordId: recordData)
             if (motherNode is Map) {
               final Map<dynamic, dynamic> records = motherNode;
-              
-              // Iterasi semua record di bawah motherId
               records.forEach((recordId, recordData) {
                 if (recordData is Map) {
                   try {
-                     items.add(
+                    items.add(
                       PregCheckRow.fromMap(
                         recordId.toString(),
                         mId,
@@ -854,8 +923,8 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                       ),
                     );
                   } catch (e) {
-                    // Cetak error parsing, tapi jangan crash
-                    print("Error parsing PregCheckRow for ID $mId/$recordId: $e");
+                    print(
+                        "Error parsing PregCheckRow for ID $mId/$recordId: $e");
                   }
                 }
               });
@@ -865,7 +934,8 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           if (items.isEmpty) {
             return const SizedBox(
               height: 100,
-              child: Center(child: Text('Belum ada data pemeriksaan kehamilan.')),
+              child:
+                  Center(child: Text('Belum ada data pemeriksaan kehamilan.')),
             );
           }
 
@@ -874,7 +944,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
           return _scrollableDataTable(
             columns: const [
               DataColumn(label: Text('Waktu')),
-              DataColumn(label: Text('Ibu')), // Menampilkan nama atau ID
+              DataColumn(label: Text('Ibu')),
               DataColumn(label: Text('Kondisi')),
               DataColumn(label: Text('BMI')),
               DataColumn(label: Text('SRI')),
@@ -883,16 +953,20 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
             ],
             rows: List<DataRow>.generate(items.length, (index) {
               final r = items[index];
+              // ... (sisa logic baris data sama)
               final isEven = index % 2 == 0;
               final base = _badgeBase(r.category);
-              final textColor = base; 
+              final textColor = base;
 
-              // Penentuan nama ibu untuk ditampilkan: Nama di record > Nama Ibu Aktif (jika ID cocok) > ID terpotong
               final displayMother = r.motherName.isNotEmpty
                   ? r.motherName
-                  : (r.motherId == _motherId && _motherName != null && _motherName!.isNotEmpty) 
-                    ? _motherName!
-                    : r.motherId.length > 8 ? '${r.motherId.substring(0, 8)}...' : r.motherId;
+                  : (r.motherId == _motherId &&
+                          _motherName != null &&
+                          _motherName!.isNotEmpty)
+                      ? _motherName!
+                      : r.motherId.length > 8
+                          ? '${r.motherId.substring(0, 8)}...'
+                          : r.motherId;
 
               return DataRow(
                 color: MaterialStateProperty.resolveWith<Color?>(
@@ -903,10 +977,11 @@ class _SrsHistoryPageState extends State<SrsHistoryPage> {
                   DataCell(
                     Text(
                       displayMother,
-                      // Highlight jika motherId cocok dengan ibu aktif
-                      style: (r.motherId == _motherId) ? const TextStyle(fontWeight: FontWeight.bold) : null,
+                      style: (r.motherId == _motherId)
+                          ? const TextStyle(fontWeight: FontWeight.bold)
+                          : null,
                     ),
-                  ), 
+                  ),
                   DataCell(Text(r.conditionLabel)),
                   DataCell(
                     Text(r.bmi == null ? '-' : r.bmi!.toStringAsFixed(1)),
