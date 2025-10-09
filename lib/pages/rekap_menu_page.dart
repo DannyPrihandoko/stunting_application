@@ -6,6 +6,7 @@ import '../models/mother_profile_repository.dart';
 import 'cek_perkembangan_kehamilan_page.dart';
 import 'rekap_tinggi_page.dart';
 import 'rekap_berat_page.dart';
+import 'gizi_status_page.dart'; // NEW
 
 class RekapMenuPage extends StatefulWidget {
   const RekapMenuPage({super.key});
@@ -51,14 +52,29 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
     );
   }
 
+  void _openGiziStatusPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const GiziStatusPage()),
+    );
+  }
+
   Future<void> _pickChildAndOpenHeightRecap() async {
     final child = await _pickChild();
     if (child == null) return;
 
-    // pastikan DOB terisi; kalau null, coba fetch dari /profile
-    final bd =
-        child['birthDateMs'] as int? ??
-        await _loadChildBirthDateMs(child['id'] as String);
+    // Pastikan DOB terisi. Jika belum ada di cache sheet, coba fetch dari DB.
+    int? bd = child['birthDateMs'] as int?;
+    if (bd == null) {
+      bd = await _loadChildBirthDateMs(child['id'] as String);
+    }
+
+    if (bd == null) {
+      if (mounted) _showSnackbar('Gagal mendapatkan tanggal lahir anak.');
+      return;
+    }
+
+    if (!mounted || _motherId == null || child['id'] == null) return;
 
     Navigator.push(
       context,
@@ -77,9 +93,18 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
     final child = await _pickChild();
     if (child == null) return;
 
-    final bd =
-        child['birthDateMs'] as int? ??
-        await _loadChildBirthDateMs(child['id'] as String);
+    // Pastikan DOB terisi. Jika belum ada di cache sheet, coba fetch dari DB.
+    int? bd = child['birthDateMs'] as int?;
+    if (bd == null) {
+      bd = await _loadChildBirthDateMs(child['id'] as String);
+    }
+
+    if (bd == null) {
+      if (mounted) _showSnackbar('Gagal mendapatkan tanggal lahir anak.');
+      return;
+    }
+
+    if (!mounted || _motherId == null || child['id'] == null) return;
 
     Navigator.push(
       context,
@@ -97,9 +122,9 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
   // ---------- pilih anak (bottom sheet) ----------
   Future<Map<String, dynamic>?> _pickChild() async {
     if (_motherId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profil Ibu belum dipilih/dibuat.')),
-      );
+      if (mounted) {
+        _showSnackbar('Profil Ibu belum dipilih/dibuat.');
+      }
       return null;
     }
     final snap = await _db.ref('mothers/$_motherId/children').get();
@@ -111,16 +136,13 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
         if (v is Map) {
           final mm = Map<dynamic, dynamic>.from(v);
 
-          // Ekstrak nama (beberapa kemungkinan kunci)
           final name = _extractName(mm);
-
-          // Ekstrak DOB dari root atau submap 'profile'
           final dob = _extractBirthDateMs(mm);
 
           items.add({
             'id': id.toString(),
             'name': name ?? '',
-            'birthDateMs': dob, // bisa null; nanti dicoba fetch khusus
+            'birthDateMs': dob, // DOB yang didapatkan dari root anak
           });
         }
       });
@@ -128,13 +150,12 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
 
     if (items.isEmpty) {
       if (!mounted) return null;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Belum ada data anak untuk Ibu ini.')),
-      );
+      _showSnackbar('Belum ada data anak untuk Ibu ini.');
       return null;
     }
 
     if (!mounted) return null;
+    // Tampilkan Bottom Sheet untuk memilih
     return showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       showDragHandle: true,
@@ -154,7 +175,7 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
                     : '(Tanpa nama)',
               ),
               subtitle: (it['birthDateMs'] != null)
-                  ? Text(_fmtDate(it['birthDateMs'] as int))
+                  ? Text('Tgl lahir: ${_fmtDate(it['birthDateMs'] as int)}')
                   : const Text('Tgl lahir: —'),
               onTap: () => Navigator.pop(context, it),
             );
@@ -168,6 +189,7 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
 
   // ---------- helper ekstraksi nama & DOB ----------
   String? _extractName(Map mm) {
+    // Mencari nama di berbagai kunci yang mungkin
     final profile = (mm['profile'] is Map) ? Map.from(mm['profile']) : null;
     final candidates = [
       mm['name'],
@@ -187,53 +209,33 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
     int? asInt(dynamic v) {
       if (v == null) return null;
       if (v is int) return v;
+      // Realtime DB mungkin menyimpan angka sebagai String jika terlalu besar
       return int.tryParse(v.toString());
     }
 
     final profile = (mm['profile'] is Map) ? Map.from(mm['profile']) : null;
 
-    // cek di root
-    for (final k in const [
-      'birthDateMs',
-      'dobMs',
-      'tanggalLahirMs',
-      'tglLahirMs',
-      'lahirMs',
-      'birthMs',
-    ]) {
-      final v = asInt(mm[k]);
-      if (v != null) return v;
-    }
+    // Kunci yang paling umum di Firebase Realtime Database adalah 'birthDate'
+    final candidates = [
+      mm['birthDate'], // Kunci yang digunakan di ChildRepository
+      mm['dobMs'],
+      mm['tanggalLahirMs'],
+      mm['tglLahirMs'],
+      mm['lahirMs'],
+      mm['birthMs'],
+      profile?['birthDate'],
+    ];
 
-    // cek di profile
-    if (profile != null) {
-      for (final k in const [
-        'birthDateMs',
-        'dobMs',
-        'tanggalLahirMs',
-        'tglLahirMs',
-        'lahirMs',
-        'birthMs',
-      ]) {
-        final v = asInt(profile[k]);
-        if (v != null) return v;
-      }
+    for (final c in candidates) {
+      final v = asInt(c);
+      if (v != null && v > 0) return v; // Pastikan bukan 0
     }
     return null;
   }
 
+  /// Memuat DOB secara eksplisit dari DB jika tidak ditemukan di cache daftar anak.
   Future<int?> _loadChildBirthDateMs(String childId) async {
     try {
-      // coba di /profile
-      final p = await _db
-          .ref('mothers/$_motherId/children/$childId/profile')
-          .get();
-      if (p.exists && p.value is Map) {
-        final mm = Map<dynamic, dynamic>.from(p.value as Map);
-        final v = _extractBirthDateMs(mm);
-        if (v != null) return v;
-      }
-      // fallback: cek langsung di node anak (barangkali ada di root)
       final c = await _db.ref('mothers/$_motherId/children/$childId').get();
       if (c.exists && c.value is Map) {
         final mm = Map<dynamic, dynamic>.from(c.value as Map);
@@ -242,6 +244,14 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
       }
     } catch (_) {}
     return null;
+  }
+
+  void _showSnackbar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   String _fmtDate(int ms) {
@@ -264,7 +274,7 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
                 children: [
                   if (_motherName != null)
                     Text(
-                      'Ibu: ${_motherName!.isNotEmpty ? _motherName! : "—"}',
+                      'Ibu Aktif: ${_motherName!.isNotEmpty ? _motherName! : "—"}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         color: Colors.black87,
@@ -279,23 +289,30 @@ class _RekapMenuPageState extends State<RekapMenuPage> {
                       childAspectRatio: 0.92,
                       children: [
                         AssetImageButton(
+                          title: 'Status Gizi\n(BB/TB)',
+                          subtitle: 'Hitung Z-Score WFH',
+                          assetPath: 'assets/Illustrations/rekap_weight.jpg',
+                          icon: Icons.monitor_weight_outlined,
+                          onTap: _openGiziStatusPage,
+                        ),
+                        AssetImageButton(
                           title: 'Rekap\nKehamilan',
                           subtitle: 'Cek & Riwayat',
-                          assetPath: 'assets/illustrations/rekap_pregnancy.jpg',
+                          assetPath: 'assets/Illustrations/rekap_pregnancy.jpg',
                           icon: Icons.pregnant_woman_outlined,
                           onTap: _openPregnancyRecap,
                         ),
                         AssetImageButton(
                           title: 'Rekap\nTinggi Anak',
                           subtitle: 'Ringkasan & tren',
-                          assetPath: 'assets/illustrations/rekap_height.jpg',
+                          assetPath: 'assets/Illustrations/rekap_height.jpg',
                           icon: Icons.height,
                           onTap: _pickChildAndOpenHeightRecap,
                         ),
                         AssetImageButton(
                           title: 'Rekap\nBerat Anak',
                           subtitle: 'Ringkasan & tren',
-                          assetPath: 'assets/illustrations/rekap_weight.jpg',
+                          assetPath: 'assets/Illustrations/rekap_weight.jpg',
                           icon: Icons.monitor_weight_outlined,
                           onTap: _pickChildAndOpenWeightRecap,
                         ),

@@ -23,6 +23,8 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
   final _kecamatanC = TextEditingController();
   final _posyanduC = TextEditingController();
 
+  // Field opsional agama dan pekerjaan dihapus
+
   final _repo = MotherProfileRepository();
   DateTime? _tgl;
 
@@ -39,12 +41,15 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
   }
 
   Future<void> _loadCurrent() async {
+    // Memastikan MotherProfileRepository tidak memerlukan field 'agama' dan 'pekerjaan'
+    // di model MotherProfile untuk menghindari error tipe data saat readCurrent().
     final data = await _repo.readCurrent();
     if (data != null && mounted) {
       setState(() {
         _namaC.text = data.nama;
         _tempatLahirC.text = data.tempatLahir;
         _tgl = data.tanggalLahir;
+        // Memastikan format tanggal ditampilkan
         _tanggalLahirC.text = _tgl != null
             ? DateFormat('dd/MM/yyyy').format(_tgl!)
             : '';
@@ -53,6 +58,8 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
         _desaKelurahanC.text = data.desaKelurahan;
         _kecamatanC.text = data.kecamatan;
         _posyanduC.text = data.posyandu;
+
+        // Field agama dan pekerjaan tidak lagi dimuat
       });
     }
   }
@@ -67,6 +74,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
     _desaKelurahanC.dispose();
     _kecamatanC.dispose();
     _posyanduC.dispose();
+    // Disposal untuk _agamaC dan _pekerjaanC dihapus
     super.dispose();
   }
 
@@ -83,6 +91,8 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
       setState(() {
         _tgl = picked;
         _tanggalLahirC.text = DateFormat('dd/MM/yyyy').format(picked);
+        // Memaksa validasi ulang setelah tanggal dipilih
+        _formKey.currentState?.validate();
       });
     }
   }
@@ -94,6 +104,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
 
   String? _validPhone(String? v) {
     if (v == null || v.trim().isEmpty) return 'Nomor HP wajib diisi';
+    // Hanya memfilter, validasi Regex aslinya ada di MotherProfileRepository
     final digits = v.replaceAll(RegExp(r'[^0-9+]'), '');
     if (!RegExp(r'^(?:\+?62|0)\d{8,15}$').hasMatch(digits)) {
       return 'Format nomor HP tidak valid';
@@ -102,7 +113,16 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
   }
 
   Future<void> _save() async {
+    // Validasi form: memicu semua validator
     if (!_formKey.currentState!.validate()) return;
+
+    // Validasi tanggal lahir yang tidak tercakup oleh TextFormField validator
+    if (_tgl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tanggal lahir wajib diisi.')),
+      );
+      return;
+    }
 
     final profile = MotherProfile(
       nama: _namaC.text.trim(),
@@ -113,13 +133,16 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
       desaKelurahan: _desaKelurahanC.text.trim(),
       kecamatan: _kecamatanC.text.trim(),
       posyandu: _posyanduC.text.trim(),
+      // Field agama dan pekerjaan dihapus dari konstruktor
     );
 
     final curId = await _repo.getCurrentId();
     if (curId == null) {
+      // CREATE
       await _repo.create(profile);
     } else {
-      // gunakan toMap() agar turunannya (nama_lower, noHp_norm, updatedAt, ownerId) terjaga
+      // UPDATE
+      // update menggunakan toMap()
       await _repo.update(curId, profile.toMap());
     }
 
@@ -138,6 +161,8 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
   Future<void> _delete() async {
     final curId = await _repo.getCurrentId();
     if (curId == null) return;
+
+    // Gunakan fungsi pop-up kustom
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
@@ -155,6 +180,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
         ],
       ),
     );
+
     if (ok == true) {
       await _repo.deleteCurrent();
       if (mounted) {
@@ -168,6 +194,8 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
         _desaKelurahanC.clear();
         _kecamatanC.clear();
         _posyanduC.clear();
+        // Clear controller agama dan pekerjaan dihapus
+
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Profil ibu dihapus.')));
@@ -197,6 +225,7 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
           key: _formKey,
           child: Column(
             children: [
+              // ===== INFORMASI DASAR (Wajib) =====
               TextFormField(
                 controller: _namaC,
                 textCapitalization: TextCapitalization.words,
@@ -224,8 +253,8 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
                         suffix: const Icon(Icons.date_range),
                       ),
                       onTap: _pickDate,
-                      validator: (_) =>
-                          _tgl == null ? 'Tanggal lahir wajib diisi' : null,
+                      // Validator di sini hanya memberi pesan standar. Validasi utama via _tgl check di _save
+                      validator: (v) => _required(v, label: 'Tanggal lahir'),
                     ),
                   ),
                 ],
@@ -241,9 +270,11 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
                 validator: _validPhone,
               ),
               const SizedBox(height: 12),
+
+              // ===== ALAMAT (Wajib) =====
               TextFormField(
                 controller: _alamatC,
-                decoration: _dec('Alamat'),
+                decoration: _dec('Alamat Lengkap'),
                 validator: (v) => _required(v, label: 'Alamat'),
                 maxLines: 2,
               ),
@@ -273,7 +304,11 @@ class _ProfilBundaPageState extends State<ProfilBundaPage> {
                 decoration: _dec('Posyandu'),
                 validator: (v) => _required(v, label: 'Posyandu'),
               ),
+
+              // ===== INFORMASI TAMBAHAN (Opsional) - Dihapus =====
               const SizedBox(height: 20),
+
+              // ===== TOMBOL AKSI =====
               Row(
                 children: [
                   Expanded(
