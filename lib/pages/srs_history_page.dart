@@ -318,6 +318,13 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
         elevation: 4,
         bottom: TabBar(
           controller: _tabController,
+          // --- PERUBAHAN DI SINI ---
+          labelColor: Colors.white, // Warna teks tab yang aktif
+          unselectedLabelColor: Colors.white.withOpacity(
+            0.7,
+          ), // Warna teks tab yang tidak aktif
+          indicatorColor: Colors.white, // Warna garis indikator
+          // --------------------------
           tabs: const [
             Tab(text: 'SRS'),
             Tab(text: 'Kalkulator'),
@@ -359,7 +366,6 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
             _HistoryTab<SrsRow>(
               query: _searchQuery,
               dbRef: _dbRefSrs,
-              // motherId dan motherName tetap di-pass untuk UI (misal, highlight 'Ibu Aktif')
               motherId: _motherId,
               motherName: _motherName,
               rowFactory: (id, _, m) => SrsRow.fromMap(id, m),
@@ -406,7 +412,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            const Icon(Icons.shield_outlined, color: Colors.indigo),
+            const Icon(
+              Icons.admin_panel_settings_outlined,
+              color: Colors.indigo,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -419,10 +428,6 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
       ),
     );
   }
-
-  // ===================================
-  // DETAIL DIALOGS
-  // ===================================
 
   String _labelOf(String key) => key.replaceAll('_', ' ');
 
@@ -622,8 +627,8 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
 // GENERIC TAB VIEW & DATA HANDLING
 // ===================================
 
-typedef RowFactory<T> = T Function(
-    String id, String motherId, Map<dynamic, dynamic> map);
+typedef RowFactory<T> =
+    T Function(String id, String motherId, Map<dynamic, dynamic> map);
 
 class _HistoryTab<T> extends StatelessWidget {
   final String query;
@@ -687,8 +692,7 @@ class _HistoryTab<T> extends StatelessWidget {
   String _getGroupingKey(T item) {
     final itemDynamic = item as dynamic;
     if (item is PregCheckRow) return item.motherId;
-    final key = itemDynamic.motherId;
-    return key ?? 'Unknown';
+    return itemDynamic.motherId ?? 'Unknown';
   }
 
   List<T> _parseSnapshot(DataSnapshot? rawSnapshot) {
@@ -717,7 +721,9 @@ class _HistoryTab<T> extends StatelessWidget {
                   );
                   list.add(item);
                 } catch (e) {
-                  print("Error parsing PregCheck record $motherId/$recordId: $e");
+                  print(
+                    "Error parsing PregCheck record $motherId/$recordId: $e",
+                  );
                 }
               }
             });
@@ -760,15 +766,12 @@ class _HistoryTab<T> extends StatelessWidget {
         final rawSnapshot = snapshot.data?.snapshot;
         final allItems = _parseSnapshot(rawSnapshot);
 
-        // --- Filtering (DIUBAH) ---
         final filteredItems = allItems.where((item) {
           final itemDynamic = item as dynamic;
-          // Filter berdasarkan query pencarian (tetap berlaku)
           if (query.isNotEmpty &&
-              !(itemDynamic.searchIndex?.contains(query) ?? false)) {
+              !(itemDynamic.searchIndex as String).contains(query)) {
             return false;
           }
-          // Tampilkan semua data (Mode Administrator), filter motherId dihilangkan
           return true;
         }).toList();
 
@@ -796,7 +799,6 @@ class _HistoryTab<T> extends StatelessWidget {
           );
         }
 
-        // --- Grouping ---
         final Map<String, List<T>> grouped = {};
         for (final item in filteredItems) {
           final key = _getGroupingKey(item);
@@ -817,14 +819,13 @@ class _HistoryTab<T> extends StatelessWidget {
           );
         }
 
-        // --- Rendering ---
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 16),
           itemCount: sortedKeys.length,
           itemBuilder: (context, index) {
             final key = sortedKeys[index];
             final itemsInGroup = grouped[key]!;
-            final itemDynamic = itemsInGroup.first as dynamic;
+            final firstItem = itemsInGroup.first as dynamic;
 
             String title;
             if (T == CalculatorRecord) {
@@ -832,11 +833,11 @@ class _HistoryTab<T> extends StatelessWidget {
                   ? 'Ibu Aktif: $motherName'
                   : 'ID Ibu: $key (${itemsInGroup.length} riwayat)';
             } else {
-              title = itemDynamic.motherName?.isNotEmpty == true
-                  ? itemDynamic.motherName
+              title = firstItem.motherName?.isNotEmpty == true
+                  ? firstItem.motherName
                   : (key == motherId && motherName != null)
-                      ? 'Ibu Aktif: $motherName'
-                      : 'ID Ibu: $key';
+                  ? 'Ibu Aktif: $motherName'
+                  : 'ID Ibu: $key';
             }
 
             if (key == motherId) {
@@ -852,8 +853,7 @@ class _HistoryTab<T> extends StatelessWidget {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: ExpansionTile(
-                  initiallyExpanded:
-                      key == motherId,
+                  initiallyExpanded: key == motherId,
                   backgroundColor: Colors.indigo.shade50.withOpacity(0.5),
                   title: Text(
                     title,

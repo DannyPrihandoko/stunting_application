@@ -19,8 +19,14 @@ import 'pages/profil_bunda_page.dart';
 import 'pages/data_anak_page.dart';
 import 'pages/rekap_menu_page.dart';
 
+// --- Tambahkan import untuk inisialisasi tanggal ---
+import 'package:intl/date_symbol_data_local.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // --- Inisialisasi format tanggal untuk locale Indonesia ---
+  await initializeDateFormatting('id_ID', null);
+
   try {
     // Inisialisasi Firebase
     await Firebase.initializeApp(
@@ -125,6 +131,26 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
+// --- PERBAIKAN: Fungsi navigasi dipindahkan ke luar kelas ---
+void _go(BuildContext context, Widget page) {
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondary) => page,
+      transitionsBuilder: (context, animation, secondary, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeOut;
+        final tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
+        return SlideTransition(position: animation.drive(tween), child: child);
+      },
+    ),
+  );
+}
+
 // ---------------- HOME PAGE ----------------
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -164,10 +190,9 @@ class HomePage extends StatelessWidget {
     return 'Buka fitur';
   }
 
-  // --- FUNGSI BARU: Tampilkan Dialog PIN ---
   Future<void> _showPinDialog(BuildContext context) async {
     final pinController = TextEditingController();
-    const String correctPin = '1234'; // PIN untuk akses
+    const String correctPin = '1234';
 
     return showDialog<void>(
       context: context,
@@ -196,8 +221,8 @@ class HomePage extends StatelessWidget {
               child: const Text('Masuk'),
               onPressed: () {
                 if (pinController.text == correctPin) {
-                  Navigator.of(context).pop(); // Tutup dialog
-                  _go(context, const SrsHistoryPage()); // Buka halaman riwayat
+                  Navigator.of(context).pop();
+                  _go(context, const SrsHistoryPage());
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -219,7 +244,6 @@ class HomePage extends StatelessWidget {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // --- DAFTAR MENU DENGAN PATH GAMBAR ---
     final List<Map<String, dynamic>> menuItems = [
       {
         "title": "Profil Bunda",
@@ -280,9 +304,8 @@ class HomePage extends StatelessWidget {
       {
         "title": "Riwayat Perhitungan SRS",
         "icon": Icons.history,
-        "onTap": (BuildContext context) =>
-            _showPinDialog(context), // Panggil dialog PIN
-        "page": null, // Page null karena navigasi ditangani oleh onTap
+        "onTap": (BuildContext context) => _showPinDialog(context),
+        "page": null,
         "color": Colors.indigo.shade700,
         "assetPath": null,
         "subTitle": "Lihat hasil lama",
@@ -496,7 +519,7 @@ class HomePage extends StatelessWidget {
                       item["page"] as Widget?,
                       item["color"] as Color,
                       item["subTitle"] as String?,
-                      item["assetPath"] as String?, // Pass the asset path
+                      item["assetPath"] as String?,
                       item["onTap"] as Function(BuildContext)?,
                     );
                   }).toList(),
@@ -524,30 +547,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // --- Fungsi Navigasi ---
-  void _go(BuildContext context, Widget page) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondary) => page,
-        transitionsBuilder: (context, animation, secondary, child) {
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeOut;
-          final tween = Tween(
-            begin: begin,
-            end: end,
-          ).chain(CurveTween(curve: curve));
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-      ),
-    );
-  }
-
-  // --- Card Kecil (Quick Action) di Header ---
   Widget _qa(
     BuildContext context, {
     required String label,
@@ -569,7 +568,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // --- Card Menu Utama (menggunakan Gambar) ---
   Widget _buildAssetMenuCard(
     BuildContext context,
     String shortTitleText,
@@ -582,8 +580,6 @@ class HomePage extends StatelessWidget {
     Function(BuildContext)? onTapCallback,
   ) {
     final radius = BorderRadius.circular(16);
-
-    // Warna fallback untuk icon/background jika tidak ada assetPath
     final fallbackColor = color.withOpacity(0.85);
 
     return Material(
