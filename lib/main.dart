@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart';
 
 /// Firebase
 import 'package:firebase_core/firebase_core.dart';
@@ -22,7 +23,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     // Inisialisasi Firebase
-    // NOTE: DefaultFirebaseOptions.currentPlatform harus ada di file firebase_options.dart
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -164,6 +164,56 @@ class HomePage extends StatelessWidget {
     return 'Buka fitur';
   }
 
+  // --- FUNGSI BARU: Tampilkan Dialog PIN ---
+  Future<void> _showPinDialog(BuildContext context) async {
+    final pinController = TextEditingController();
+    const String correctPin = '1234'; // PIN untuk akses
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Masukkan PIN Admin'),
+          content: TextField(
+            controller: pinController,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 4,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'PIN',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FilledButton(
+              child: const Text('Masuk'),
+              onPressed: () {
+                if (pinController.text == correctPin) {
+                  Navigator.of(context).pop(); // Tutup dialog
+                  _go(context, const SrsHistoryPage()); // Buka halaman riwayat
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('PIN salah!'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
@@ -192,7 +242,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.menu_book_outlined,
         "page": const EdukasiPage(),
         "color": Colors.blueGrey.shade700,
-        "assetPath": null, 
+        "assetPath": null,
         "subTitle": "Panduan ringkas",
       },
       {
@@ -200,7 +250,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.assessment_outlined,
         "page": const SrsPage(),
         "color": Colors.deepOrange.shade800,
-        "assetPath": null, 
+        "assetPath": null,
         "subTitle": "Deteksi dini",
       },
       {
@@ -208,7 +258,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.pregnant_woman_outlined,
         "page": const CekPerkembanganKehamilanPage(),
         "color": Colors.pink.shade700,
-        "assetPath": "assets/Illustrations/rekap_pregnancy.jpg", 
+        "assetPath": "assets/Illustrations/rekap_pregnancy.jpg",
         "subTitle": "Jurnal bumil",
       },
       {
@@ -216,7 +266,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.family_restroom_outlined,
         "page": const DataAnakPage(),
         "color": Colors.green.shade700,
-        "assetPath": "assets/Illustrations/rekap_height.jpg", 
+        "assetPath": "assets/Illustrations/rekap_height.jpg",
         "subTitle": "Anak per Ibu",
       },
       {
@@ -224,13 +274,15 @@ class HomePage extends StatelessWidget {
         "icon": Icons.donut_large_outlined,
         "page": const RekapMenuPage(),
         "color": Colors.purple.shade700,
-        "assetPath": "assets/Illustrations/rekap_height.jpg", 
+        "assetPath": "assets/Illustrations/rekap_height.jpg",
         "subTitle": "Ringkasan Statistik",
       },
       {
         "title": "Riwayat Perhitungan SRS",
         "icon": Icons.history,
-        "page": const SrsHistoryPage(),
+        "onTap": (BuildContext context) =>
+            _showPinDialog(context), // Panggil dialog PIN
+        "page": null, // Page null karena navigasi ditangani oleh onTap
         "color": Colors.indigo.shade700,
         "assetPath": null,
         "subTitle": "Lihat hasil lama",
@@ -317,9 +369,7 @@ class HomePage extends StatelessWidget {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(
-                                        0.18,
-                                      ),
+                                      color: Colors.white.withOpacity(0.18),
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.white24),
                                     ),
@@ -447,6 +497,7 @@ class HomePage extends StatelessWidget {
                       item["color"] as Color,
                       item["subTitle"] as String?,
                       item["assetPath"] as String?, // Pass the asset path
+                      item["onTap"] as Function(BuildContext)?,
                     );
                   }).toList(),
                 ),
@@ -527,7 +578,8 @@ class HomePage extends StatelessWidget {
     Widget? page,
     Color color,
     String? subTitle,
-    String? assetPath, // Parameter baru
+    String? assetPath,
+    Function(BuildContext)? onTapCallback,
   ) {
     final radius = BorderRadius.circular(16);
 
@@ -540,15 +592,17 @@ class HomePage extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          if (page == null) {
+          if (onTapCallback != null) {
+            onTapCallback(context);
+          } else if (page != null) {
+            _go(context, page);
+          } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("$originalTitle akan datang!"),
                 duration: const Duration(seconds: 1),
               ),
             );
-          } else {
-            _go(context, page);
           }
         },
         child: Ink(
@@ -556,24 +610,19 @@ class HomePage extends StatelessWidget {
               ? BoxDecoration(
                   borderRadius: radius,
                   image: DecorationImage(
-                    // Memastikan path aset benar
-                    image: AssetImage(assetPath), 
+                    image: AssetImage(assetPath),
                     fit: BoxFit.cover,
-                    // DIUBAH: Mengurangi kegelapan pada gambar
                     colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.05), 
+                      Colors.black.withOpacity(0.05),
                       BlendMode.darken,
                     ),
                   ),
                 )
               : BoxDecoration(
                   borderRadius: radius,
-                  color: fallbackColor, // Fallback color if no asset
+                  color: fallbackColor,
                   gradient: LinearGradient(
-                    colors: [
-                      fallbackColor,
-                      fallbackColor.withOpacity(0.85),
-                    ],
+                    colors: [fallbackColor, fallbackColor.withOpacity(0.85)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -584,18 +633,14 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Icon (tetap dipertahankan untuk identifikasi cepat, dengan background putih)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.92),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, size: 32, 
-                  // Menggunakan warna langsung (Color) yang telah ditentukan
-                  color: color), 
+                  child: Icon(icon, size: 32, color: color),
                 ),
-                // Text Konten
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -606,7 +651,7 @@ class HomePage extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white, // Text warna putih agar kontras
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
