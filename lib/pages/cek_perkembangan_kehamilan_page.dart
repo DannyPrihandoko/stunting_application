@@ -40,7 +40,7 @@ class _CekPerkembanganKehamilanPageState
   String _saran = '—';
 
   bool _headerCollapsed = true;
-  bool _resultCollapsed = false;
+  bool _resultCollapsed = true; // Defaultnya tertutup
   bool _loadingMother = true;
   String? _motherId;
   String? _motherName;
@@ -158,7 +158,7 @@ class _CekPerkembanganKehamilanPageState
       _sri = sri;
       _kategori = kategori;
       _saran = saran;
-      _resultCollapsed = false;
+      _resultCollapsed = false; // Otomatis buka hasil setelah dihitung
     });
   }
 
@@ -320,6 +320,7 @@ class _CekPerkembanganKehamilanPageState
                 Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Card(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -380,12 +381,20 @@ class _CekPerkembanganKehamilanPageState
                           return null;
                         },
                       ),
+                      const SizedBox(height: 24),
+                      OutlinedButton.icon(
+                        onPressed: _showHistoryBottomSheet,
+                        icon: const Icon(Icons.history),
+                        label: const Text('Lihat Riwayat Pemeriksaan'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold)
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                _buildHistorySection(),
-                const SizedBox(height: 90), // Spacer for floating result panel
+                const SizedBox(height: 120),
               ],
             ),
           ),
@@ -476,96 +485,130 @@ class _CekPerkembanganKehamilanPageState
     );
   }
 
-  Widget _buildHistorySection() {
+  void _showHistoryBottomSheet() {
     if (_motherId == null) {
-      // Return empty container if no mother is selected
-      return const SizedBox.shrink();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profil Ibu belum diatur untuk melihat riwayat.')),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.6,
+          maxChildSize: 0.9,
+          builder: (context, scrollController) {
+            return _buildHistorySection(scrollController);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildHistorySection(ScrollController? scrollController) {
+    if (_motherId == null) {
+      return const Center(child: Text('Profil Ibu belum diatur.'));
     }
 
     final ref = _db.ref('pregnancy_checks/$_motherId').orderByChild('timestamp');
     ref.keepSynced(true);
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      child: StreamBuilder<DatabaseEvent>(
-        stream: ref.onValue,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-            return const SizedBox(height: 120, child: Center(child: CircularProgressIndicator()));
-          }
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const ListTile(title: Text('Belum ada riwayat pemeriksaan.'), dense: true);
-          }
+    return StreamBuilder<DatabaseEvent>(
+      stream: ref.onValue,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.snapshot.value == null) {
+          return const Center(child: Text('Belum ada riwayat pemeriksaan.'));
+        }
 
-          final map = Map<dynamic, dynamic>.from(snapshot.data!.snapshot.value as Map);
-          final items = map.entries.where((e) => e.value is Map).map((e) {
-            final m = Map<dynamic, dynamic>.from(e.value);
-            final ts = (m['timestamp'] is int) ? m['timestamp'] as int : int.tryParse('${m['timestamp']}') ?? 0;
-            return {
-              'id': e.key.toString(),
-              'label': (m['condition']?['label'] ?? '-').toString(),
-              'bmi': m['derived']?['bmi'],
-              'sri': m['derived']?['sri'],
-              'cat': (m['derived']?['category'] ?? '-').toString(),
-              'ts': ts,
-              'preg_count': m['input']?['pregnancyCount'] ?? 0,
-            };
-          }).toList()
-            ..sort((a, b) => (b['ts'] as int).compareTo(a['ts'] as int));
+        final map = Map<dynamic, dynamic>.from(snapshot.data!.snapshot.value as Map);
+        final items = map.entries.where((e) => e.value is Map).map((e) {
+          final m = Map<dynamic, dynamic>.from(e.value);
+          final ts = (m['timestamp'] is int) ? m['timestamp'] as int : int.tryParse('${m['timestamp']}') ?? 0;
+          return {
+            'id': e.key.toString(),
+            'label': (m['condition']?['label'] ?? '-').toString(),
+            'bmi': m['derived']?['bmi'],
+            'sri': m['derived']?['sri'],
+            'cat': (m['derived']?['category'] ?? '-').toString(),
+            'ts': ts,
+            'preg_count': m['input']?['pregnancyCount'] ?? 0,
+          };
+        }).toList()
+          ..sort((a, b) => (b['ts'] as int).compareTo(a['ts'] as int));
 
-          if (items.isEmpty) {
-            return const ListTile(title: Text('Belum ada riwayat pemeriksaan.'), dense: true);
+        if (items.isEmpty) {
+          return const Center(child: Text('Belum ada riwayat pemeriksaan.'));
+        }
+
+        final Map<int, List<Map<String, dynamic>>> grouped = {};
+        for (final item in items) {
+          final count = item['preg_count'] as int;
+          if (count > 0) {
+            grouped.putIfAbsent(count, () => []).add(item);
           }
+        }
+        final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
-          // Group by pregnancy count
-          final Map<int, List<Map<String, dynamic>>> grouped = {};
-          for (final item in items) {
-            final count = item['preg_count'] as int;
-            if (count > 0) {
-              grouped.putIfAbsent(count, () => []).add(item);
-            }
-          }
-          final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
-
-          return Column(
-            children: sortedKeys.map((pregCount) {
+        return ListView(
+          controller: scrollController,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Riwayat Pemeriksaan Ibu: $_motherName',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            ...sortedKeys.map((pregCount) {
               final groupItems = grouped[pregCount]!;
-              return ExpansionTile(
-                title: Text('Riwayat Kehamilan Ke-$pregCount', style: const TextStyle(fontWeight: FontWeight.bold)),
-                children: groupItems.map((it) {
-                  final cat = it['cat'] as String;
-                  final c = _badgeColor(cat);
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: c.withOpacity(0.15),
-                      child: Icon(Icons.monitor_heart, color: c),
-                    ),
-                    title: Text(it['label'] as String),
-                    subtitle: Text(
-                        "Waktu: ${_formatTimestamp(it['ts'] as int)}\nBMI: ${it['bmi'] == null ? '-' : (it['bmi'] as num).toStringAsFixed(1)} • SRI: ${it['sri'] ?? '-'}"),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: c.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: c.withOpacity(0.35)),
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                clipBehavior: Clip.antiAlias,
+                child: ExpansionTile(
+                  title: Text('Riwayat Kehamilan Ke-$pregCount', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  children: groupItems.map((it) {
+                    final cat = it['cat'] as String;
+                    final c = _badgeColor(cat);
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: c.withOpacity(0.15),
+                        child: Icon(Icons.monitor_heart, color: c),
                       ),
-                      child: Text(cat, style: TextStyle(color: c, fontWeight: FontWeight.w700)),
-                    ),
-                  );
-                }).toList(),
+                      title: Text(it['label'] as String),
+                      subtitle: Text(
+                          "Waktu: ${_formatTimestamp(it['ts'] as int)}\nBMI: ${it['bmi'] == null ? '-' : (it['bmi'] as num).toStringAsFixed(1)} • SRI: ${it['sri'] ?? '-'}"),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: c.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: c.withOpacity(0.35)),
+                        ),
+                        child: Text(cat, style: TextStyle(color: c, fontWeight: FontWeight.w700)),
+                      ),
+                    );
+                  }).toList(),
+                ),
               );
             }).toList(),
-          );
-        },
-      ),
+          ],
+        );
+      },
     );
   }
   
   Color _badgeColor(String c) {
-    final x = c.toString().toLowerCase();
+    final x = c.toLowerCase();
     if (x.contains('tinggi')) return Colors.redAccent;
     if (x.contains('sedang')) return Colors.orange;
     return Colors.green;
@@ -618,7 +661,7 @@ class _HeaderExpanded extends StatelessWidget {
         onTap: onToggle,
         child: Container(
           color: Colors.orange.withOpacity(0.12),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: const Row(
             children: [
               Icon(Icons.keyboard_arrow_down, size: 20, color: Colors.orange),

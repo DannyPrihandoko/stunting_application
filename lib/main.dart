@@ -158,6 +158,7 @@ class HomePage extends StatelessWidget {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
 
+    // --- PERBAIKAN: Nama file disesuaikan dengan screenshot ---
     final List<Map<String, dynamic>> menuItems = [
       {
         "title": "Identitas Bunda",
@@ -173,7 +174,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.calculate_outlined,
         "route": "/calculator",
         "color": Colors.blue.shade700,
-        "assetPath": "assets/Illustrations/calculator_gizi.png",
+        "assetPath": "assets/Illustrations/calculator_gizi.png", // Ekstensi .png
       },
       {
         "title": "Materi Edukasi",
@@ -181,7 +182,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.menu_book_outlined,
         "route": "/edukasi",
         "color": Colors.blueGrey.shade700,
-        "assetPath": "assets/Illustrations/edukasi.png",
+        "assetPath": "assets/Illustrations/edukasi.png", // Ekstensi .png
       },
       {
         "title": "Prediksi Risiko (SRS)",
@@ -189,7 +190,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.assessment_outlined,
         "route": "/srs",
         "color": Colors.deepOrange.shade800,
-        "assetPath": null,
+        "assetPath": null, // Tidak ada aset spesifik, akan menggunakan warna
       },
       {
         "title": "Jurnal Kehamilan",
@@ -213,7 +214,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.donut_large_outlined,
         "route": "/rekap-menu",
         "color": Colors.purple.shade700,
-        "assetPath": "assets/Illustrations/rekap_data.png",
+        "assetPath": "assets/Illustrations/rekap_data.png", // Ekstensi .png
       },
       {
         "title": "Riwayat (Admin)",
