@@ -107,7 +107,6 @@ class _DataAnakPageState extends State<DataAnakPage> {
       fontWeight: FontWeight.w900,
       color: Colors.grey.shade900,
     );
-    final sub = TextStyle(color: Colors.grey.shade700);
 
     return Scaffold(
       appBar: AppBar(
@@ -141,8 +140,6 @@ class _DataAnakPageState extends State<DataAnakPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Daftar Anak', style: title),
-                      const SizedBox(height: 4),
-                      Text('Tertaut ke: /mothers/$_motherId/children', style: sub),
                       const SizedBox(height: 8),
                       Expanded(child: _buildList()),
                     ],

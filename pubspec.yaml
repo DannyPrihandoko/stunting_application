@@ -1,19 +1,19 @@
 name: stunting_application
 description: "A new Flutter project."
-publish_to: 'none'  # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.2
+  sdk: '>=3.9.2 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  firebase_core: ^2.32.0 # Pastikan versi ini adalah yang terbaru atau stabil
-  firebase_database: ^10.4.0 # Pastikan versi ini adalah yang terbaru atau stabil
-  intl: ^0.18.1 # Pastikan versi ini adalah yang terbaru atau stabil
+  firebase_core: ^2.32.0
+  firebase_database: ^10.4.0
+  intl: ^0.18.1
   flutter_sticky_header: ^0.6.5
   shared_preferences: ^2.3.2
   firebase_auth: ^4.16.0
@@ -24,14 +24,15 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.0.17
+  provider: ^6.1.2 # Direkomendasikan untuk state management
 
 dev_dependencies:
-  flutter_native_splash: ^2.4.6  # Versi terbaru untuk splash screen
+  flutter_native_splash: ^2.4.6
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0  # Pembaruan untuk lints
-  lints: ^6.0.0  # Pembaruan untuk lints
-  test_api: ^0.7.6  # Menurunkan versi test_api ke 0.7.6 untuk kompatibilitas dengan flutter_test
+  flutter_lints: ^6.0.0
+  lints: ^6.0.0
+  test_api: ^0.7.6
   flutter_launcher_icons: ^0.14.4
 
 flutter:
@@ -39,15 +40,17 @@ flutter:
   assets:
     - assets/Illustrations/
     - assets/icons/
+    - assets/edukasi/tab1/
+    - assets/edukasi/tab2/ 
+    - assets/edukasi/tab3/
+    - assets/edukasi/tab4/
+    - assets/edukasi/tab5/
+    - assets/edukasi/tab6/
 
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: assets/icons/icon_apps.png
-
-  # (Opsional, untuk Android 8+)
   adaptive_icon_background: "#64B5F6"
   adaptive_icon_foreground: assets/icons/icon_apps.png
-
-  # (iOS) agar lolos App Store
   remove_alpha_ios: true

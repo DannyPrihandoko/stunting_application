@@ -68,10 +68,11 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
               if (vv is Map) {
                 final m = Map<dynamic, dynamic>.from(vv);
                 final raw = m['heightCm'];
-                if (raw is num)
+                if (raw is num) {
                   h = raw.toDouble();
-                else
+                } else {
                   h = double.tryParse('$raw');
+                }
               } else if (vv is num) {
                 h = vv.toDouble();
               } else {
@@ -222,8 +223,9 @@ class _ChildGrowthRecapPageState extends State<ChildGrowthRecapPage> {
         ? 0.0
         : (coverage);
         
-    if (adjustedCoverage < 0.3)
-      score += 1; 
+    if (adjustedCoverage < 0.3) {
+      score += 1;
+    } 
 
     // ----------------------------------------------------
     // Finalisasi Kesimpulan (Dipersingkat)
