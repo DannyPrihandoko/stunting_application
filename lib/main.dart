@@ -158,7 +158,6 @@ class HomePage extends StatelessWidget {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // --- PERBAIKAN: Nama file disesuaikan dengan screenshot ---
     final List<Map<String, dynamic>> menuItems = [
       {
         "title": "Identitas Bunda",
@@ -174,7 +173,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.calculate_outlined,
         "route": "/calculator",
         "color": Colors.blue.shade700,
-        "assetPath": "assets/Illustrations/calculator_gizi.png", // Ekstensi .png
+        "assetPath": "assets/Illustrations/calculator_gizi.png",
       },
       {
         "title": "Materi Edukasi",
@@ -182,7 +181,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.menu_book_outlined,
         "route": "/edukasi",
         "color": Colors.blueGrey.shade700,
-        "assetPath": "assets/Illustrations/edukasi.png", // Ekstensi .png
+        "assetPath": "assets/Illustrations/edukasi.png",
       },
       {
         "title": "Prediksi Risiko (SRS)",
@@ -190,7 +189,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.assessment_outlined,
         "route": "/srs",
         "color": Colors.deepOrange.shade800,
-        "assetPath": null, // Tidak ada aset spesifik, akan menggunakan warna
+        "assetPath": null,
       },
       {
         "title": "Jurnal Kehamilan",
@@ -206,7 +205,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.family_restroom_outlined,
         "route": "/data-anak",
         "color": Colors.green.shade700,
-        "assetPath": "assets/Illustrations/rekap_height.jpg",
+        "assetPath": "assets/Illustrations/gizi_anak.png",
       },
       {
         "title": "Laporan Rekap",
@@ -214,7 +213,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.donut_large_outlined,
         "route": "/rekap-menu",
         "color": Colors.purple.shade700,
-        "assetPath": "assets/Illustrations/rekap_data.png", // Ekstensi .png
+        "assetPath": "assets/Illustrations/rekap_data.png",
       },
       {
         "title": "Riwayat (Admin)",
@@ -261,7 +260,6 @@ class HomePage extends StatelessWidget {
                     bottom: false,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      // --- PERBAIKAN: Menggunakan Column dan Expanded untuk fleksibilitas ---
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -295,7 +293,6 @@ class HomePage extends StatelessWidget {
                             style: TextStyle(color: Colors.white.withOpacity(0.90), fontSize: 14),
                           ),
                           const SizedBox(height: 12),
-                          // --- PERBAIKAN: Expanded agar Wrap bisa di-scroll jika perlu ---
                           Expanded(
                             child: SingleChildScrollView(
                               child: Wrap(

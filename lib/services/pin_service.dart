@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class PinService {
   final _storage = const FlutterSecureStorage();
   static const _pinKey = 'admin_pin';
-  static const String defaultPin = '1234'; // PIN awal
+  static const String defaultPin = '1998'; // PIN awal
 
   /// Mengambil PIN yang tersimpan. Jika belum ada, kembalikan PIN default.
   Future<String> getPin() async {

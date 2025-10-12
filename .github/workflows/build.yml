@@ -1,0 +1,69 @@
+# Nama workflow yang akan muncul di tab Actions di GitHub
+name: Build Flutter iOS App
+
+# Jalankan workflow ini setiap kali ada 'push' ke branch 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-ios:
+    # Menggunakan mesin virtual macOS terbaru dari GitHub
+    runs-on: macos-latest
+
+    steps:
+      # 1. Mengunduh kode dari repositori Anda
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # 2. Mengatur environment Flutter (versi bisa disesuaikan)
+      # Saya lihat Anda menggunakan banyak plugin, versi Flutter yang stabil penting
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9' # Ganti jika Anda menggunakan versi lain
+          channel: 'stable'
+          cache: true # Menambahkan cache untuk mempercepat proses build berikutnya
+
+      # 3. Mengunduh semua package dari pubspec.yaml
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 4. (PENTING) Menyiapkan Code Signing untuk iOS
+      # Langkah ini menggunakan 'secrets' yang akan Anda atur di GitHub
+      - name: Set up code signing for iOS
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Membuat keychain sementara di mesin virtual
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Mengimpor sertifikat .p12 dari GitHub Secrets
+          CERTIFICATE_P12_PATH=$RUNNER_TEMP/certificate.p12
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_P12_PATH
+          security import $CERTIFICATE_P12_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # Mengimpor provisioning profile
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/$(uuidgen).mobileprovision"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PROFILE_PATH
+
+      # 5. Membangun file .ipa (tanpa --release karena sudah default)
+      # Anda perlu membuat file ExportOptions.plist di folder ios/
+      - name: Build IPA for iOS
+        run: flutter build ipa --export-options-plist=ios/ExportOptions.plist
+
+      # 6. Mengunggah file .ipa yang sudah jadi sebagai "artifact"
+      # Hasilnya bisa Anda unduh dari halaman Actions di GitHub
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-ipa # Nama file .zip yang akan berisi .ipa Anda
+          path: build/ios/ipa/*.ipa

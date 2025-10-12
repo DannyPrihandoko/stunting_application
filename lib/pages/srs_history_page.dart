@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/services.dart';
 
 import '../models/mother_profile_repository.dart';
 
@@ -11,7 +12,7 @@ import '../models/mother_profile_repository.dart';
 
 class SrsRow {
   final String id;
-  final String motherId; // Ditambahkan untuk pengelompokan
+  final String motherId;
   final int score;
   final String category;
   final String recommendation;
@@ -44,7 +45,6 @@ class SrsRow {
 
     final mother = (m['mother'] ?? {}) as Map? ?? {};
     final motherName = (mother['name'] ?? m['motherName'] ?? '').toString();
-    // Menggunakan ownerId dari mother object atau default 'unknown'
     final motherId = (mother['ownerId'] ?? 'unknown_srs').toString();
 
     int parseInt(dynamic v) {
@@ -78,7 +78,7 @@ class SrsRow {
 
 class CalculatorRecord {
   final String id;
-  final String motherId; // Ditambahkan untuk pengelompokan
+  final String motherId;
   final int score;
   final String riskLabel;
   final String advice;
@@ -105,9 +105,7 @@ class CalculatorRecord {
       return int.tryParse("$v") ?? 0;
     }
 
-    // Mengambil motherId dari meta atau default 'unknown'
     final motherId = (m['meta']?['ownerId'] ?? 'unknown_calc').toString();
-
     final Map<String, dynamic> meta = (m['meta'] is Map)
         ? Map<String, dynamic>.from(m['meta'] as Map)
         : {};
@@ -200,7 +198,6 @@ class PregCheckRow {
     final derived = m['derived'] ?? {};
     final input = m['input'] ?? {};
     final motherName = (m['motherName'] ?? '').toString();
-    // Menggunakan motherId dari data input jika ada, atau dari argumen fallback
     final motherId = (m['motherId'] ?? motherIdFallback).toString();
 
     return PregCheckRow(
@@ -259,7 +256,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadMother();
     _searchController.addListener(_updateSearchQuery);
 
@@ -318,17 +315,15 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
         elevation: 4,
         bottom: TabBar(
           controller: _tabController,
-          // --- PERUBAHAN DI SINI ---
-          labelColor: Colors.white, // Warna teks tab yang aktif
-          unselectedLabelColor: Colors.white.withOpacity(
-            0.7,
-          ), // Warna teks tab yang tidak aktif
-          indicatorColor: Colors.white, // Warna garis indikator
-          // --------------------------
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withOpacity(0.7),
+          indicatorColor: Colors.white,
+          isScrollable: true,
           tabs: const [
             Tab(text: 'SRS'),
             Tab(text: 'Kalkulator'),
             Tab(text: 'Kehamilan'),
+            Tab(text: 'Data Ibu'),
           ],
         ),
       ),
@@ -397,6 +392,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
               categoryKey: 'category',
               onTap: _showPregDetails,
             ),
+            _MotherIdTab(query: _searchQuery),
           ],
         ),
       ),
@@ -624,7 +620,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
 }
 
 // ===================================
-// GENERIC TAB VIEW & DATA HANDLING
+// GENERIC TAB VIEW & DATA HANDLING (KODE YANG HILANG)
 // ===================================
 
 typedef RowFactory<T> =
@@ -904,6 +900,73 @@ class _HistoryTab<T> extends StatelessWidget {
                       onTap: () => onTap(item),
                     );
                   }).toList(),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+// ===============================
+// WIDGET BARU UNTUK TAB DATA IBU
+// ===============================
+
+class _MotherIdTab extends StatelessWidget {
+  final String query;
+  const _MotherIdTab({required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    final dbRef = FirebaseDatabase.instance.ref("mothers");
+
+    return StreamBuilder<DatabaseEvent>(
+      stream: dbRef.onValue,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.snapshot.value == null) {
+          return const Center(child: Text('Tidak dapat memuat data ibu.'));
+        }
+
+        final map = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
+        final allMothers = map.entries.map((e) => MotherProfile.fromMap(e.key, e.value)).toList();
+        
+        final filteredMothers = allMothers.where((mother) {
+            if (query.isNotEmpty) {
+                return mother.nama.toLowerCase().contains(query) || 
+                       mother.id!.toLowerCase().contains(query);
+            }
+            return true;
+        }).toList();
+
+        if (filteredMothers.isEmpty) {
+          return const Center(child: Text('Tidak ada data ibu ditemukan.'));
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          itemCount: filteredMothers.length,
+          itemBuilder: (context, index) {
+            final mother = filteredMothers[index];
+            return Card(
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(mother.nama.isNotEmpty ? mother.nama : 'Tanpa Nama'),
+                subtitle: Text('ID: ${mother.id ?? "N/A"}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.copy),
+                  tooltip: 'Salin ID',
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: mother.id ?? ''));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('ID Ibu disalin ke clipboard!')),
+                    );
+                  },
                 ),
               ),
             );
