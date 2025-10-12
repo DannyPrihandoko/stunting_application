@@ -16,14 +16,14 @@ jobs:
       - name: Checkout repository code
         uses: actions/checkout@v4
 
-      # 2. Mengatur environment Flutter
+      # 2. Mengatur environment Flutter dengan versi spesifik
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable' # Menggunakan versi stabil terbaru
+          flutter-version: '3.22.2' # <-- PERUBAHAN UTAMA DI SINI
           channel: 'stable'
-          architecture: 'x64'   # Menentukan arsitektur yang benar untuk server GitHub
-          cache: true             # Menggunakan cache untuk mempercepat build
+          architecture: 'x64'
+          cache: true
 
       # 3. Mengunduh semua package dari pubspec.yaml
       - name: Install dependencies
@@ -62,5 +62,5 @@ jobs:
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-ipa # Nama file .zip yang akan berisi .ipa Anda
+          name: release-ipa
           path: build/ios/ipa/*.ipa
