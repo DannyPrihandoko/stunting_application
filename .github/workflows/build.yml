@@ -21,7 +21,7 @@ jobs:
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9' # Ganti jika Anda menggunakan versi lain
+          flutter-version: 'stable' # Ganti jika Anda menggunakan versi lain
           channel: 'stable'
           cache: true # Menambahkan cache untuk mempercepat proses build berikutnya
 
