@@ -3,13 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
+// -- IMPORT YANG DIPERBAIKI --
+import '../models/admin_data_models.dart';
+import '../models/child_repository.dart';
 import '../models/mother_profile_repository.dart';
+import 'rekap_berat_page.dart';
+import 'rekap_tinggi_page.dart';
+import 'gizi_status_page.dart';
+// -- AKHIR PERBAIKAN IMPORT --
 
-// ===============================
-// MODELS DATA
-// ===============================
-
+// (Model SrsRow, CalculatorRecord, dan PregCheckRow tetap sama)
 class SrsRow {
   final String id;
   final String motherId;
@@ -228,10 +233,6 @@ class PregCheckRow {
       '${motherName.toLowerCase()} ${category.toLowerCase()} ${sri} ${conditionLabel.toLowerCase()}';
 }
 
-// ===============================
-// HISTORY PAGE
-// ===============================
-
 class SrsHistoryPage extends StatefulWidget {
   const SrsHistoryPage({super.key});
 
@@ -309,7 +310,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Riwayat Perhitungan (Admin)"),
+        title: const Text("Dasbor Admin"),
         backgroundColor: Colors.indigo.shade700,
         foregroundColor: Colors.white,
         elevation: 4,
@@ -320,10 +321,10 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
           indicatorColor: Colors.white,
           isScrollable: true,
           tabs: const [
-            Tab(text: 'SRS'),
-            Tab(text: 'Kalkulator'),
-            Tab(text: 'Kehamilan'),
-            Tab(text: 'Data Ibu'),
+            Tab(text: 'Riwayat SRS'),
+            Tab(text: 'Riwayat Gizi'),
+            Tab(text: 'Riwayat Hamil'),
+            Tab(text: 'Data Anak'),
           ],
         ),
       ),
@@ -337,7 +338,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    labelText: 'Cari berdasarkan nama/kategori...',
+                    labelText: 'Cari nama ibu atau anak...',
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
@@ -392,7 +393,7 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
               categoryKey: 'category',
               onTap: _showPregDetails,
             ),
-            _MotherIdTab(query: _searchQuery),
+            _ChildrenTab(query: _searchQuery),
           ],
         ),
       ),
@@ -619,12 +620,8 @@ class _SrsHistoryPageState extends State<SrsHistoryPage>
   }
 }
 
-// ===================================
-// GENERIC TAB VIEW & DATA HANDLING (KODE YANG HILANG)
-// ===================================
-
-typedef RowFactory<T> =
-    T Function(String id, String motherId, Map<dynamic, dynamic> map);
+typedef RowFactory<T> = T Function(
+    String id, String motherId, Map<dynamic, dynamic> map);
 
 class _HistoryTab<T> extends StatelessWidget {
   final String query;
@@ -652,10 +649,12 @@ class _HistoryTab<T> extends StatelessWidget {
 
   Color _badgeBase(String s) {
     final x = s.toLowerCase();
-    if (x.contains('tinggi') || x.contains('obesitas') || x.contains('merah'))
+    if (x.contains('tinggi') || x.contains('obesitas') || x.contains('merah')) {
       return Colors.red;
-    if (x.contains('sedang') || x.contains('berlebih') || x.contains('kuning'))
+    }
+    if (x.contains('sedang') || x.contains('berlebih') || x.contains('kuning')) {
       return Colors.orange;
+    }
     return Colors.green;
   }
 
@@ -748,9 +747,8 @@ class _HistoryTab<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Query ref = (T == PregCheckRow)
-        ? dbRef
-        : dbRef.orderByChild('timestamp');
+    final Query ref =
+        (T == PregCheckRow) ? dbRef : dbRef.orderByChild('timestamp');
 
     return StreamBuilder<DatabaseEvent>(
       stream: ref.onValue,
@@ -759,7 +757,15 @@ class _HistoryTab<T> extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final rawSnapshot = snapshot.data?.snapshot;
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+          return const Center(child: Text('Belum ada riwayat data.'));
+        }
+
+        final rawSnapshot = snapshot.data!.snapshot;
         final allItems = _parseSnapshot(rawSnapshot);
 
         final filteredItems = allItems.where((item) {
@@ -771,24 +777,14 @@ class _HistoryTab<T> extends StatelessWidget {
           return true;
         }).toList();
 
-        if (filteredItems.isEmpty && query.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: Text(
-                'Belum ada riwayat data di tab ini.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          );
-        }
-
-        if (filteredItems.isEmpty && query.isNotEmpty) {
+        if (filteredItems.isEmpty) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
               child: Text(
-                'Tidak ditemukan hasil untuk "$query".',
+                query.isEmpty
+                    ? 'Belum ada riwayat data di tab ini.'
+                    : 'Tidak ditemukan hasil untuk "$query".',
                 textAlign: TextAlign.center,
               ),
             ),
@@ -832,8 +828,8 @@ class _HistoryTab<T> extends StatelessWidget {
               title = firstItem.motherName?.isNotEmpty == true
                   ? firstItem.motherName
                   : (key == motherId && motherName != null)
-                  ? 'Ibu Aktif: $motherName'
-                  : 'ID Ibu: $key';
+                      ? 'Ibu Aktif: $motherName'
+                      : 'ID Ibu: $key';
             }
 
             if (key == motherId) {
@@ -910,13 +906,9 @@ class _HistoryTab<T> extends StatelessWidget {
   }
 }
 
-// ===============================
-// WIDGET BARU UNTUK TAB DATA IBU
-// ===============================
-
-class _MotherIdTab extends StatelessWidget {
+class _ChildrenTab extends StatelessWidget {
   final String query;
-  const _MotherIdTab({required this.query});
+  const _ChildrenTab({required this.query});
 
   @override
   Widget build(BuildContext context) {
@@ -929,48 +921,150 @@ class _MotherIdTab extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.snapshot.value == null) {
-          return const Center(child: Text('Tidak dapat memuat data ibu.'));
+        if (snapshot.hasError ||
+            !snapshot.hasData ||
+            snapshot.data!.snapshot.value == null) {
+          return Center(child: Text('Gagal memuat data: ${snapshot.error}'));
         }
 
-        final map = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
-        final allMothers = map.entries.map((e) => MotherProfile.fromMap(e.key, e.value)).toList();
-        
-        final filteredMothers = allMothers.where((mother) {
-            if (query.isNotEmpty) {
-                return mother.nama.toLowerCase().contains(query) || 
-                       mother.id!.toLowerCase().contains(query);
-            }
-            return true;
+        final map =
+            Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
+        final allMothers = map.entries.map((e) {
+          final motherData = Map<String, dynamic>.from(e.value as Map);
+          final childrenData =
+              motherData['children'] as Map<dynamic, dynamic>? ?? {};
+          final children = childrenData.entries.map((childEntry) {
+            return ChildData.fromMap(
+              childEntry.key.toString(),
+              Map<String, dynamic>.from(childEntry.value as Map),
+            );
+          }).toList();
+          return MotherWithChildren(
+            mother: MotherProfile.fromMap(e.key, e.value),
+            children: children,
+          );
+        }).toList();
+
+        final filteredMothers = allMothers.where((data) {
+          if (query.isNotEmpty) {
+            final motherMatch = data.mother.nama.toLowerCase().contains(query);
+            final childMatch = data.children
+                .any((child) => child.name.toLowerCase().contains(query));
+            return motherMatch || childMatch;
+          }
+          return true;
         }).toList();
 
         if (filteredMothers.isEmpty) {
-          return const Center(child: Text('Tidak ada data ibu ditemukan.'));
+          return const Center(
+              child: Text('Tidak ada data ibu atau anak ditemukan.'));
         }
 
         return ListView.builder(
           padding: const EdgeInsets.all(8.0),
           itemCount: filteredMothers.length,
           itemBuilder: (context, index) {
-            final mother = filteredMothers[index];
+            final data = filteredMothers[index];
+            final mother = data.mother;
+            final children = data.children;
+
             return Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(mother.nama.isNotEmpty ? mother.nama : 'Tanpa Nama'),
-                subtitle: Text('ID: ${mother.id ?? "N/A"}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.copy),
-                  tooltip: 'Salin ID',
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: mother.id ?? ''));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('ID Ibu disalin ke clipboard!')),
-                    );
-                  },
+              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              child: ExpansionTile(
+                leading: const Icon(Icons.family_restroom, color: Colors.indigo),
+                title: Text(
+                  mother.nama.isNotEmpty ? mother.nama : 'Tanpa Nama',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
+                subtitle: Text('ID Ibu: ${mother.id ?? "N/A"}'),
+                children: children.isEmpty
+                    ? [const ListTile(title: Text('Belum ada data anak.'))]
+                    : children.map((child) {
+                        return ListTile(
+                          leading: Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Icon(
+                                child.sex == 'L' ? Icons.boy : Icons.girl,
+                                color: Colors.blueGrey),
+                          ),
+                          title: Text(child.name.isNotEmpty
+                              ? child.name
+                              : 'Tanpa Nama'),
+                          subtitle: Text(
+                              'Lahir: ${child.birthDate != null ? DateFormat('dd MMM yyyy').format(child.birthDate!) : '-'}'),
+                          onTap: () =>
+                              _showChildActions(context, mother, child),
+                        );
+                      }).toList(),
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showChildActions(
+      BuildContext context, MotherProfile mother, ChildData child) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.monitor_weight_outlined),
+                title: const Text('Rekap & Input Berat Badan'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChildWeightRecapPage(
+                        motherId: mother.id!,
+                        childId: child.id!,
+                        childName: child.name,
+                        childBirthDateMs:
+                            child.birthDate?.millisecondsSinceEpoch,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.height),
+                title: const Text('Rekap & Input Tinggi Badan'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChildGrowthRecapPage(
+                        motherId: mother.id!,
+                        childId: child.id!,
+                        childName: child.name,
+                        childBirthDateMs:
+                            child.birthDate?.millisecondsSinceEpoch,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.assessment_outlined),
+                title: const Text('Lihat Status Gizi (BB/TB)'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GiziStatusPage(), // Dihapus const
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         );
       },
     );

@@ -1,0 +1,169 @@
+{
+    "calculator_history": {
+      "-OanJ5gNXXTIPn1sQmS2": {
+        "advice": "Perkuat praktik menyusui & MP-ASI (diversitas + frekuensi), lengkapi imunisasi, edukasi WASH, dan pantau pertumbuhan tiap 1–2 bulan.",
+        "checked": { "bblr_prematur": true, "tinggi_ibu_pendek": true },
+        "createdAt": 1759650016359,
+        "groups": { "directBirth": ["bblr_prematur"], "maternal": ["tinggi_ibu_pendek"] },
+        "meta": { "appVersion": "1.0.0", "child": { "ageMonths": 12, "name": "Aisyah", "sex": "P" }, "ownerId": "anonymous", "scoringVersion": "v1" },
+        "riskLabel": "Risiko Sedang", "score": 5, "timestamp": 1759650016359
+      }
+    },
+    "device_index": {
+      "dummy-device-1": { "clientKey": "dummykey1", "currentMotherId": "-Dummy_Ibu_Siti", "updatedAt": 1760305800000 },
+      "dummy-device-2": { "clientKey": "dummykey2", "currentMotherId": "-Dummy_Ibu_Ani", "updatedAt": 1760305800000 },
+      "dummy-device-3": { "clientKey": "dummykey3", "currentMotherId": "-Dummy_Ibu_Dewi", "updatedAt": 1760305800000 },
+      "dummy-device-4": { "clientKey": "dummykey4", "currentMotherId": "-Dummy_Ibu_Eka", "updatedAt": 1760305800000 },
+      "dummy-device-5": { "clientKey": "dummykey5", "currentMotherId": "-Dummy_Ibu_Rina", "updatedAt": 1760305800000 },
+      "dummy-device-6": { "clientKey": "dummykey6", "currentMotherId": "-Dummy_Ibu_Hasanah", "updatedAt": 1760305800000 },
+      "dummy-device-7": { "clientKey": "dummykey7", "currentMotherId": "-Dummy_Ibu_Indah", "updatedAt": 1760305800000 },
+      "dummy-device-8": { "clientKey": "dummykey8", "currentMotherId": "-Dummy_Ibu_Juwita", "updatedAt": 1760305800000 },
+      "dummy-device-9": { "clientKey": "dummykey9", "currentMotherId": "-Dummy_Ibu_Kartika", "updatedAt": 1760305800000 },
+      "dummy-device-10": { "clientKey": "dummykey10", "currentMotherId": "-Dummy_Ibu_Lina", "updatedAt": 1760305800000 }
+    },
+    "mothers": {
+      "-Dummy_Ibu_Siti": {
+        "nama": "Siti Aminah", "nama_lower": "siti aminah", "tempatLahir": "Bandung", "tanggalLahir": 915148800000, "noHp": "081234567890",
+        "alamat": "Jl. Merdeka No. 10", "desaKelurahan": "Cibaduyut", "kecamatan": "Bojongloa Kidul", "posyandu": "Melati",
+        "ownerId": "user_siti_1", "ownerDeviceId": "dummy-device-1", "createdAt": 1728883200000, "updatedAt": 1760305800000,
+        "children": {
+          "-Dummy_Anak_Budi": {
+            "name": "Budi Santoso", "name_lower": "budi santoso", "sex": "L", "birthDate": 1696982400000,
+            "growth": { "6": { "heightCm": 65.7, "measuredAt": 1712793600000 }, "12": { "heightCm": 74.5, "measuredAt": 1728883200000 } },
+            "weight": { "6": { "weightKg": 7.9, "measuredAt": 1712793600000 }, "12": { "weightKg": 9.6, "measuredAt": 1728883200000 } }
+          }
+        }
+      },
+      "-Dummy_Ibu_Ani": {
+        "nama": "Ani Suryani", "nama_lower": "ani suryani", "tempatLahir": "Surabaya", "tanggalLahir": 978307200000, "noHp": "085712345678",
+        "alamat": "Jl. Pahlawan No. 25", "desaKelurahan": "Wonokromo", "kecamatan": "Wonokromo", "posyandu": "Anggrek",
+        "ownerId": "user_ani_2", "ownerDeviceId": "dummy-device-2", "createdAt": 1728883300000, "updatedAt": 1760305800000,
+        "children": {
+          "-Dummy_Anak_Citra": { "name": "Citra Lestari", "name_lower": "citra lestari", "sex": "P", "birthDate": 1712793600000 }
+        }
+      },
+      "-Dummy_Ibu_Dewi": {
+        "nama": "Dewi Lestari", "nama_lower": "dewi lestari", "tempatLahir": "Medan", "tanggalLahir": 883612800000, "noHp": "081398765432",
+        "alamat": "Jl. Gatot Subroto No. 15", "desaKelurahan": "Sei Sikambing B", "kecamatan": "Medan Sunggal", "posyandu": "Mawar",
+        "ownerId": "user_dewi_3", "ownerDeviceId": "dummy-device-3", "createdAt": 1728883400000, "updatedAt": 1760305800000
+      },
+      "-Dummy_Ibu_Eka": {
+          "nama": "Eka Fitriani", "nama_lower": "eka fitriani", "tempatLahir": "Makassar", "tanggalLahir": 1009843200000, "noHp": "082187654321",
+          "alamat": "Jl. Perintis Kemerdekaan No. 5", "desaKelurahan": "Tamalanrea", "kecamatan": "Tamalanrea", "posyandu": "Kenanga",
+          "ownerId": "user_eka_4", "ownerDeviceId": "dummy-device-4", "createdAt": 1728883500000, "updatedAt": 1760305800000,
+          "children": {
+              "-Dummy_Anak_Fajar": { "name": "Fajar Hidayat", "name_lower": "fajar hidayat", "sex": "L", "birthDate": 1720656000000 }
+          }
+      },
+      "-Dummy_Ibu_Rina": {
+          "nama": "Rina Hartati", "nama_lower": "rina hartati", "tempatLahir": "Palembang", "tanggalLahir": 946684800000, "noHp": "081912348765",
+          "alamat": "Jl. Jenderal Sudirman No. 30", "desaKelurahan": "Ilir Timur I", "kecamatan": "Ilir Timur I", "posyandu": "Cempaka",
+          "ownerId": "user_rina_5", "ownerDeviceId": "dummy-device-5", "createdAt": 1728883600000, "updatedAt": 1760305800000,
+          "children": {
+              "-Dummy_Anak_Gita": { "name": "Gita Ananda", "name_lower": "gita ananda", "sex": "P", "birthDate": 1689033600000 }
+          }
+      },
+      "-Dummy_Ibu_Hasanah": {
+          "nama": "Hasanah", "nama_lower": "hasanah", "tempatLahir": "Semarang", "tanggalLahir": 852076800000, "noHp": "087855554444",
+          "alamat": "Jl. Pemuda No. 100", "desaKelurahan": "Mugasari", "kecamatan": "Semarang Selatan", "posyandu": "Dahlia",
+          "ownerId": "user_hasanah_6", "ownerDeviceId": "dummy-device-6", "createdAt": 1728883700000, "updatedAt": 1760305800000
+      },
+      "-Dummy_Ibu_Indah": {
+          "nama": "Indah Sari", "nama_lower": "indah sari", "tempatLahir": "Yogyakarta", "tanggalLahir": 1041379200000, "noHp": "089611112222",
+          "alamat": "Jl. Malioboro No. 50", "desaKelurahan": "Suryatmajan", "kecamatan": "Danurejan", "posyandu": "Flamboyan",
+          "ownerId": "user_indah_7", "ownerDeviceId": "dummy-device-7", "createdAt": 1728883800000, "updatedAt": 1760305800000,
+          "children": {
+              "-Dummy_Anak_Haris": { "name": "Haris Gunawan", "name_lower": "haris gunawan", "sex": "L", "birthDate": 1723334400000, "growth": { "3": { "heightCm": 60.1, "measuredAt": 1731110400000 } } },
+              "-Dummy_Anak_Indri": { "name": "Indriani Putri", "name_lower": "indriani putri", "sex": "P", "birthDate": 1659312000000, "weight": { "24": { "weightKg": 12.2, "measuredAt": 1722470400000 } } }
+          }
+      },
+      "-Dummy_Ibu_Juwita": {
+          "nama": "Juwita Manurung", "nama_lower": "juwita manurung", "tempatLahir": "Denpasar", "tanggalLahir": 933120000000, "noHp": "081299887766",
+          "alamat": "Jl. Teuku Umar No. 88", "desaKelurahan": "Dauh Puri Klod", "kecamatan": "Denpasar Barat", "posyandu": "Kamboja",
+          "ownerId": "user_juwita_8", "ownerDeviceId": "dummy-device-8", "createdAt": 1728883900000, "updatedAt": 1760305800000,
+          "children": {
+              "-Dummy_Anak_Kadek": { "name": "Kadek Merta", "name_lower": "kadek merta", "sex": "L", "birthDate": 1725926400000 }
+          }
+      },
+      "-Dummy_Ibu_Kartika": {
+          "nama": "Kartika Chandra", "nama_lower": "kartika chandra", "tempatLahir": "Jayapura", "tanggalLahir": 820454400000, "noHp": "085212123434",
+          "alamat": "Jl. Raya Abepura No. 12", "desaKelurahan": "Kotaraja", "kecamatan": "Abepura", "posyandu": "Nusa Indah",
+          "ownerId": "user_kartika_9", "ownerDeviceId": "dummy-device-9", "createdAt": 1728884000000, "updatedAt": 1760305800000,
+          "children": {
+              "-Dummy_Anak_Gede": { "name": "I Gede Wirawan", "name_lower": "i gede wirawan", "sex": "L", "birthDate": 1704067200000 }
+          }
+      },
+      "-Dummy_Ibu_Lina": {
+          "nama": "Lina Marlina", "nama_lower": "lina marlina", "tempatLahir": "Pontianak", "tanggalLahir": 994550400000, "noHp": "087765432109",
+          "alamat": "Jl. Gajah Mada No. 200", "desaKelurahan": "Benua Melayu Darat", "kecamatan": "Pontianak Selatan", "posyandu": "Teratai",
+          "ownerId": "user_lina_10", "ownerDeviceId": "dummy-device-10", "createdAt": 1728884100000, "updatedAt": 1760305800000
+      }
+    },
+      "pregnancy_checks": {
+      "-Dummy_Ibu_Siti": {
+        "-Dummy_PregCheck_1": {
+          "condition": { "label": "Sebelum Hamil", "raw": "pre", "stage": "pre" },
+          "derived": { "bmi": 22.1, "bmiCategory": "Normal (18.5–24.9)", "category": "Rendah", "heightUnder150": false, "lilaLow": false, "isParityRisk": true, "sri": 1 },
+          "input": { "heightCm": 155, "weightKg": 53, "lilaCm": 25, "pregnancyCount": 1 },
+          "motherId": "-Dummy_Ibu_Siti", "motherName": "Siti Aminah",
+          "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).", "timestamp": 1728884500000
+        }
+      },
+      "-Dummy_Ibu_Ani": {
+        "-Dummy_PregCheck_2": {
+          "condition": { "label": "Hamil Bulan 3", "pregMonth": 3, "raw": "preg_3", "stage": "preg" },
+          "derived": { "bmi": 17.5, "bmiCategory": "Kurang (<18.5)", "category": "Tinggi", "heightUnder150": true, "lilaLow": true, "isParityRisk": false, "sri": 5 },
+          "input": { "heightCm": 148, "weightKg": 38.5, "lilaCm": 22.5, "pregnancyCount": 2 },
+          "motherId": "-Dummy_Ibu_Ani", "motherName": "Ani Suryani",
+          "recommendation": "Pendampingan intensif: konseling gizi pra/awal kehamilan, protein hewani harian, tablet tambah darah, rujuk bila ada infeksi, dan perbaikan WASH di rumah.", "timestamp": 1728884600000
+        }
+      }
+    },
+    "risk_factors": {
+      "weight_1": {
+        "anak_laki": { "label": "Jenis kelamin anak laki-laki", "weight": 1 },
+        "art_banyak": { "label": "Anggota rumah tangga banyak (≥5)", "weight": 1 },
+        "ayah_pendek": { "label": "Ayah bertubuh pendek", "weight": 1 },
+        "diare_berulang_infeksi": { "label": "Diare berulang / infeksi", "weight": 1 },
+        "imunisasi_tidak_lengkap": { "label": "Imunisasi tidak lengkap", "weight": 1 },
+        "lila_kurang": { "label": "LILA ibu kurang", "weight": 1 },
+        "pajanan_pestisida": { "label": "Pajanan pestisida", "weight": 1 },
+        "pendapatan_rendah": { "label": "Pendapatan keluarga rendah", "weight": 1 },
+        "pendidikan_ibu_rendah": { "label": "Pendidikan ibu rendah", "weight": 1 },
+        "pola_asuh_tidak_adekuat": { "label": "Pola asuh tidak adekuat", "weight": 1 },
+        "usia_ibu_remaja": { "label": "Kehamilan usia remaja", "weight": 1 }
+      },
+      "weight_2": {
+        "asi_non_eksklusif": { "label": "Tidak ASI eksklusif 0–6 bln", "weight": 2 },
+        "bblr": { "label": "Berat Badan Lahir Rendah (BBLR)", "weight": 2 },
+        "ibu_pendek": { "label": "Ibu bertubuh pendek", "weight": 2 },
+        "mpasi_tidak_adekuat": { "label": "MP-ASI tidak adekuat", "weight": 2 },
+        "panjang_lahir_pendek_iugr": { "label": "Panjang lahir pendek / IUGR", "weight": 2 },
+        "prematur": { "label": "Prematur", "weight": 2 },
+        "wash_buruk": { "label": "WASH buruk (jamban tidak layak/air tidak diolah)", "weight": 2 }
+      }
+    },
+    "srs_calculations": {
+      "-Dummy_Srs_Siti": {
+        "category": "Sedang", "mother": { "name": "Siti Aminah", "name_lower": "siti aminah", "ownerId": "-Dummy_Ibu_Siti" },
+        "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+        "risk_factors_weight1": { "pendidikan_ibu_rendah": true, "diare_berulang_infeksi": true },
+        "risk_factors_weight2": { "ibu_pendek": true, "mpasi_tidak_adekuat": true },
+        "score": 6, "timestamp": 1728885000000
+      },
+      "-Dummy_Srs_Ani": {
+        "category": "Tinggi", "mother": { "name": "Ani Suryani", "name_lower": "ani suryani", "ownerId": "-Dummy_Ibu_Ani" },
+        "recommendation": "Kunjungan rumah mingguan, konseling menyusui & MP-ASI, paket PMT protein hewani, perbaikan WASH prioritas, rujuk bila ada infeksi.",
+        "risk_factors_weight1": { "usia_ibu_remaja": true, "pendapatan_rendah": true },
+        "risk_factors_weight2": { "bblr": true, "prematur": true, "wash_buruk": true, "asi_non_eksklusif": true },
+        "score": 10, "timestamp": 1728885100000
+      },
+       "-Dummy_Srs_Eka": {
+        "category": "Rendah", "mother": { "name": "Eka Fitriani", "name_lower": "eka fitriani", "ownerId": "-Dummy_Ibu_Eka" },
+        "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+        "risk_factors_weight1": { "anak_laki": true },
+        "risk_factors_weight2": { "bblr": false },
+        "score": 1, "timestamp": 1728885200000
+      }
+    }
+  }

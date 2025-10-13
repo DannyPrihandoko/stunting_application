@@ -30,9 +30,15 @@ Future<void> main() async {
   await initializeDateFormatting('id_ID', null);
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // ## PERUBAHAN DI SINI ##
+    // Hanya inisialisasi Firebase jika belum ada instance yang berjalan.
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+    // ## AKHIR PERUBAHAN ##
+
     if (!kIsWeb) {
       FirebaseDatabase.instance.setPersistenceEnabled(true);
       FirebaseDatabase.instance.setPersistenceCacheSizeBytes(20 * 1024 * 1024);
@@ -51,6 +57,8 @@ Future<void> main() async {
     ),
   );
 }
+
+// ... Sisa kode di file main.dart tetap sama ...
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -281,7 +289,7 @@ class HomePage extends StatelessWidget {
                                   children: [
                                     Text('${_timeGreeting()},', style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
                                     const SizedBox(height: 2),
-                                    const Text('Halo, Pengguna SITUNTAS 👋', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+                                    const Text('Halo, Pengguna SITUNTAS', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
                                   ],
                                 ),
                               ),
@@ -289,7 +297,7 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "Pantau tumbuh kembang—gizi, MP-ASI, hingga kebersihan rumah tangga.",
+                            "Pantau tumbuh kembang gizi, MP-ASI, hingga kebersihan rumah tangga.",
                             style: TextStyle(color: Colors.white.withOpacity(0.90), fontSize: 14),
                           ),
                           const SizedBox(height: 12),
@@ -342,7 +350,7 @@ class HomePage extends StatelessWidget {
                 padding: EdgeInsets.all(screenWidth * 0.03),
                 width: double.infinity,
                 child: const Text(
-                  "© 2025 SITUNTAS - Sistem Deteksi Stunting Tuntas",
+                  "ﾂｩ 2025 SITUNTAS - Sistem Deteksi Stunting Tuntas",
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),

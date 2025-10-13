@@ -28,6 +28,534 @@
       "riskLabel": "Risiko Sedang",
       "score": 5,
       "timestamp": 1759650016359
+    },
+    "-OapSVLfelXW5vVVJE56": {
+      "advice": "Teruskan praktik baik: ASI/MP-ASI seimbang, higienitas, imunisasi lengkap, dan pemantauan rutin posyandu.",
+      "checked": {
+        "laki_laki": true
+      },
+      "createdAt": 1759686035329,
+      "groups": {
+        "childOther": [
+          "laki_laki"
+        ]
+      },
+      "meta": {
+        "appVersion": "1.0.0",
+        "ownerId": "anonymous",
+        "scoringVersion": "v1"
+      },
+      "riskLabel": "Risiko Rendah",
+      "score": 1,
+      "timestamp": 1759686035329
+    },
+    "-OapbHLxtk4fPZY-BXaY": {
+      "advice": "Perkuat praktik menyusui & MP-ASI (diversitas + frekuensi), lengkapi imunisasi, edukasi WASH, dan pantau pertumbuhan tiap 1–2 bulan.",
+      "checked": {
+        "bblr_prematur": true,
+        "imunisasi_tidak_lengkap": true,
+        "non_asi_eksklusif": true
+      },
+      "createdAt": 1759688599656,
+      "groups": {
+        "directBirth": [
+          "bblr_prematur"
+        ],
+        "directFeeding": [
+          "non_asi_eksklusif"
+        ],
+        "directInfection": [
+          "imunisasi_tidak_lengkap"
+        ]
+      },
+      "meta": {
+        "appVersion": "1.0.0",
+        "child": {
+          "ageMonths": 12,
+          "name": "da",
+          "sex": "P"
+        },
+        "ownerId": "anonymous",
+        "scoringVersion": "v1"
+      },
+      "riskLabel": "Risiko Sedang",
+      "score": 6,
+      "timestamp": 1759688599656
+    }
+  },
+  "device_index": {
+    "android-BP41_250822_007-sdk_gphone64_x86_64-ranchu-a85cc888-36bf-4709-9778-f984f5b991bc": {
+      "clientKey": "9b51b91bc16949bf80b0b36c47a06f19b97f115597674aa3b69899f518aa9b7d",
+      "currentMotherId": "-OarOcae-7ANBpxVQ7hg",
+      "updatedAt": 1759743775209
+    },
+    "android-SP1A_210812_016-22120RN86G-mt6768-11251d84-d3b3-4b5c-b4b1-c5c38252391c": {
+      "clientKey": "84fdede7fddc4567aeb4740acdd0c792e89db769f4da43f2affa809d02839aa8",
+      "currentMotherId": "-Ob11_wn2PALMe90WCq8",
+      "updatedAt": 1759897083825
+    },
+    "android-SP1A_210812_016-22120RN86G-mt6768-2c50e076-c64c-4a9c-88f8-f408bc150b98": {
+      "clientKey": "9a873a5a8d474926b03756476f4f274c8b027e6f37cd444689f023f3da93f699",
+      "currentMotherId": "-OawYNXxaw5nqF-fd2ly",
+      "updatedAt": 1759805016542
+    },
+    "android-SP1A_210812_016-22120RN86G-mt6768-a7f73ea8-3885-450a-baba-16b510b863f7": {
+      "clientKey": "0ef0962a87884e809e451d2152e50fac0750d7ff378a484e9f69a0db599a5a9e",
+      "currentMotherId": "-Ob8wGrQ0ymfWHaijZ-Y",
+      "updatedAt": 1760029646522
+    },
+    "android-SP1A_210812_016-22120RN86G-mt6768-dd88b3da-642e-4ac2-af20-82b54df27600": {
+      "clientKey": "20f629a83c6f493b9886bad71b20b230baa21d1a32824e0ea01e4fff14721a61",
+      "currentMotherId": "-ObK3cCWsA9Aw7J2YtcK",
+      "updatedAt": 1760216384695
+    },
+    "android-SP1A_210812_016-22120RN86G-mt6768-e505aafb-8592-412a-8a04-c053cb3e238f": {
+      "clientKey": "2ae2c8e1d4514801842ba2ce09978232da553a5b8b964721b4df47de393794d1",
+      "currentMotherId": "-OapZXsiz4BhvDNhRVR1",
+      "updatedAt": 1759687880538
+    },
+    "android-SP1A_210812_016-22120RN86G-mt6768-f6b686bc-9b65-45f2-ad21-506e81116d9b": {
+      "clientKey": "018d491faeb44253bf7f50f2b409a0d8763e8b9047764b08a90c08ab950fc4f9",
+      "currentMotherId": "-Oap_pOHsTzsiHApGmv_",
+      "updatedAt": 1759688218318
+    }
+  },
+  "gizi_wfh_history": {
+    "-Ob8wODzm8HWWrE1Drkh": {
+      "-Ob8wpmEjVBteg2ohdEH": {
+        "childId": "-Ob8wODzm8HWWrE1Drkh",
+        "childName": "Tes 5 L",
+        "childSex": "L",
+        "input": {
+          "heightCm": 110,
+          "weightKg": 50
+        },
+        "motherId": "-Ob8wGrQ0ymfWHaijZ-Y",
+        "result": {
+          "category": "Kategori Obesitas",
+          "scoreText": "Z-Score Est: 20.07 SD",
+          "zScore": 20.07
+        },
+        "scoringMethod": "WFH_Mock_V1",
+        "timestamp": 1760029793483
+      }
+    }
+  },
+  "mothers": {
+    "-Oao5sxuO_ntnYqOrRhP": {
+      "alamat": "gshahdn",
+      "children": {
+        "-Oaog_VFjT4ANcAybat3": {
+          "birthDate": 1728925200000,
+          "createdAt": 1759673210899,
+          "name": "Edgs",
+          "name_lower": "edgs",
+          "sex": "L",
+          "updatedAt": 1759673210899
+        }
+      },
+      "createdAt": 1759663329146,
+      "desaKelurahan": "jdjdjs",
+      "kecamatan": "bshdhd",
+      "nama": "Dsa",
+      "nama_lower": "dsa",
+      "noHp": "0852525222",
+      "noHp_norm": "+62852525222",
+      "ownerId": "LKZDZRzX8QUDlTwchHqGbxVgF8l2",
+      "posyandu": "bshdhd",
+      "tanggalLahir": 971110800000,
+      "tempatLahir": "jsjsj",
+      "updatedAt": 1759663329146
+    },
+    "-OapZXsiz4BhvDNhRVR1": {
+      "alamat": "gagsvs",
+      "createdAt": 1759687880267,
+      "desaKelurahan": "vsgshaz",
+      "kecamatan": "vshsbz",
+      "nama": "Gahajsj",
+      "nama_lower": "gahajsj",
+      "noHp": "0855225866",
+      "noHp_norm": "+62855225866",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-e505aafb-8592-412a-8a04-c053cb3e238f",
+      "ownerId": "MDLlg5wKo2bOdamcA6XSj8lVk0X2",
+      "posyandu": "gsgsvs",
+      "tanggalLahir": 970678800000,
+      "tempatLahir": "gagaha",
+      "updatedAt": 1759687880267
+    },
+    "-Oap_pOHsTzsiHApGmv_": {
+      "alamat": "chhvcf",
+      "children": {
+        "-OarsWedkQjd1nNugb-B": {
+          "birthDate": 1696525200000,
+          "createdAt": 1759726672553,
+          "growth": {
+            "22": {
+              "heightCm": 70,
+              "measuredAt": 1754413200000,
+              "monthKey": "2025-08",
+              "updatedAt": 1759727361237
+            }
+          },
+          "name": "Anak 1",
+          "name_lower": "anak 1",
+          "sex": "L",
+          "updatedAt": 1759726672553
+        }
+      },
+      "createdAt": 1759688218195,
+      "desaKelurahan": "fghgx",
+      "kecamatan": "xvhvc",
+      "nama": "Tes3",
+      "nama_lower": "tes3",
+      "noHp": "085858858",
+      "noHp_norm": "+6285858858",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-f6b686bc-9b65-45f2-ad21-506e81116d9b",
+      "ownerId": "giXXsFpKkqcWi0fttxHDAUUaZ933",
+      "posyandu": "cccbhxc",
+      "tanggalLahir": 970851600000,
+      "tempatLahir": "fgjvc",
+      "updatedAt": 1759763455630
+    },
+    "-OarOcae-7ANBpxVQ7hg": {
+      "alamat": "tes data 2",
+      "children": {
+        "-Ob0zLOrO9g_un0YcLHb": {
+          "birthDate": 1557248400000,
+          "createdAt": 1759896233593,
+          "name": "Tes 2",
+          "name_lower": "tes 2",
+          "sex": "L",
+          "updatedAt": 1759896233593
+        }
+      },
+      "createdAt": 1759718574515,
+      "desaKelurahan": "data 2",
+      "kecamatan": "data2",
+      "nama": "Tes data2",
+      "nama_lower": "tes data2",
+      "noHp": "0852364156",
+      "noHp_norm": "+62852364156",
+      "ownerDeviceId": "android-BP41.250822.007-sdk_gphone64_x86_64-ranchu-a85cc888-36bf-4709-9778-f984f5b991bc",
+      "ownerId": "99Qv5qXKmjNN05tINyrYc5SaxNt1",
+      "posyandu": "data 2",
+      "tanggalLahir": 970678800000,
+      "tempatLahir": "tes data 2",
+      "updatedAt": 1759718574515
+    },
+    "-OawYNXxaw5nqF-fd2ly": {
+      "alamat": "data4",
+      "createdAt": 1759805016289,
+      "desaKelurahan": "data4",
+      "kecamatan": "data4",
+      "nama": "Tes Data 4",
+      "nama_lower": "tes data 4",
+      "noHp": "0856565656",
+      "noHp_norm": "+62856565656",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-2c50e076-c64c-4a9c-88f8-f408bc150b98",
+      "ownerId": "ore4eot7BvcVLkUZIan7T0rrep53",
+      "posyandu": "data4",
+      "tanggalLahir": 528483600000,
+      "tempatLahir": "data4",
+      "updatedAt": 1759805016289
+    },
+    "-OawYNYDJNRU3KFrAn1S": {
+      "alamat": "data4",
+      "createdAt": 1759805016300,
+      "desaKelurahan": "data4",
+      "kecamatan": "data4",
+      "nama": "Tes Data 4",
+      "nama_lower": "tes data 4",
+      "noHp": "0856565656",
+      "noHp_norm": "+62856565656",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-2c50e076-c64c-4a9c-88f8-f408bc150b98",
+      "ownerId": "ore4eot7BvcVLkUZIan7T0rrep53",
+      "posyandu": "data4",
+      "tanggalLahir": 528483600000,
+      "tempatLahir": "data4",
+      "updatedAt": 1759805016300
+    },
+    "-Ob11_wn2PALMe90WCq8": {
+      "alamat": "data5",
+      "createdAt": 1759897083702,
+      "desaKelurahan": "data5",
+      "kecamatan": "data5",
+      "nama": "DATA5",
+      "nama_lower": "data5",
+      "noHp": "08646464643",
+      "noHp_norm": "+628646464643",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-11251d84-d3b3-4b5c-b4b1-c5c38252391c",
+      "ownerId": "W7Qc2W3A9oSsHQGOhwmGYRhmcnm1",
+      "posyandu": "data5",
+      "tanggalLahir": 844880400000,
+      "tempatLahir": "data5",
+      "updatedAt": 1759897472180
+    },
+    "-Ob8wGrQ0ymfWHaijZ-Y": {
+      "alamat": "tes 5",
+      "children": {
+        "-Ob8wODzm8HWWrE1Drkh": {
+          "birthDate": 1569949200000,
+          "createdAt": 1760029676479,
+          "name": "Tes 5 L",
+          "name_lower": "tes 5 l",
+          "sex": "L",
+          "updatedAt": 1760029676479
+        },
+        "-Ob8wRWW80H3Q3J2KIug": {
+          "birthDate": 1665334800000,
+          "createdAt": 1760029689953,
+          "growth": {
+            "12": {
+              "heightCm": 80,
+              "measuredAt": 1696870800000,
+              "monthKey": "2023-10",
+              "updatedAt": 1760029731683
+            },
+            "24": {
+              "heightCm": 110,
+              "measuredAt": 1728493200000,
+              "monthKey": "2024-10",
+              "updatedAt": 1760029772732
+            }
+          },
+          "name": "Tes 5 P",
+          "name_lower": "tes 5 p",
+          "sex": "P",
+          "updatedAt": 1760029689953
+        }
+      },
+      "createdAt": 1760029646301,
+      "desaKelurahan": "tes 5",
+      "kecamatan": "tes 5",
+      "nama": "Tes 5",
+      "nama_lower": "tes 5",
+      "noHp": "08546464646",
+      "noHp_norm": "+628546464646",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-a7f73ea8-3885-450a-baba-16b510b863f7",
+      "ownerId": "HP5YM35Gq9Z1JaAK4KuctM5xNPz1",
+      "posyandu": "tes 5",
+      "tanggalLahir": 971024400000,
+      "tempatLahir": "tes 5",
+      "updatedAt": 1760029646301
+    },
+    "-ObK3cCWsA9Aw7J2YtcK": {
+      "alamat": "tes 6",
+      "createdAt": 1760216384376,
+      "desaKelurahan": "tes 6",
+      "kecamatan": "tes6",
+      "nama": "Tes 6",
+      "nama_lower": "tes 6",
+      "noHp": "0897979797",
+      "noHp_norm": "+62897979797",
+      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-dd88b3da-642e-4ac2-af20-82b54df27600",
+      "ownerId": "jNvO2wwZCDU4kYijGZVa0CieKGf1",
+      "posyandu": "tes 6",
+      "tanggalLahir": 876589200000,
+      "tempatLahir": "tes 6",
+      "updatedAt": 1760216384376
+    }
+  },
+  "pregnancy_checks": {
+    "-Oao5sxuO_ntnYqOrRhP": {
+      "-Oap3TUa1WzKyIz_7iWW": {
+        "condition": {
+          "label": "Hamil Bulan 1",
+          "pregMonth": 1,
+          "raw": "preg_1",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 44.44444444444444,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 150,
+          "weightKg": 100
+        },
+        "motherId": "-Oao5sxuO_ntnYqOrRhP",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1759679473772
+      },
+      "-Oap5kCgQdKVni2dQhXS": {
+        "condition": {
+          "label": "Hamil Bulan 2",
+          "pregMonth": 2,
+          "raw": "preg_2",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 35.55555555555556,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 150,
+          "weightKg": 80
+        },
+        "motherId": "-Oao5sxuO_ntnYqOrRhP",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1759680070887
+      }
+    },
+    "-Oap_pOHsTzsiHApGmv_": {
+      "-Oau7GZbQm9WKOCPLDlU": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 23.437499999999996,
+          "bmiCategory": "Normal (18.5–24.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 160,
+          "weightKg": 60
+        },
+        "motherId": "-Oap_pOHsTzsiHApGmv_",
+        "motherName": "Tes3",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1759764355409
+      },
+      "-Oau7PrnvZ21zVUbCr9-": {
+        "condition": {
+          "label": "Hamil Bulan 1",
+          "pregMonth": 1,
+          "raw": "preg_1",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 31.249999999999993,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 160,
+          "weightKg": 80
+        },
+        "motherId": "-Oap_pOHsTzsiHApGmv_",
+        "motherName": "Tes3",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1759764393493
+      },
+      "-Oau7Uom-a67oF_Q-I_w": {
+        "condition": {
+          "label": "Hamil Bulan 5",
+          "pregMonth": 5,
+          "raw": "preg_5",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 46.87499999999999,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 160,
+          "weightKg": 120
+        },
+        "motherId": "-Oap_pOHsTzsiHApGmv_",
+        "motherName": "Tes3",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1759764413851
+      },
+      "-Oau7be1HhDZb6GNNKEn": {
+        "condition": {
+          "label": "Hamil Bulan 5",
+          "pregMonth": 5,
+          "raw": "preg_5",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 20.408163265306126,
+          "bmiCategory": "Normal (18.5–24.9)",
+          "category": "Sedang",
+          "heightUnder150": true,
+          "lilaLow": false,
+          "sri": 2
+        },
+        "input": {
+          "heightCm": 140,
+          "weightKg": 40
+        },
+        "motherId": "-Oap_pOHsTzsiHApGmv_",
+        "motherName": "Tes3",
+        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
+        "timestamp": 1759764445864
+      }
+    },
+    "-OarOcae-7ANBpxVQ7hg": {
+      "-ObCU0oWyNk6c1CEVGcS": {
+        "condition": {
+          "label": "Hamil Bulan 4",
+          "pregMonth": 4,
+          "raw": "preg_4",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 31.249999999999993,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 160,
+          "lilaCm": 30,
+          "weightKg": 80
+        },
+        "motherId": "-OarOcae-7ANBpxVQ7hg",
+        "motherName": "Tes data2",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760089087340
+      }
+    },
+    "-ObK3cCWsA9Aw7J2YtcK": {
+      "-ObK3jCUqRxFvvetgUuG": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 31.249999999999993,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": true,
+          "lilaLow": false,
+          "sri": 1
+        },
+        "input": {
+          "heightCm": 160,
+          "lilaCm": 30,
+          "pregnancyCount": 1,
+          "weightKg": 80
+        },
+        "motherId": "-ObK3cCWsA9Aw7J2YtcK",
+        "motherName": "Tes 6",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760216413245
+      }
     }
   },
   "risk_factors": {
@@ -140,6 +668,135 @@
       },
       "score": 3,
       "timestamp": 1759650042445
+    },
+    "-OarswQaxIXKw1e9wnmc": {
+      "category": "Sedang",
+      "mother": {
+        "name": "Sdfghvtes2",
+        "name_lower": "sdfghvtes2"
+      },
+      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": true,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": true,
+        "prematur": true,
+        "wash_buruk": false
+      },
+      "score": 6,
+      "timestamp": 1759726782245
+    },
+    "-Oau3y4K3o9Mer8TdPUx": {
+      "category": "Sedang",
+      "mother": {
+        "name": "Tes3",
+        "name_lower": "tes3"
+      },
+      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": true,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": true,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": false
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": true,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": true,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 6,
+      "timestamp": 1759763489156
+    },
+    "-Ob8wID4GsWvAJcAnBPE": {
+      "category": "Rendah",
+      "mother": {
+        "name": "Tes 5",
+        "name_lower": "tes 5"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": true,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": true,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 4,
+      "timestamp": 1760029651892
+    },
+    "-ObCZBZ_1KS8seN5Uy0B": {
+      "category": "Rendah",
+      "mother": {
+        "name": "Tes data2",
+        "name_lower": "tes data2",
+        "ownerId": "-OarOcae-7ANBpxVQ7hg"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": true,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": true,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 4,
+      "timestamp": 1760090442072
     },
     "-SrsCalcIdRendahAlpha": {
       "category": "Rendah",

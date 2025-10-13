@@ -1,15 +1,10 @@
 // lib/models/mother_profile_repository.dart
-//
-// PERUBAHAN PENTING:
-// - Menghapus kelas _DeviceIdentity internal yang tidak konsisten.
-// - Menggunakan layanan AppDeviceId terpusat dari 'lib/services/app_device_id.dart'.
-// - Ini memastikan ID perangkat stabil bahkan setelah instalasi ulang,
-//   memperbaiki masalah sinkronisasi motherId dan penyimpanan offline.
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/app_device_id.dart'; // <-- MENGGUNAKAN LAYANAN TERPUSAT
+import 'package:connectivity_plus/connectivity_plus.dart'; // <-- Pastikan dependensi ini ada
+import '../services/app_device_id.dart';
 
 /// Data model untuk Profil Ibu.
 class MotherProfile {
@@ -117,18 +112,36 @@ class MotherProfileRepository {
   DatabaseReference _deviceIndexRef(String rawDeviceId) =>
       _root.child('device_index').child(_safeKey(rawDeviceId));
 
+  // ## FUNGSI YANG DIPERBARUI ##
   Future<void> ensureSignedIn() async {
     final auth = FirebaseAuth.instance;
     if (auth.currentUser != null) return;
+
+    // Periksa konektivitas sebelum mencoba sign-in
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // Jika tidak ada koneksi, lewati proses sign-in.
+      // Aplikasi akan berjalan dengan data offline.
+      print("Tidak ada koneksi internet, melewati sign-in anonim.");
+      return;
+    }
+
     try {
       await auth.signInAnonymously();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'operation-not-allowed' || e.code == 'admin-restricted-operation') {
         return;
       }
+      // Jika errornya tetap network-request-failed, kita biarkan saja
+      // agar tidak menghentikan aplikasi.
+      if (e.code == 'network-request-failed') {
+        print("Gagal sign-in anonim karena masalah jaringan, melanjutkan secara offline.");
+        return;
+      }
       rethrow;
     }
   }
+  // ## AKHIR PERUBAHAN ##
 
   String? get _uid => FirebaseAuth.instance.currentUser?.uid;
 
@@ -138,7 +151,6 @@ class MotherProfileRepository {
     final sp = await SharedPreferences.getInstance();
     await sp.setString(_kCurrentId, id);
 
-    // Gunakan AppDeviceId yang sudah distandarisasi
     final deviceId = await AppDeviceId.getId();
     final clientKey = await AppDeviceId.getClientKey();
     await _deviceIndexRef(deviceId).set({
@@ -153,7 +165,6 @@ class MotherProfileRepository {
     final local = sp.getString(_kCurrentId);
     if (local != null && local.isNotEmpty) return local;
 
-    // Auto-recover dari device_index menggunakan AppDeviceId yang stabil
     final deviceId = await AppDeviceId.getId();
     final snap = await _deviceIndexRef(deviceId).get();
     if (snap.exists && snap.value is Map) {
