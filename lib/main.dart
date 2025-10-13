@@ -21,7 +21,6 @@ import 'pages/gizi_status_page.dart';
 import 'pages/pin_entry_page.dart';
 import 'pages/change_pin_page.dart';
 
-
 // Providers
 import 'providers/gizi_status_provider.dart';
 
@@ -50,9 +49,7 @@ Future<void> main() async {
 
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => GiziStatusNotifier()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => GiziStatusNotifier())],
       child: const MyApp(),
     ),
   );
@@ -73,7 +70,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: primaryBlue),
         useMaterial3: true,
-        fontFamilyFallback: const ['Roboto', 'Noto Sans Symbols 2', 'Noto Sans'],
+        fontFamilyFallback: const [
+          'Roboto',
+          'Noto Sans Symbols 2',
+          'Noto Sans',
+        ],
         appBarTheme: const AppBarTheme(
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
@@ -197,7 +198,7 @@ class HomePage extends StatelessWidget {
         "icon": Icons.assessment_outlined,
         "route": "/srs",
         "color": Colors.deepOrange.shade800,
-        "assetPath": null,
+        "assetPath": "assets/Illustrations/history_srs.png",
       },
       {
         "title": "Jurnal Kehamilan",
@@ -227,7 +228,8 @@ class HomePage extends StatelessWidget {
         "title": "Riwayat (Admin)",
         "subTitle": "Akses Data Perhitungan",
         "icon": Icons.history,
-        "onTap": (BuildContext context) => Navigator.pushNamed(context, '/pin-entry'),
+        "onTap": (BuildContext context) =>
+            Navigator.pushNamed(context, '/pin-entry'),
         "route": null,
         "color": Colors.indigo.shade700,
         "assetPath": null,
@@ -257,12 +259,22 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    right: -6, top: 36,
-                    child: Icon(Icons.pregnant_woman_outlined, size: 110, color: Colors.white.withOpacity(0.10)),
+                    right: -6,
+                    top: 36,
+                    child: Icon(
+                      Icons.pregnant_woman_outlined,
+                      size: 110,
+                      color: Colors.white.withOpacity(0.10),
+                    ),
                   ),
                   Positioned(
-                    left: -8, bottom: 8,
-                    child: Icon(Icons.local_dining_outlined, size: 128, color: Colors.white.withOpacity(0.10)),
+                    left: -8,
+                    bottom: 8,
+                    child: Icon(
+                      Icons.local_dining_outlined,
+                      size: 128,
+                      color: Colors.white.withOpacity(0.10),
+                    ),
                   ),
                   SafeArea(
                     bottom: false,
@@ -274,22 +286,40 @@ class HomePage extends StatelessWidget {
                           Row(
                             children: [
                               Container(
-                                width: 44, height: 44,
+                                width: 44,
+                                height: 44,
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.18),
                                   shape: BoxShape.circle,
                                   border: Border.all(color: Colors.white24),
                                 ),
-                                child: const Icon(Icons.volunteer_activism_outlined, color: Colors.white),
+                                child: const Icon(
+                                  Icons.volunteer_activism_outlined,
+                                  color: Colors.white,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('${_timeGreeting()},', style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                                    Text(
+                                      '${_timeGreeting()},',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                     const SizedBox(height: 2),
-                                    const Text('Halo, Pengguna SITUNTAS', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+                                    const Text(
+                                      'Halo, Pengguna SITUNTAS 👋',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -297,19 +327,53 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "Pantau tumbuh kembang gizi, MP-ASI, hingga kebersihan rumah tangga.",
-                            style: TextStyle(color: Colors.white.withOpacity(0.90), fontSize: 14),
+                            "Pantau tumbuh kembang—gizi, MP-ASI, hingga kebersihan rumah tangga.",
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.90),
+                              fontSize: 14,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Expanded(
                             child: SingleChildScrollView(
                               child: Wrap(
-                                spacing: 8, runSpacing: 8,
+                                spacing: 8,
+                                runSpacing: 8,
                                 children: [
-                                  _qa(context, label: 'Profil', icon: Icons.person_outline, onTap: () => Navigator.pushNamed(context, '/profile')),
-                                  _qa(context, label: 'Kalkulator', icon: Icons.calculate_outlined, onTap: () => Navigator.pushNamed(context, '/calculator')),
-                                  _qa(context, label: 'SRS', icon: Icons.assessment_outlined, onTap: () => Navigator.pushNamed(context, '/srs')),
-                                  _qa(context, label: 'Edukasi', icon: Icons.menu_book_outlined, onTap: () => Navigator.pushNamed(context, '/edukasi')),
+                                  _qa(
+                                    context,
+                                    label: 'Profil',
+                                    icon: Icons.person_outline,
+                                    onTap: () => Navigator.pushNamed(
+                                      context,
+                                      '/profile',
+                                    ),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'Kalkulator',
+                                    icon: Icons.calculate_outlined,
+                                    onTap: () => Navigator.pushNamed(
+                                      context,
+                                      '/calculator',
+                                    ),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'SRS',
+                                    icon: Icons.assessment_outlined,
+                                    onTap: () =>
+                                        Navigator.pushNamed(context, '/srs'),
+                                  ),
+                                  _qa(
+                                    context,
+                                    label: 'Edukasi',
+                                    icon: Icons.menu_book_outlined,
+                                    onTap: () => Navigator.pushNamed(
+                                      context,
+                                      '/edukasi',
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -362,7 +426,12 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _qa(BuildContext context, {required String label, required IconData icon, required VoidCallback onTap}) {
+  Widget _qa(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return ElevatedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, size: 16, color: Colors.blue.shade800),
@@ -401,7 +470,10 @@ class HomePage extends StatelessWidget {
             Navigator.pushNamed(context, route);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("$title akan datang!"), duration: const Duration(seconds: 1)),
+              SnackBar(
+                content: Text("$title akan datang!"),
+                duration: const Duration(seconds: 1),
+              ),
             );
           }
         },
@@ -460,7 +532,13 @@ class HomePage extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
-                            shadows: [Shadow(color: Colors.black45, blurRadius: 4, offset: Offset(1,1))],
+                            shadows: [
+                              Shadow(
+                                color: Colors.black45,
+                                blurRadius: 4,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
                           ),
                         ),
                         if (subTitle != null) ...[
@@ -470,7 +548,9 @@ class HomePage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.white.withOpacity(0.95),
-                              shadows: const [Shadow(color: Colors.black45, blurRadius: 2)],
+                              shadows: const [
+                                Shadow(color: Colors.black45, blurRadius: 2),
+                              ],
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
