@@ -1,69 +1,58 @@
-# Nama workflow
-name: Build iOS via HashiCorp Vault
+# Nama alur kerja (workflow) yang akan tampil di tab Actions GitHub
+name: Build Flutter iOS App
 
+# Menentukan kapan alur kerja ini akan dijalankan
 on:
-  push:
-    branches: [ "main" ]
+  # Juga memungkinkan alur kerja ini dijalankan secara manual dari tab Actions
+  workflow_dispatch:
 
-# Izin untuk mendapatkan OIDC token dari GitHub
-permissions:
-  id-token: write
-  contents: read
-
+# Daftar pekerjaan (jobs) yang akan dijalankan dalam alur kerja ini
 jobs:
-  build-and-deploy-ios:
+  build:
+    # Menentukan nama pekerjaan
+    name: Build iOS App
+    # Menggunakan runner terbaru dari macOS yang disediakan oleh GitHub
+    # Ini diperlukan karena untuk membangun aplikasi iOS, kita butuh Xcode
     runs-on: macos-latest
 
+    # Langkah-langkah (steps) yang akan dieksekusi dalam pekerjaan ini
     steps:
+      # Langkah 1: Mengunduh (checkout) kode sumber dari repositori Anda
       - name: Checkout repository code
         uses: actions/checkout@v4
 
-      # 1. Mengambil secret dari HashiCorp Vault menggunakan OIDC
-      - name: Import Secrets from Vault
-        uses: hashicorp/vault-action@v3
+      # Langkah 2: Mengatur environment Java (seringkali dibutuhkan oleh Flutter)
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          url: https://your-vault-server.com:8200 # <-- Alamat server Vault Anda
-          role: my-flutter-app # <-- Nama peran yang dibuat di Vault
-          method: jwt
-          path: secret/data/flutter-ci # <-- Path tempat secret disimpan
-          exportEnv: true # <-- PENTING: Membuat secret tersedia sebagai environment variable
+          distribution: 'zulu'
+          java-version: '11'
 
-      - name: Setup Flutter SDK
+      # Langkah 3: Mengatur SDK Flutter menggunakan action dari komunitas
+      - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
+          # Anda bisa mengganti versi Flutter sesuai dengan yang Anda gunakan di proyek
+          flutter-version: '3.35.5' 
           channel: 'stable'
-          cache: true
+          cache: true # Mengaktifkan cache untuk mempercepat proses build di masa depan
 
+      # Langkah 4: Menginstal semua dependency proyek Flutter
       - name: Install dependencies
         run: flutter pub get
 
-      # 2. Impor sertifikat & profil menggunakan secret yang sudah diambil dari Vault
-      # Perhatikan, kita tidak lagi menggunakan ${{ secrets.* }}
-      - name: Import Code Signing Certificate
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ env.BUILD_CERTIFICATE_BASE_64 }}
-          p12-password: ${{ env.P12_PASSWORD }}
+      # Langkah 5: Menjalankan proses build untuk iOS
+      # --release: Membangun versi rilis (production)
+      # --no-codesign: Melewatkan proses code signing, karena kita tidak memiliki sertifikat di environment CI
+      - name: Build iOS application
+        run: flutter build ios --release --no-codesign
 
-      - name: Import Provisioning Profile
-        uses: apple-actions/import-provisioning-profile@v1
+      # Langkah 6: Mengunggah artefak hasil build (.app)
+      # Hasil build ini nantinya bisa Anda unduh dari halaman ringkasan alur kerja
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          provisioning-profile-base64: ${{ env.BUILD_PROVISION_PROFILE_BASE_64 }}
-      
-      - name: Increment Build Number
-        run: |
-          cd ios
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $(git rev-list --count HEAD)" "Runner/Info.plist"
-
-      - name: Build IPA for iOS
-        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-
-      # 3. Unggah ke TestFlight menggunakan secret dari Vault
-      - name: Upload to TestFlight
-        uses: apple-actions/upload-testflight-build@v2
-        with:
-          app-path: "build/ios/ipa/*.ipa"
-          issuer-id: ${{ env.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ env.APPSTORE_KEY_ID }}
-          api-private-key: ${{ env.APPSTORE_PRIVATE_KEY }}
+          # Nama artefak yang akan diunggah
+          name: release-ios-app
+          # Path menuju folder hasil build aplikasi iOS
+          path: build/ios/iphoneos/*.app
