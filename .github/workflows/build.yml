@@ -1,66 +1,69 @@
-# Nama workflow yang akan muncul di tab Actions di GitHub
-name: Build Flutter iOS App
+# Nama workflow
+name: Build iOS via HashiCorp Vault
 
-# Jalankan workflow ini setiap kali ada 'push' ke branch 'main'
 on:
   push:
     branches: [ "main" ]
 
+# Izin untuk mendapatkan OIDC token dari GitHub
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  build-ios:
-    # Menggunakan mesin virtual macOS terbaru dari GitHub
+  build-and-deploy-ios:
     runs-on: macos-latest
 
     steps:
-      # 1. Mengunduh kode dari repositori Anda
       - name: Checkout repository code
         uses: actions/checkout@v4
 
-      # 2. Mengatur environment Flutter dengan versi spesifik
+      # 1. Mengambil secret dari HashiCorp Vault menggunakan OIDC
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: https://your-vault-server.com:8200 # <-- Alamat server Vault Anda
+          role: my-flutter-app # <-- Nama peran yang dibuat di Vault
+          method: jwt
+          path: secret/data/flutter-ci # <-- Path tempat secret disimpan
+          exportEnv: true # <-- PENTING: Membuat secret tersedia sebagai environment variable
+
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.5' # <-- PERUBAHAN UTAMA DI SINI
+          flutter-version: '3.22.2'
           channel: 'stable'
-          architecture: 'x64'
           cache: true
 
-      # 3. Mengunduh semua package dari pubspec.yaml
       - name: Install dependencies
         run: flutter pub get
 
-      # 4. Menyiapkan Code Signing untuk iOS dari GitHub Secrets
-      - name: Set up code signing for iOS
-        env:
-          BUILD_CERTIFICATE_BASE_64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE_64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # Membuat keychain sementara di mesin virtual
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Mengimpor sertifikat .p12 dari GitHub Secrets
-          CERTIFICATE_P12_PATH=$RUNNER_TEMP/certificate.p12
-          echo -n "$BUILD_CERTIFICATE_BASE_64" | base64 --decode -o $CERTIFICATE_P12_PATH
-          security import $CERTIFICATE_P12_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # Mengimpor provisioning profile
-          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-          PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/$(uuidgen).mobileprovision"
-          echo -n "$BUILD_PROVISION_PROFILE_BASE_64" | base64 --decode -o $PROFILE_PATH
-
-      # 5. Membangun file .ipa
-      - name: Build IPA for iOS
-        run: flutter build ipa --export-options-plist=ios/ExportOptions.plist
-
-      # 6. Mengunggah file .ipa yang sudah jadi sebagai "artifact"
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
+      # 2. Impor sertifikat & profil menggunakan secret yang sudah diambil dari Vault
+      # Perhatikan, kita tidak lagi menggunakan ${{ secrets.* }}
+      - name: Import Code Signing Certificate
+        uses: apple-actions/import-codesign-certs@v3
         with:
-          name: release-ipa
-          path: build/ios/ipa/*.ipa
+          p12-file-base64: ${{ env.BUILD_CERTIFICATE_BASE_64 }}
+          p12-password: ${{ env.P12_PASSWORD }}
+
+      - name: Import Provisioning Profile
+        uses: apple-actions/import-provisioning-profile@v1
+        with:
+          provisioning-profile-base64: ${{ env.BUILD_PROVISION_PROFILE_BASE_64 }}
+      
+      - name: Increment Build Number
+        run: |
+          cd ios
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $(git rev-list --count HEAD)" "Runner/Info.plist"
+
+      - name: Build IPA for iOS
+        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+
+      # 3. Unggah ke TestFlight menggunakan secret dari Vault
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v2
+        with:
+          app-path: "build/ios/ipa/*.ipa"
+          issuer-id: ${{ env.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ env.APPSTORE_KEY_ID }}
+          api-private-key: ${{ env.APPSTORE_PRIVATE_KEY }}
