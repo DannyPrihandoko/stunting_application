@@ -1,58 +1,47 @@
-# Nama alur kerja (workflow) yang akan tampil di tab Actions GitHub
-name: Build Flutter iOS App
+# Nama workflow Anda
+name: Build Flutter App
 
-# Menentukan kapan alur kerja ini akan dijalankan
+# Pemicu workflow (misalnya saat ada push ke branch main)
 on:
-  # Juga memungkinkan alur kerja ini dijalankan secara manual dari tab Actions
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
-# Daftar pekerjaan (jobs) yang akan dijalankan dalam alur kerja ini
 jobs:
   build:
-    # Menentukan nama pekerjaan
-    name: Build iOS App
-    # Menggunakan runner terbaru dari macOS yang disediakan oleh GitHub
-    # Ini diperlukan karena untuk membangun aplikasi iOS, kita butuh Xcode
+    # Menggunakan runner macOS karena kita membangun untuk iOS
     runs-on: macos-latest
 
-    # Langkah-langkah (steps) yang akan dieksekusi dalam pekerjaan ini
     steps:
-      # Langkah 1: Mengunduh (checkout) kode sumber dari repositori Anda
-      - name: Checkout repository code
-        uses: actions/checkout@v4
+      # 1. Checkout kode dari repository
+      - uses: actions/checkout@v3
 
-      # Langkah 2: Mengatur environment Java (seringkali dibutuhkan oleh Flutter)
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      # 2. Setup Java (diperlukan oleh Flutter)
+      - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '11'
 
-      # Langkah 3: Mengatur SDK Flutter menggunakan action dari komunitas
-      - name: Set up Flutter SDK
-        uses: subosito/flutter-action@v2
+      # 3. Setup Flutter SDK
+      - uses: subosito/flutter-action@v2
         with:
-          # Anda bisa mengganti versi Flutter sesuai dengan yang Anda gunakan di proyek
-          flutter-version: '3.35.5' 
           channel: 'stable'
-          cache: true # Mengaktifkan cache untuk mempercepat proses build di masa depan
 
-      # Langkah 4: Menginstal semua dependency proyek Flutter
-      - name: Install dependencies
-        run: flutter pub get
+      # 4. Ambil dependensi awal
+      - run: flutter pub get
 
-      # Langkah 5: Menjalankan proses build untuk iOS
-      # --release: Membangun versi rilis (production)
-      # --no-codesign: Melewatkan proses code signing, karena kita tidak memiliki sertifikat di environment CI
-      - name: Build iOS application
+      # 5. ✨ (LANGKAH BARU) Perbarui dependensi yang usang
+      # Ini akan menyelesaikan masalah header non-modular
+      - name: Update Flutter Dependencies
+        run: flutter pub upgrade --major-versions
+
+      # 6. (OPSIONAL TAPI DISARANKAN) Bersihkan build iOS sebelumnya
+      - name: Clean iOS project
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          pod install --repo-update
+          cd ..
+
+      # 7. Jalankan perintah build iOS Anda
+      - name: Build iOS Release
         run: flutter build ios --release --no-codesign
-
-      # Langkah 6: Mengunggah artefak hasil build (.app)
-      # Hasil build ini nantinya bisa Anda unduh dari halaman ringkasan alur kerja
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          # Nama artefak yang akan diunggah
-          name: release-ios-app
-          # Path menuju folder hasil build aplikasi iOS
-          path: build/ios/iphoneos/*.app
