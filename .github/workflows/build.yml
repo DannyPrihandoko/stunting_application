@@ -20,7 +20,7 @@ jobs:
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2' # <-- PERUBAHAN UTAMA DI SINI
+          flutter-version: '3.9.2' # <-- PERUBAHAN UTAMA DI SINI
           channel: 'stable'
           architecture: 'x64'
           cache: true
