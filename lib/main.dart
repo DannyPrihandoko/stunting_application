@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SITUNTAS',
+      title: 'SIGENTING',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: primaryBlue),
         useMaterial3: true,
@@ -132,7 +132,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Icon(Icons.child_care_outlined, size: 100, color: Colors.white),
             SizedBox(height: 20),
             Text(
-              "SITUNTAS",
+              "SIGENTING",
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -313,7 +313,7 @@ class HomePage extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 2),
                                     const Text(
-                                      'Halo, Pengguna SITUNTAS 👋',
+                                      'Halo, Pengguna SIGENTING 👋',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
@@ -414,7 +414,7 @@ class HomePage extends StatelessWidget {
                 padding: EdgeInsets.all(screenWidth * 0.03),
                 width: double.infinity,
                 child: const Text(
-                  "ﾂｩ 2025 SITUNTAS - Sistem Deteksi Stunting Tuntas",
+                  "ﾂｩ 2025 SIGENTING - Sistem Deteksi Stunting Tuntas",
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),

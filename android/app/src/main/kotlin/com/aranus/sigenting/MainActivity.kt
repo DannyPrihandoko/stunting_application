@@ -1,4 +1,4 @@
-package com.example.stunting_application
+package com.aranus.sigenting
 
 import io.flutter.embedding.android.FlutterActivity
 

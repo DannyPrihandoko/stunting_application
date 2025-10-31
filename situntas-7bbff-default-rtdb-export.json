@@ -19,7 +19,7 @@
         "appVersion": "1.0.0",
         "child": {
           "ageMonths": 12,
-          "name": "aisyah",
+          "name": "Aisyah",
           "sex": "P"
         },
         "ownerId": "anonymous",
@@ -29,50 +29,30 @@
       "score": 5,
       "timestamp": 1759650016359
     },
-    "-OapSVLfelXW5vVVJE56": {
-      "advice": "Teruskan praktik baik: ASI/MP-ASI seimbang, higienitas, imunisasi lengkap, dan pemantauan rutin posyandu.",
-      "checked": {
-        "laki_laki": true
-      },
-      "createdAt": 1759686035329,
-      "groups": {
-        "childOther": [
-          "laki_laki"
-        ]
-      },
-      "meta": {
-        "appVersion": "1.0.0",
-        "ownerId": "anonymous",
-        "scoringVersion": "v1"
-      },
-      "riskLabel": "Risiko Rendah",
-      "score": 1,
-      "timestamp": 1759686035329
-    },
-    "-OapbHLxtk4fPZY-BXaY": {
+    "-Obk8uWtyPO2tvHjKYol": {
       "advice": "Perkuat praktik menyusui & MP-ASI (diversitas + frekuensi), lengkapi imunisasi, edukasi WASH, dan pantau pertumbuhan tiap 1–2 bulan.",
       "checked": {
-        "bblr_prematur": true,
-        "imunisasi_tidak_lengkap": true,
-        "non_asi_eksklusif": true
+        "iugr": true,
+        "non_asi_eksklusif": true,
+        "tinggi_ibu_pendek": true
       },
-      "createdAt": 1759688599656,
+      "createdAt": 1760670756372,
       "groups": {
         "directBirth": [
-          "bblr_prematur"
+          "iugr"
         ],
         "directFeeding": [
           "non_asi_eksklusif"
         ],
-        "directInfection": [
-          "imunisasi_tidak_lengkap"
+        "maternal": [
+          "tinggi_ibu_pendek"
         ]
       },
       "meta": {
         "appVersion": "1.0.0",
         "child": {
-          "ageMonths": 12,
-          "name": "da",
+          "ageMonths": 1,
+          "name": "fatim",
           "sex": "P"
         },
         "ownerId": "anonymous",
@@ -80,465 +60,656 @@
       },
       "riskLabel": "Risiko Sedang",
       "score": 6,
-      "timestamp": 1759688599656
+      "timestamp": 1760670756372
+    },
+    "-OblGsTJj7mVLRI-heRa": {
+      "advice": "Teruskan praktik baik: ASI/MP-ASI seimbang, higienitas, imunisasi lengkap, dan pemantauan rutin posyandu.",
+      "createdAt": 1760689620935,
+      "meta": {
+        "appVersion": "1.0.0",
+        "child": {
+          "ageMonths": 13,
+          "name": "Bara",
+          "sex": "L"
+        },
+        "ownerId": "anonymous",
+        "scoringVersion": "v1"
+      },
+      "riskLabel": "Risiko Rendah",
+      "score": 0,
+      "timestamp": 1760689620935
     }
   },
   "device_index": {
-    "android-BP41_250822_007-sdk_gphone64_x86_64-ranchu-a85cc888-36bf-4709-9778-f984f5b991bc": {
-      "clientKey": "9b51b91bc16949bf80b0b36c47a06f19b97f115597674aa3b69899f518aa9b7d",
-      "currentMotherId": "-OarOcae-7ANBpxVQ7hg",
-      "updatedAt": 1759743775209
+    "AP3A_240617_008": {
+      "clientKey": "b53d3e4f8c1e4a5285103b4bc92c8f726738872016ed4c08b685d3fc8d823644",
+      "currentMotherId": "-Obk3OEwfOaX91QviZib",
+      "updatedAt": 1760669309821
     },
-    "android-SP1A_210812_016-22120RN86G-mt6768-11251d84-d3b3-4b5c-b4b1-c5c38252391c": {
-      "clientKey": "84fdede7fddc4567aeb4740acdd0c792e89db769f4da43f2affa809d02839aa8",
-      "currentMotherId": "-Ob11_wn2PALMe90WCq8",
-      "updatedAt": 1759897083825
+    "AP3A_240905_015_A2": {
+      "clientKey": "212c4e125daf468790a413087d7f04a48f09f56a404a46ac84c229f4677573d8",
+      "currentMotherId": "-ObmG_bSMcmRV1FgeUq1",
+      "updatedAt": 1760706322061
     },
-    "android-SP1A_210812_016-22120RN86G-mt6768-2c50e076-c64c-4a9c-88f8-f408bc150b98": {
-      "clientKey": "9a873a5a8d474926b03756476f4f274c8b027e6f37cd444689f023f3da93f699",
-      "currentMotherId": "-OawYNXxaw5nqF-fd2ly",
-      "updatedAt": 1759805016542
+    "QKQ1_200209_002": {
+      "clientKey": "c24fa6b8f14646fc9299b5a235e1035ab560b652e13a45eba09529de161c4fed",
+      "currentMotherId": "-OblG5lkRfJWbH9vO1gd",
+      "updatedAt": 1760689419415
     },
-    "android-SP1A_210812_016-22120RN86G-mt6768-a7f73ea8-3885-450a-baba-16b510b863f7": {
-      "clientKey": "0ef0962a87884e809e451d2152e50fac0750d7ff378a484e9f69a0db599a5a9e",
-      "currentMotherId": "-Ob8wGrQ0ymfWHaijZ-Y",
-      "updatedAt": 1760029646522
+    "QP1A_190711_020": {
+      "clientKey": "b7353debf0d24e75bb6289b8ac7dade93c69697006a44c16b667fe1385c44163",
+      "currentMotherId": "-OblCQKlCvkTtgJ2MBbg",
+      "updatedAt": 1760688455319
     },
-    "android-SP1A_210812_016-22120RN86G-mt6768-dd88b3da-642e-4ac2-af20-82b54df27600": {
-      "clientKey": "20f629a83c6f493b9886bad71b20b230baa21d1a32824e0ea01e4fff14721a61",
-      "currentMotherId": "-ObK3cCWsA9Aw7J2YtcK",
-      "updatedAt": 1760216384695
+    "RP1A_200720_011": {
+      "clientKey": "cff481cfc5f34af191813868501c649633db446772b44079a4f6f293f24e3efb",
+      "currentMotherId": "-OblEoCWXJtTugfRaecp",
+      "updatedAt": 1760689079786
     },
-    "android-SP1A_210812_016-22120RN86G-mt6768-e505aafb-8592-412a-8a04-c053cb3e238f": {
-      "clientKey": "2ae2c8e1d4514801842ba2ce09978232da553a5b8b964721b4df47de393794d1",
-      "currentMotherId": "-OapZXsiz4BhvDNhRVR1",
-      "updatedAt": 1759687880538
+    "RP1A_200720_012": {
+      "clientKey": "c2a52df49d4846eaa095cb22a96508d26f489d7b24c34093a41cacadb39e2b7e",
+      "currentMotherId": "-OblFGaeQ_uIIxsMhzUf",
+      "updatedAt": 1760689201526
     },
-    "android-SP1A_210812_016-22120RN86G-mt6768-f6b686bc-9b65-45f2-ad21-506e81116d9b": {
-      "clientKey": "018d491faeb44253bf7f50f2b409a0d8763e8b9047764b08a90c08ab950fc4f9",
-      "currentMotherId": "-Oap_pOHsTzsiHApGmv_",
-      "updatedAt": 1759688218318
+    "SP1A_210812_016": {
+      "clientKey": "b82efe8ad40347bc93e127eeb3c2cf8ec466a6a509a9454282a17c061fb218d7",
+      "currentMotherId": "-ObR4SuIyeMcqKnlPdAH",
+      "updatedAt": 1760334047269
+    },
+    "TP1A_220624_014": {
+      "clientKey": "f83be2d4b4f143e4b76782e607875ab8132197dc51c745db99ee886852a67a09",
+      "currentMotherId": "-OblCgJpw_rp7udNPoiP",
+      "updatedAt": 1760688524244
+    },
+    "TP1A_220905_001": {
+      "clientKey": "6ea0bad47c374d29941eec0c10a8cfb56d94be0a2c2f457c95570483bec420ab",
+      "currentMotherId": "-OblFiwoNdQg1I9B4B0i",
+      "updatedAt": 1760689321075
+    },
+    "UP1A_230620_001": {
+      "clientKey": "5c8bd4b330354ec18740d9fde8bc09d65f111cf3b06f4636b721335edac8d807",
+      "currentMotherId": "-ObpygKjvfk6Ab-xHsDX",
+      "updatedAt": 1760768478136
+    },
+    "UP1A_231005_007": {
+      "clientKey": "947cbe1ffd884a55b012d3d6a701e1254db11ba3ab33481a885aac1c568075dc",
+      "currentMotherId": "-OblDHHllbIGdfS6XXfv",
+      "updatedAt": 1760688678242
+    },
+    "dummy-device-1": {
+      "clientKey": "dummykey1",
+      "currentMotherId": "-Dummy_Ibu_Siti",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-10": {
+      "clientKey": "dummykey10",
+      "currentMotherId": "-Dummy_Ibu_Lina",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-2": {
+      "clientKey": "dummykey2",
+      "currentMotherId": "-Dummy_Ibu_Ani",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-3": {
+      "clientKey": "dummykey3",
+      "currentMotherId": "-Dummy_Ibu_Dewi",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-4": {
+      "clientKey": "dummykey4",
+      "currentMotherId": "-Dummy_Ibu_Eka",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-5": {
+      "clientKey": "dummykey5",
+      "currentMotherId": "-Dummy_Ibu_Rina",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-6": {
+      "clientKey": "dummykey6",
+      "currentMotherId": "-Dummy_Ibu_Hasanah",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-7": {
+      "clientKey": "dummykey7",
+      "currentMotherId": "-Dummy_Ibu_Indah",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-8": {
+      "clientKey": "dummykey8",
+      "currentMotherId": "-Dummy_Ibu_Juwita",
+      "updatedAt": 1760305800000
+    },
+    "dummy-device-9": {
+      "clientKey": "dummykey9",
+      "currentMotherId": "-Dummy_Ibu_Kartika",
+      "updatedAt": 1760305800000
     }
   },
   "gizi_wfh_history": {
-    "-Ob8wODzm8HWWrE1Drkh": {
-      "-Ob8wpmEjVBteg2ohdEH": {
-        "childId": "-Ob8wODzm8HWWrE1Drkh",
-        "childName": "Tes 5 L",
+    "-Obk3r5S5vnvSWmGO_Wt": {
+      "-Obk7g4-KGRr8DnMZM68": {
+        "childId": "-Obk3r5S5vnvSWmGO_Wt",
+        "childName": "Fatim",
         "childSex": "L",
         "input": {
-          "heightCm": 110,
-          "weightKg": 50
+          "heightCm": 50,
+          "weightKg": 5
         },
-        "motherId": "-Ob8wGrQ0ymfWHaijZ-Y",
+        "motherId": "-Obk3OEwfOaX91QviZib",
         "result": {
           "category": "Kategori Obesitas",
-          "scoreText": "Z-Score Est: 20.07 SD",
-          "zScore": 20.07
+          "scoreText": "Z-Score Est: 11.00 SD",
+          "zScore": 11
         },
         "scoringMethod": "WFH_Mock_V1",
-        "timestamp": 1760029793483
+        "timestamp": 1760670435247
       }
     }
   },
   "mothers": {
-    "-Oao5sxuO_ntnYqOrRhP": {
-      "alamat": "gshahdn",
+    "-Dummy_Ibu_Ani": {
+      "alamat": "Jl. Pahlawan No. 25",
       "children": {
-        "-Oaog_VFjT4ANcAybat3": {
-          "birthDate": 1728925200000,
-          "createdAt": 1759673210899,
-          "name": "Edgs",
-          "name_lower": "edgs",
-          "sex": "L",
-          "updatedAt": 1759673210899
+        "-Dummy_Anak_Citra": {
+          "birthDate": 1712793600000,
+          "name": "Citra Lestari",
+          "name_lower": "citra lestari",
+          "sex": "P"
         }
       },
-      "createdAt": 1759663329146,
-      "desaKelurahan": "jdjdjs",
-      "kecamatan": "bshdhd",
-      "nama": "Dsa",
-      "nama_lower": "dsa",
-      "noHp": "0852525222",
-      "noHp_norm": "+62852525222",
-      "ownerId": "LKZDZRzX8QUDlTwchHqGbxVgF8l2",
-      "posyandu": "bshdhd",
-      "tanggalLahir": 971110800000,
-      "tempatLahir": "jsjsj",
-      "updatedAt": 1759663329146
+      "createdAt": 1728883300000,
+      "desaKelurahan": "Wonokromo",
+      "kecamatan": "Wonokromo",
+      "nama": "Ani Suryani",
+      "nama_lower": "ani suryani",
+      "noHp": "085712345678",
+      "ownerDeviceId": "dummy-device-2",
+      "ownerId": "user_ani_2",
+      "posyandu": "Anggrek",
+      "tanggalLahir": 978307200000,
+      "tempatLahir": "Surabaya",
+      "updatedAt": 1760305800000
     },
-    "-OapZXsiz4BhvDNhRVR1": {
-      "alamat": "gagsvs",
-      "createdAt": 1759687880267,
-      "desaKelurahan": "vsgshaz",
-      "kecamatan": "vshsbz",
-      "nama": "Gahajsj",
-      "nama_lower": "gahajsj",
-      "noHp": "0855225866",
-      "noHp_norm": "+62855225866",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-e505aafb-8592-412a-8a04-c053cb3e238f",
-      "ownerId": "MDLlg5wKo2bOdamcA6XSj8lVk0X2",
-      "posyandu": "gsgsvs",
-      "tanggalLahir": 970678800000,
-      "tempatLahir": "gagaha",
-      "updatedAt": 1759687880267
+    "-Dummy_Ibu_Dewi": {
+      "alamat": "Jl. Gatot Subroto No. 15",
+      "createdAt": 1728883400000,
+      "desaKelurahan": "Sei Sikambing B",
+      "kecamatan": "Medan Sunggal",
+      "nama": "Dewi Lestari",
+      "nama_lower": "dewi lestari",
+      "noHp": "081398765432",
+      "ownerDeviceId": "dummy-device-3",
+      "ownerId": "user_dewi_3",
+      "posyandu": "Mawar",
+      "tanggalLahir": 883612800000,
+      "tempatLahir": "Medan",
+      "updatedAt": 1760305800000
     },
-    "-Oap_pOHsTzsiHApGmv_": {
-      "alamat": "chhvcf",
+    "-Dummy_Ibu_Eka": {
+      "alamat": "Jl. Perintis Kemerdekaan No. 5",
       "children": {
-        "-OarsWedkQjd1nNugb-B": {
-          "birthDate": 1696525200000,
-          "createdAt": 1759726672553,
+        "-Dummy_Anak_Fajar": {
+          "birthDate": 1720656000000,
+          "name": "Fajar Hidayat",
+          "name_lower": "fajar hidayat",
+          "sex": "L"
+        }
+      },
+      "createdAt": 1728883500000,
+      "desaKelurahan": "Tamalanrea",
+      "kecamatan": "Tamalanrea",
+      "nama": "Eka Fitriani",
+      "nama_lower": "eka fitriani",
+      "noHp": "082187654321",
+      "ownerDeviceId": "dummy-device-4",
+      "ownerId": "user_eka_4",
+      "posyandu": "Kenanga",
+      "tanggalLahir": 1009843200000,
+      "tempatLahir": "Makassar",
+      "updatedAt": 1760305800000
+    },
+    "-Dummy_Ibu_Hasanah": {
+      "alamat": "Jl. Pemuda No. 100",
+      "createdAt": 1728883700000,
+      "desaKelurahan": "Mugasari",
+      "kecamatan": "Semarang Selatan",
+      "nama": "Hasanah",
+      "nama_lower": "hasanah",
+      "noHp": "087855554444",
+      "ownerDeviceId": "dummy-device-6",
+      "ownerId": "user_hasanah_6",
+      "posyandu": "Dahlia",
+      "tanggalLahir": 852076800000,
+      "tempatLahir": "Semarang",
+      "updatedAt": 1760305800000
+    },
+    "-Dummy_Ibu_Indah": {
+      "alamat": "Jl. Malioboro No. 50",
+      "children": {
+        "-Dummy_Anak_Haris": {
+          "birthDate": 1723334400000,
           "growth": {
-            "22": {
-              "heightCm": 70,
-              "measuredAt": 1754413200000,
-              "monthKey": "2025-08",
-              "updatedAt": 1759727361237
+            "3": {
+              "heightCm": 60.1,
+              "measuredAt": 1731110400000
             }
           },
-          "name": "Anak 1",
-          "name_lower": "anak 1",
-          "sex": "L",
-          "updatedAt": 1759726672553
-        }
-      },
-      "createdAt": 1759688218195,
-      "desaKelurahan": "fghgx",
-      "kecamatan": "xvhvc",
-      "nama": "Tes3",
-      "nama_lower": "tes3",
-      "noHp": "085858858",
-      "noHp_norm": "+6285858858",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-f6b686bc-9b65-45f2-ad21-506e81116d9b",
-      "ownerId": "giXXsFpKkqcWi0fttxHDAUUaZ933",
-      "posyandu": "cccbhxc",
-      "tanggalLahir": 970851600000,
-      "tempatLahir": "fgjvc",
-      "updatedAt": 1759763455630
-    },
-    "-OarOcae-7ANBpxVQ7hg": {
-      "alamat": "tes data 2",
-      "children": {
-        "-Ob0zLOrO9g_un0YcLHb": {
-          "birthDate": 1557248400000,
-          "createdAt": 1759896233593,
-          "name": "Tes 2",
-          "name_lower": "tes 2",
-          "sex": "L",
-          "updatedAt": 1759896233593
-        }
-      },
-      "createdAt": 1759718574515,
-      "desaKelurahan": "data 2",
-      "kecamatan": "data2",
-      "nama": "Tes data2",
-      "nama_lower": "tes data2",
-      "noHp": "0852364156",
-      "noHp_norm": "+62852364156",
-      "ownerDeviceId": "android-BP41.250822.007-sdk_gphone64_x86_64-ranchu-a85cc888-36bf-4709-9778-f984f5b991bc",
-      "ownerId": "99Qv5qXKmjNN05tINyrYc5SaxNt1",
-      "posyandu": "data 2",
-      "tanggalLahir": 970678800000,
-      "tempatLahir": "tes data 2",
-      "updatedAt": 1759718574515
-    },
-    "-OawYNXxaw5nqF-fd2ly": {
-      "alamat": "data4",
-      "createdAt": 1759805016289,
-      "desaKelurahan": "data4",
-      "kecamatan": "data4",
-      "nama": "Tes Data 4",
-      "nama_lower": "tes data 4",
-      "noHp": "0856565656",
-      "noHp_norm": "+62856565656",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-2c50e076-c64c-4a9c-88f8-f408bc150b98",
-      "ownerId": "ore4eot7BvcVLkUZIan7T0rrep53",
-      "posyandu": "data4",
-      "tanggalLahir": 528483600000,
-      "tempatLahir": "data4",
-      "updatedAt": 1759805016289
-    },
-    "-OawYNYDJNRU3KFrAn1S": {
-      "alamat": "data4",
-      "createdAt": 1759805016300,
-      "desaKelurahan": "data4",
-      "kecamatan": "data4",
-      "nama": "Tes Data 4",
-      "nama_lower": "tes data 4",
-      "noHp": "0856565656",
-      "noHp_norm": "+62856565656",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-2c50e076-c64c-4a9c-88f8-f408bc150b98",
-      "ownerId": "ore4eot7BvcVLkUZIan7T0rrep53",
-      "posyandu": "data4",
-      "tanggalLahir": 528483600000,
-      "tempatLahir": "data4",
-      "updatedAt": 1759805016300
-    },
-    "-Ob11_wn2PALMe90WCq8": {
-      "alamat": "data5",
-      "createdAt": 1759897083702,
-      "desaKelurahan": "data5",
-      "kecamatan": "data5",
-      "nama": "DATA5",
-      "nama_lower": "data5",
-      "noHp": "08646464643",
-      "noHp_norm": "+628646464643",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-11251d84-d3b3-4b5c-b4b1-c5c38252391c",
-      "ownerId": "W7Qc2W3A9oSsHQGOhwmGYRhmcnm1",
-      "posyandu": "data5",
-      "tanggalLahir": 844880400000,
-      "tempatLahir": "data5",
-      "updatedAt": 1759897472180
-    },
-    "-Ob8wGrQ0ymfWHaijZ-Y": {
-      "alamat": "tes 5",
-      "children": {
-        "-Ob8wODzm8HWWrE1Drkh": {
-          "birthDate": 1569949200000,
-          "createdAt": 1760029676479,
-          "name": "Tes 5 L",
-          "name_lower": "tes 5 l",
-          "sex": "L",
-          "updatedAt": 1760029676479
+          "name": "Haris Gunawan",
+          "name_lower": "haris gunawan",
+          "sex": "L"
         },
-        "-Ob8wRWW80H3Q3J2KIug": {
-          "birthDate": 1665334800000,
-          "createdAt": 1760029689953,
-          "growth": {
-            "12": {
-              "heightCm": 80,
-              "measuredAt": 1696870800000,
-              "monthKey": "2023-10",
-              "updatedAt": 1760029731683
-            },
-            "24": {
-              "heightCm": 110,
-              "measuredAt": 1728493200000,
-              "monthKey": "2024-10",
-              "updatedAt": 1760029772732
-            }
-          },
-          "name": "Tes 5 P",
-          "name_lower": "tes 5 p",
+        "-Dummy_Anak_Indri": {
+          "birthDate": 1659312000000,
+          "name": "Indriani Putri",
+          "name_lower": "indriani putri",
           "sex": "P",
-          "updatedAt": 1760029689953
+          "weight": {
+            "24": {
+              "measuredAt": 1722470400000,
+              "weightKg": 12.2
+            }
+          }
         }
       },
-      "createdAt": 1760029646301,
-      "desaKelurahan": "tes 5",
-      "kecamatan": "tes 5",
-      "nama": "Tes 5",
-      "nama_lower": "tes 5",
-      "noHp": "08546464646",
-      "noHp_norm": "+628546464646",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-a7f73ea8-3885-450a-baba-16b510b863f7",
-      "ownerId": "HP5YM35Gq9Z1JaAK4KuctM5xNPz1",
-      "posyandu": "tes 5",
-      "tanggalLahir": 971024400000,
-      "tempatLahir": "tes 5",
-      "updatedAt": 1760029646301
+      "createdAt": 1728883800000,
+      "desaKelurahan": "Suryatmajan",
+      "kecamatan": "Danurejan",
+      "nama": "Indah Sari",
+      "nama_lower": "indah sari",
+      "noHp": "089611112222",
+      "ownerDeviceId": "dummy-device-7",
+      "ownerId": "user_indah_7",
+      "posyandu": "Flamboyan",
+      "tanggalLahir": 1041379200000,
+      "tempatLahir": "Yogyakarta",
+      "updatedAt": 1760305800000
     },
-    "-ObK3cCWsA9Aw7J2YtcK": {
-      "alamat": "tes 6",
-      "createdAt": 1760216384376,
-      "desaKelurahan": "tes 6",
-      "kecamatan": "tes6",
-      "nama": "Tes 6",
-      "nama_lower": "tes 6",
-      "noHp": "0897979797",
-      "noHp_norm": "+62897979797",
-      "ownerDeviceId": "android-SP1A.210812.016-22120RN86G-mt6768-dd88b3da-642e-4ac2-af20-82b54df27600",
-      "ownerId": "jNvO2wwZCDU4kYijGZVa0CieKGf1",
-      "posyandu": "tes 6",
-      "tanggalLahir": 876589200000,
-      "tempatLahir": "tes 6",
-      "updatedAt": 1760216384376
+    "-Dummy_Ibu_Juwita": {
+      "alamat": "Jl. Teuku Umar No. 88",
+      "children": {
+        "-Dummy_Anak_Kadek": {
+          "birthDate": 1725926400000,
+          "name": "Kadek Merta",
+          "name_lower": "kadek merta",
+          "sex": "L"
+        }
+      },
+      "createdAt": 1728883900000,
+      "desaKelurahan": "Dauh Puri Klod",
+      "kecamatan": "Denpasar Barat",
+      "nama": "Juwita Manurung",
+      "nama_lower": "juwita manurung",
+      "noHp": "081299887766",
+      "ownerDeviceId": "dummy-device-8",
+      "ownerId": "user_juwita_8",
+      "posyandu": "Kamboja",
+      "tanggalLahir": 933120000000,
+      "tempatLahir": "Denpasar",
+      "updatedAt": 1760305800000
+    },
+    "-Dummy_Ibu_Kartika": {
+      "alamat": "Jl. Raya Abepura No. 12",
+      "children": {
+        "-Dummy_Anak_Gede": {
+          "birthDate": 1704067200000,
+          "name": "I Gede Wirawan",
+          "name_lower": "i gede wirawan",
+          "sex": "L"
+        }
+      },
+      "createdAt": 1728884000000,
+      "desaKelurahan": "Kotaraja",
+      "kecamatan": "Abepura",
+      "nama": "Kartika Chandra",
+      "nama_lower": "kartika chandra",
+      "noHp": "085212123434",
+      "ownerDeviceId": "dummy-device-9",
+      "ownerId": "user_kartika_9",
+      "posyandu": "Nusa Indah",
+      "tanggalLahir": 820454400000,
+      "tempatLahir": "Jayapura",
+      "updatedAt": 1760305800000
+    },
+    "-Dummy_Ibu_Lina": {
+      "alamat": "Jl. Gajah Mada No. 200",
+      "createdAt": 1728884100000,
+      "desaKelurahan": "Benua Melayu Darat",
+      "kecamatan": "Pontianak Selatan",
+      "nama": "Lina Marlina",
+      "nama_lower": "lina marlina",
+      "noHp": "087765432109",
+      "ownerDeviceId": "dummy-device-10",
+      "ownerId": "user_lina_10",
+      "posyandu": "Teratai",
+      "tanggalLahir": 994550400000,
+      "tempatLahir": "Pontianak",
+      "updatedAt": 1760305800000
+    },
+    "-Dummy_Ibu_Rina": {
+      "alamat": "Jl. Jenderal Sudirman No. 30",
+      "children": {
+        "-Dummy_Anak_Gita": {
+          "birthDate": 1689033600000,
+          "name": "Gita Ananda",
+          "name_lower": "gita ananda",
+          "sex": "P"
+        }
+      },
+      "createdAt": 1728883600000,
+      "desaKelurahan": "Ilir Timur I",
+      "kecamatan": "Ilir Timur I",
+      "nama": "Rina Hartati",
+      "nama_lower": "rina hartati",
+      "noHp": "081912348765",
+      "ownerDeviceId": "dummy-device-5",
+      "ownerId": "user_rina_5",
+      "posyandu": "Cempaka",
+      "tanggalLahir": 946684800000,
+      "tempatLahir": "Palembang",
+      "updatedAt": 1760305800000
+    },
+    "-Dummy_Ibu_Siti": {
+      "alamat": "Jl. Merdeka No. 10",
+      "children": {
+        "-Dummy_Anak_Budi": {
+          "birthDate": 1696982400000,
+          "growth": {
+            "6": {
+              "heightCm": 65.7,
+              "measuredAt": 1712793600000
+            },
+            "12": {
+              "heightCm": 74.5,
+              "measuredAt": 1728883200000
+            }
+          },
+          "name": "Budi Santoso",
+          "name_lower": "budi santoso",
+          "sex": "L",
+          "weight": {
+            "6": {
+              "measuredAt": 1712793600000,
+              "weightKg": 7.9
+            },
+            "12": {
+              "measuredAt": 1728883200000,
+              "weightKg": 9.6
+            }
+          }
+        }
+      },
+      "createdAt": 1728883200000,
+      "desaKelurahan": "Cibaduyut",
+      "kecamatan": "Bojongloa Kidul",
+      "nama": "Siti Aminah",
+      "nama_lower": "siti aminah",
+      "noHp": "081234567890",
+      "ownerDeviceId": "dummy-device-1",
+      "ownerId": "user_siti_1",
+      "posyandu": "Melati",
+      "tanggalLahir": 915148800000,
+      "tempatLahir": "Bandung",
+      "updatedAt": 1760305800000
+    },
+    "-ObR4SuIyeMcqKnlPdAH": {
+      "alamat": "jl.irian RT 02 RW.07",
+      "children": {
+        "-ObR4ZOcZQ3QolTPcgfU": {
+          "birthDate": 1657645200000,
+          "createdAt": 1760334071400,
+          "growth": {
+            "39": {
+              "heightCm": 100,
+              "measuredAt": 1760288400000,
+              "monthKey": "2025-10",
+              "updatedAt": 1760334631270
+            }
+          },
+          "name": "Tes L",
+          "name_lower": "tes l",
+          "sex": "L",
+          "updatedAt": 1760334071400
+        },
+        "-ObR4b6UFG7wW9T0YKF2": {
+          "birthDate": 1697130000000,
+          "createdAt": 1760334082527,
+          "name": "Tes P",
+          "name_lower": "tes p",
+          "sex": "P",
+          "updatedAt": 1760334082527
+        }
+      },
+      "createdAt": 1760334044819,
+      "desaKelurahan": "tanjung agung",
+      "kecamatan": "sungai serut",
+      "nama": "Putri Kartika",
+      "nama_lower": "putri kartika",
+      "noHp": "082373993309",
+      "noHp_norm": "+6282373993309",
+      "ownerDeviceId": "SP1A.210812.016",
+      "ownerId": "cNnn0ArLdZhjjiZNI80lQ8qOGoj1",
+      "posyandu": "tanjung agung",
+      "tanggalLahir": 650480400000,
+      "tempatLahir": "Bengkulu",
+      "updatedAt": 1760688893945
+    },
+    "-Obk3OEwfOaX91QviZib": {
+      "alamat": "Jl. Wr. Supratman no 33 RT. 10 RW.03",
+      "desaKelurahan": "Bentiring Permai",
+      "kecamatan": "Muara Bangkahulu",
+      "nama": "Jani Artina",
+      "nama_lower": "jani artina",
+      "noHp": "083163856944",
+      "noHp_norm": "+6283163856944",
+      "ownerId": "ddsMZ67VnGTo0GZS73In8yAlUon1",
+      "posyandu": "Puskesmas muara Bangkahulu",
+      "tanggalLahir": 794509200000,
+      "tempatLahir": "Pematang Tiga",
+      "updatedAt": 1761242488024
+    },
+    "-OblCQKlCvkTtgJ2MBbg": {
+      "alamat": "Pekik nyaring Blok 3",
+      "createdAt": 1760688452977,
+      "desaKelurahan": "Pekik Nyaring",
+      "kecamatan": "Pondok kelapa",
+      "nama": "Fenti Septianggi",
+      "nama_lower": "fenti septianggi",
+      "noHp": "082374134950",
+      "noHp_norm": "+6282374134950",
+      "ownerDeviceId": "QP1A.190711.020",
+      "ownerId": "0PHYlFal09OmB5yNtjBqbjdvsz63",
+      "posyandu": "PMB Susi Irma novia",
+      "tanggalLahir": 937069200000,
+      "tempatLahir": "pekik nyaring",
+      "updatedAt": 1760688678482
+    },
+    "-OblCgJpw_rp7udNPoiP": {
+      "alamat": "lempuing",
+      "createdAt": 1760688522549,
+      "desaKelurahan": "tanah patah",
+      "kecamatan": "Bengkulu kota",
+      "nama": "Dede Novia Kartika",
+      "nama_lower": "dede novia kartika",
+      "noHp": "082289334002",
+      "noHp_norm": "+6282289334002",
+      "ownerDeviceId": "TP1A.220624.014",
+      "ownerId": "Wjp0Yj91wCZKG3AMDfwUr3K9x3K2",
+      "posyandu": "PBM  bidan susi",
+      "tanggalLahir": 734374800000,
+      "tempatLahir": "bengkulu",
+      "updatedAt": 1761184223730
+    },
+    "-OblDHHllbIGdfS6XXfv": {
+      "alamat": "jl putri gading Cempaka",
+      "children": {
+        "-OblgWt47Cvqog28Lod5": {
+          "birthDate": 1631120400000,
+          "createdAt": 1760696606277,
+          "height_records": {
+            "-Oblg_Uhqf9SOFfYXl1M": {
+              "heightCm": 100,
+              "measurementDateMs": 1760696613248
+            }
+          },
+          "name": "Ameer",
+          "name_lower": "ameer",
+          "sex": "L",
+          "updatedAt": 1760696606277
+        }
+      },
+      "createdAt": 1760688678065,
+      "desaKelurahan": "penurunan",
+      "kecamatan": "ratu samban",
+      "nama": "Ami Mutia",
+      "nama_lower": "ami mutia",
+      "noHp": "085142764042",
+      "noHp_norm": "+6285142764042",
+      "ownerDeviceId": "UP1A.231005.007",
+      "ownerId": "HwHBr47dZIMGUPNlRfpXjK5xNA33",
+      "posyandu": "PMB bisa susi irma novia",
+      "tanggalLahir": 1083517200000,
+      "tempatLahir": "bengkulu",
+      "updatedAt": 1760696231892
+    },
+    "-OblEoCWXJtTugfRaecp": {
+      "alamat": "betungan",
+      "createdAt": 1760689079137,
+      "desaKelurahan": "betungan",
+      "kecamatan": "selebar",
+      "nama": "Putri Septia Harmaningsih",
+      "nama_lower": "putri septia harmaningsih",
+      "noHp": "08973405055",
+      "noHp_norm": "+628973405055",
+      "ownerDeviceId": "RP1A.200720.011",
+      "ownerId": "9XX9H5HkLZfWPsbvMJ2fhYWSvq32",
+      "posyandu": "posyandu PBM susi",
+      "tanggalLahir": 1001264400000,
+      "tempatLahir": "bengkulu",
+      "updatedAt": 1760689157393
+    },
+    "-OblFGaeQ_uIIxsMhzUf": {
+      "alamat": "Jl basuki rahmat n0 5 padang jatu",
+      "createdAt": 1760689199530,
+      "desaKelurahan": "padang jati",
+      "kecamatan": "ratu samban",
+      "nama": "Reli Angelina",
+      "nama_lower": "reli angelina",
+      "noHp": "085764938280",
+      "noHp_norm": "+6285764938280",
+      "ownerDeviceId": "RP1A.200720.012",
+      "ownerId": "uSoPbgSgnafsU8mVdf7hYyIeMPQ2",
+      "posyandu": "basuki rahmat",
+      "tanggalLahir": 862678800000,
+      "tempatLahir": "muara betung",
+      "updatedAt": 1760689219545
+    },
+    "-OblFiwoNdQg1I9B4B0i": {
+      "alamat": "jln.irian semarang",
+      "createdAt": 1760689319732,
+      "desaKelurahan": "Semarang",
+      "kecamatan": "sungai serut",
+      "nama": "Novita S",
+      "nama_lower": "novita s",
+      "noHp": "082184596319",
+      "noHp_norm": "+6282184596319",
+      "ownerDeviceId": "TP1A.220905.001",
+      "ownerId": "9ec537IyHfcWfjdIirpnys6C6gt2",
+      "posyandu": "puskesmas bentiring",
+      "tanggalLahir": 808333200000,
+      "tempatLahir": "nanti agung",
+      "updatedAt": 1760846545051
+    },
+    "-OblG5lkRfJWbH9vO1gd": {
+      "alamat": "pulau baai",
+      "createdAt": 1760689417329,
+      "desaKelurahan": "sumber jaya",
+      "kecamatan": "kampung melayu",
+      "nama": "Puspa Marlena",
+      "nama_lower": "puspa marlena",
+      "noHp": "085764422230",
+      "noHp_norm": "+6285764422230",
+      "ownerDeviceId": "QKQ1.200209.002",
+      "ownerId": "4sujbFAqI4hcNhX8eHjk8ClXI9P2",
+      "posyandu": "pbm bidan susi",
+      "tanggalLahir": 941562000000,
+      "tempatLahir": "taba seberang",
+      "updatedAt": 1760689428831
+    },
+    "-ObmG_bSMcmRV1FgeUq1": {
+      "alamat": "jl. gunawan no 215 , rt. 01 rw . 01 kel. malabrokec. teluk segara",
+      "createdAt": 1760706320861,
+      "desaKelurahan": "malabro",
+      "kecamatan": "teluk segar",
+      "nama": "Rizki Nuratul Aini",
+      "nama_lower": "rizki nuratul aini",
+      "noHp": "082269117820",
+      "noHp_norm": "+6282269117820",
+      "ownerDeviceId": "AP3A.240905.015.A2",
+      "ownerId": "IEm0XKpmB7OUCE4aSUohqLjtden1",
+      "posyandu": "bidan susi",
+      "tanggalLahir": 814381200000,
+      "tempatLahir": "bengkulu",
+      "updatedAt": 1760706334954
+    },
+    "-ObpygKjvfk6Ab-xHsDX": {
+      "alamat": "jln.irian RT1 RW1",
+      "createdAt": 1760768476527,
+      "desaKelurahan": "semarang",
+      "kecamatan": "sungai serut",
+      "nama": "Wahyuni Herawati",
+      "nama_lower": "wahyuni herawati",
+      "noHp": "083199499061",
+      "noHp_norm": "+6283199499061",
+      "ownerDeviceId": "UP1A.230620.001",
+      "ownerId": "8qBYWnrCCDapInuiF3maGKL5XQC2",
+      "posyandu": "bidan Susi",
+      "tanggalLahir": 887562000000,
+      "tempatLahir": "sampang",
+      "updatedAt": 1760768488678
     }
   },
   "pregnancy_checks": {
-    "-Oao5sxuO_ntnYqOrRhP": {
-      "-Oap3TUa1WzKyIz_7iWW": {
+    "-Dummy_Ibu_Ani": {
+      "-Dummy_PregCheck_2": {
         "condition": {
-          "label": "Hamil Bulan 1",
-          "pregMonth": 1,
-          "raw": "preg_1",
+          "label": "Hamil Bulan 3",
+          "pregMonth": 3,
+          "raw": "preg_3",
           "stage": "preg"
         },
         "derived": {
-          "bmi": 44.44444444444444,
-          "bmiCategory": "Obesitas (≥30)",
-          "category": "Rendah",
-          "heightUnder150": false,
-          "lilaLow": false,
-          "sri": 0
-        },
-        "input": {
-          "heightCm": 150,
-          "weightKg": 100
-        },
-        "motherId": "-Oao5sxuO_ntnYqOrRhP",
-        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1759679473772
-      },
-      "-Oap5kCgQdKVni2dQhXS": {
-        "condition": {
-          "label": "Hamil Bulan 2",
-          "pregMonth": 2,
-          "raw": "preg_2",
-          "stage": "preg"
-        },
-        "derived": {
-          "bmi": 35.55555555555556,
-          "bmiCategory": "Obesitas (≥30)",
-          "category": "Rendah",
-          "heightUnder150": false,
-          "lilaLow": false,
-          "sri": 0
-        },
-        "input": {
-          "heightCm": 150,
-          "weightKg": 80
-        },
-        "motherId": "-Oao5sxuO_ntnYqOrRhP",
-        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1759680070887
-      }
-    },
-    "-Oap_pOHsTzsiHApGmv_": {
-      "-Oau7GZbQm9WKOCPLDlU": {
-        "condition": {
-          "label": "Sebelum Hamil",
-          "raw": "pre",
-          "stage": "pre"
-        },
-        "derived": {
-          "bmi": 23.437499999999996,
-          "bmiCategory": "Normal (18.5–24.9)",
-          "category": "Rendah",
-          "heightUnder150": false,
-          "lilaLow": false,
-          "sri": 0
-        },
-        "input": {
-          "heightCm": 160,
-          "weightKg": 60
-        },
-        "motherId": "-Oap_pOHsTzsiHApGmv_",
-        "motherName": "Tes3",
-        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1759764355409
-      },
-      "-Oau7PrnvZ21zVUbCr9-": {
-        "condition": {
-          "label": "Hamil Bulan 1",
-          "pregMonth": 1,
-          "raw": "preg_1",
-          "stage": "preg"
-        },
-        "derived": {
-          "bmi": 31.249999999999993,
-          "bmiCategory": "Obesitas (≥30)",
-          "category": "Rendah",
-          "heightUnder150": false,
-          "lilaLow": false,
-          "sri": 0
-        },
-        "input": {
-          "heightCm": 160,
-          "weightKg": 80
-        },
-        "motherId": "-Oap_pOHsTzsiHApGmv_",
-        "motherName": "Tes3",
-        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1759764393493
-      },
-      "-Oau7Uom-a67oF_Q-I_w": {
-        "condition": {
-          "label": "Hamil Bulan 5",
-          "pregMonth": 5,
-          "raw": "preg_5",
-          "stage": "preg"
-        },
-        "derived": {
-          "bmi": 46.87499999999999,
-          "bmiCategory": "Obesitas (≥30)",
-          "category": "Rendah",
-          "heightUnder150": false,
-          "lilaLow": false,
-          "sri": 0
-        },
-        "input": {
-          "heightCm": 160,
-          "weightKg": 120
-        },
-        "motherId": "-Oap_pOHsTzsiHApGmv_",
-        "motherName": "Tes3",
-        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1759764413851
-      },
-      "-Oau7be1HhDZb6GNNKEn": {
-        "condition": {
-          "label": "Hamil Bulan 5",
-          "pregMonth": 5,
-          "raw": "preg_5",
-          "stage": "preg"
-        },
-        "derived": {
-          "bmi": 20.408163265306126,
-          "bmiCategory": "Normal (18.5–24.9)",
-          "category": "Sedang",
+          "bmi": 17.5,
+          "bmiCategory": "Kurang (<18.5)",
+          "category": "Tinggi",
           "heightUnder150": true,
-          "lilaLow": false,
-          "sri": 2
+          "isParityRisk": false,
+          "lilaLow": true,
+          "sri": 5
         },
         "input": {
-          "heightCm": 140,
-          "weightKg": 40
+          "heightCm": 148,
+          "lilaCm": 22.5,
+          "pregnancyCount": 2,
+          "weightKg": 38.5
         },
-        "motherId": "-Oap_pOHsTzsiHApGmv_",
-        "motherName": "Tes3",
-        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
-        "timestamp": 1759764445864
+        "motherId": "-Dummy_Ibu_Ani",
+        "motherName": "Ani Suryani",
+        "recommendation": "Pendampingan intensif: konseling gizi pra/awal kehamilan, protein hewani harian, tablet tambah darah, rujuk bila ada infeksi, dan perbaikan WASH di rumah.",
+        "timestamp": 1728884600000
       }
     },
-    "-OarOcae-7ANBpxVQ7hg": {
-      "-ObCU0oWyNk6c1CEVGcS": {
-        "condition": {
-          "label": "Hamil Bulan 4",
-          "pregMonth": 4,
-          "raw": "preg_4",
-          "stage": "preg"
-        },
-        "derived": {
-          "bmi": 31.249999999999993,
-          "bmiCategory": "Obesitas (≥30)",
-          "category": "Rendah",
-          "heightUnder150": false,
-          "lilaLow": false,
-          "sri": 0
-        },
-        "input": {
-          "heightCm": 160,
-          "lilaCm": 30,
-          "weightKg": 80
-        },
-        "motherId": "-OarOcae-7ANBpxVQ7hg",
-        "motherName": "Tes data2",
-        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1760089087340
-      }
-    },
-    "-ObK3cCWsA9Aw7J2YtcK": {
-      "-ObK3jCUqRxFvvetgUuG": {
+    "-Dummy_Ibu_Siti": {
+      "-Dummy_PregCheck_1": {
         "condition": {
           "label": "Sebelum Hamil",
           "raw": "pre",
           "stage": "pre"
         },
         "derived": {
-          "bmi": 31.249999999999993,
-          "bmiCategory": "Obesitas (≥30)",
+          "bmi": 22.1,
+          "bmiCategory": "Normal (18.5–24.9)",
           "category": "Rendah",
           "heightUnder150": false,
           "isParityRisk": true,
@@ -546,15 +717,495 @@
           "sri": 1
         },
         "input": {
-          "heightCm": 160,
-          "lilaCm": 30,
+          "heightCm": 155,
+          "lilaCm": 25,
           "pregnancyCount": 1,
-          "weightKg": 80
+          "weightKg": 53
         },
-        "motherId": "-ObK3cCWsA9Aw7J2YtcK",
-        "motherName": "Tes 6",
+        "motherId": "-Dummy_Ibu_Siti",
+        "motherName": "Siti Aminah",
         "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
-        "timestamp": 1760216413245
+        "timestamp": 1728884500000
+      }
+    },
+    "-Obk3OEwfOaX91QviZib": {
+      "-Obk8CzBoPPx24BrSTlX": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 22.81293394167824,
+          "bmiCategory": "Normal (18.5–24.9)",
+          "category": "Tinggi",
+          "heightUnder150": true,
+          "isParityRisk": true,
+          "lilaLow": true,
+          "sri": 4
+        },
+        "input": {
+          "heightCm": 142,
+          "lilaCm": 23,
+          "pregnancyCount": 1,
+          "weightKg": 46
+        },
+        "motherId": "-Obk3OEwfOaX91QviZib",
+        "motherName": "Septi Amelia Putri",
+        "recommendation": "Pendampingan intensif: konseling gizi pra/awal kehamilan, protein hewani harian, tablet tambah darah, rujuk bila ada infeksi, dan perbaikan WASH di rumah.",
+        "timestamp": 1760670573882
+      },
+      "-Obk8FXn-YoRIqkK8tSL": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 22.81293394167824,
+          "bmiCategory": "Normal (18.5–24.9)",
+          "category": "Tinggi",
+          "heightUnder150": true,
+          "isParityRisk": true,
+          "lilaLow": true,
+          "sri": 4
+        },
+        "input": {
+          "heightCm": 142,
+          "lilaCm": 23,
+          "pregnancyCount": 1,
+          "weightKg": 46
+        },
+        "motherId": "-Obk3OEwfOaX91QviZib",
+        "motherName": "Septi Amelia Putri",
+        "recommendation": "Pendampingan intensif: konseling gizi pra/awal kehamilan, protein hewani harian, tablet tambah darah, rujuk bila ada infeksi, dan perbaikan WASH di rumah.",
+        "timestamp": 1760670584347
+      },
+      "-ObkDsr0DeqV6Ql8ADG-": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 24.79666732791113,
+          "bmiCategory": "Normal (18.5–24.9)",
+          "category": "Tinggi",
+          "heightUnder150": true,
+          "isParityRisk": true,
+          "lilaLow": true,
+          "sri": 4
+        },
+        "input": {
+          "heightCm": 142,
+          "lilaCm": 23,
+          "pregnancyCount": 1,
+          "weightKg": 50
+        },
+        "motherId": "-Obk3OEwfOaX91QviZib",
+        "motherName": "Septi Amelia Putri",
+        "recommendation": "Pendampingan intensif: konseling gizi pra/awal kehamilan, protein hewani harian, tablet tambah darah, rujuk bila ada infeksi, dan perbaikan WASH di rumah.",
+        "timestamp": 1760672060201
+      },
+      "-ObnQeoGc2PQ7BxpJlNs": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 25.21735857578381,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": true,
+          "lilaLow": false,
+          "sri": 1
+        },
+        "input": {
+          "heightCm": 163,
+          "lilaCm": 29,
+          "pregnancyCount": 1,
+          "weightKg": 67
+        },
+        "motherId": "-Obk3OEwfOaX91QviZib",
+        "motherName": "Jani Artina",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760725738881
+      },
+      "-OcHE7H6GwIInNced32V": {
+        "condition": {
+          "label": "Hamil Bulan 8",
+          "pregMonth": 8,
+          "raw": "preg_8",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 28.341300011291356,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": true,
+          "lilaLow": false,
+          "sri": 1
+        },
+        "input": {
+          "heightCm": 163,
+          "lilaCm": 29,
+          "pregnancyCount": 8,
+          "weightKg": 75.3
+        },
+        "motherId": "-Obk3OEwfOaX91QviZib",
+        "motherName": "Jani Artina",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1761242546452
+      }
+    },
+    "-OblCgJpw_rp7udNPoiP": {
+      "-Obli6fZOx5XX3Kbfotg": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 28.88888888888889,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 150,
+          "lilaCm": 36,
+          "pregnancyCount": 3,
+          "weightKg": 65
+        },
+        "motherId": "-OblCgJpw_rp7udNPoiP",
+        "motherName": "Fitria Nengsih",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760697024415
+      },
+      "-Obli8dXo13NcRjFHB7A": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 28.88888888888889,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 150,
+          "lilaCm": 36,
+          "pregnancyCount": 3,
+          "weightKg": 65
+        },
+        "motherId": "-OblCgJpw_rp7udNPoiP",
+        "motherName": "Fitria Nengsih",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760697032484
+      },
+      "-ObljGfH3rGOy9e6nR3x": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 33.77777777777778,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 150,
+          "lilaCm": 36,
+          "pregnancyCount": 3,
+          "weightKg": 76
+        },
+        "motherId": "-OblCgJpw_rp7udNPoiP",
+        "motherName": "Fitria Nengsih",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760697327515
+      },
+      "-ObljLStjor9vN0Uj9ZV": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 33.77777777777778,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 150,
+          "lilaCm": 36,
+          "pregnancyCount": 3,
+          "weightKg": 76
+        },
+        "motherId": "-OblCgJpw_rp7udNPoiP",
+        "motherName": "Fitria Nengsih",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760697347137
+      }
+    },
+    "-OblDHHllbIGdfS6XXfv": {
+      "-OblgHCV6Vv40uF-NSH1": {
+        "condition": {
+          "label": "Hamil Bulan 1",
+          "pregMonth": 1,
+          "raw": "preg_1",
+          "stage": "preg"
+        },
+        "derived": {
+          "bmi": 32.888888888888886,
+          "bmiCategory": "Obesitas (≥30)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": true,
+          "sri": 1
+        },
+        "input": {
+          "heightCm": 150,
+          "lilaCm": 23,
+          "pregnancyCount": 2,
+          "weightKg": 74
+        },
+        "motherId": "-OblDHHllbIGdfS6XXfv",
+        "motherName": "Ami Mutia",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760696542510
+      }
+    },
+    "-OblFiwoNdQg1I9B4B0i": {
+      "-Obube7GseokNYF6BTNj": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 17.941817249775728,
+          "bmiCategory": "Kurang (<18.5)",
+          "category": "Sedang",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 2
+        },
+        "input": {
+          "heightCm": 153,
+          "lilaCm": 23.5,
+          "pregnancyCount": 3,
+          "weightKg": 42
+        },
+        "motherId": "-OblFiwoNdQg1I9B4B0i",
+        "motherName": "Novita S",
+        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
+        "timestamp": 1760846327949
+      },
+      "-ObubmCBJasjQC-oZG-H": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 17.941817249775728,
+          "bmiCategory": "Kurang (<18.5)",
+          "category": "Sedang",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 2
+        },
+        "input": {
+          "heightCm": 153,
+          "lilaCm": 23.5,
+          "pregnancyCount": 3,
+          "weightKg": 42
+        },
+        "motherId": "-OblFiwoNdQg1I9B4B0i",
+        "motherName": "Novita S",
+        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
+        "timestamp": 1760846357156
+      },
+      "-ObucO_Tg6z3xHRuyI39": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 17.941817249775728,
+          "bmiCategory": "Kurang (<18.5)",
+          "category": "Sedang",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 2
+        },
+        "input": {
+          "heightCm": 153,
+          "lilaCm": 23.5,
+          "pregnancyCount": 3,
+          "weightKg": 42
+        },
+        "motherId": "-OblFiwoNdQg1I9B4B0i",
+        "motherName": "Novita S",
+        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
+        "timestamp": 1760846518119
+      },
+      "-ObucPueanBfZXzaGNOg": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 17.941817249775728,
+          "bmiCategory": "Kurang (<18.5)",
+          "category": "Sedang",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 2
+        },
+        "input": {
+          "heightCm": 153,
+          "lilaCm": 23.5,
+          "pregnancyCount": 3,
+          "weightKg": 42
+        },
+        "motherId": "-OblFiwoNdQg1I9B4B0i",
+        "motherName": "Novita S",
+        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
+        "timestamp": 1760846523589
+      },
+      "-ObucRLtcWlJOaqwZRgd": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 17.941817249775728,
+          "bmiCategory": "Kurang (<18.5)",
+          "category": "Sedang",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 2
+        },
+        "input": {
+          "heightCm": 153,
+          "lilaCm": 23.5,
+          "pregnancyCount": 3,
+          "weightKg": 42
+        },
+        "motherId": "-OblFiwoNdQg1I9B4B0i",
+        "motherName": "Novita S",
+        "recommendation": "Kelas ibu & monitoring bulanan, perbaiki menu (hewani + sayur/buah), pantau berat berkala, cek kepatuhan TTD.",
+        "timestamp": 1760846529486
+      }
+    },
+    "-ObmG_bSMcmRV1FgeUq1": {
+      "-ObmHSChF_qZ-nEbYKaI": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 28.44095497516423,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 158,
+          "lilaCm": 41,
+          "pregnancyCount": 3,
+          "weightKg": 71
+        },
+        "motherId": "-ObmG_bSMcmRV1FgeUq1",
+        "motherName": "Rizki Nuratul Aini",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760706549366
+      },
+      "-ObmHVbn1lk6Xbbcddq9": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 28.44095497516423,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 158,
+          "lilaCm": 41,
+          "pregnancyCount": 3,
+          "weightKg": 71
+        },
+        "motherId": "-ObmG_bSMcmRV1FgeUq1",
+        "motherName": "Rizki Nuratul Aini",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760706563337
+      },
+      "-ObmHbQ0MG3Zk8_8PUXy": {
+        "condition": {
+          "label": "Sebelum Hamil",
+          "raw": "pre",
+          "stage": "pre"
+        },
+        "derived": {
+          "bmi": 28.44095497516423,
+          "bmiCategory": "Berlebih (25–29.9)",
+          "category": "Rendah",
+          "heightUnder150": false,
+          "isParityRisk": false,
+          "lilaLow": false,
+          "sri": 0
+        },
+        "input": {
+          "heightCm": 158,
+          "lilaCm": 41,
+          "pregnancyCount": 3,
+          "weightKg": 71
+        },
+        "motherId": "-ObmG_bSMcmRV1FgeUq1",
+        "motherName": "Rizki Nuratul Aini",
+        "recommendation": "Edukasi universal & pemantauan rutin (posyandu/ANC).",
+        "timestamp": 1760706591172
       }
     }
   },
@@ -637,250 +1288,227 @@
     }
   },
   "srs_calculations": {
-    "-OanJC6acXbcDYKtESot": {
-      "category": "Rendah",
-      "mother": {
-        "name": "siti",
-        "name_lower": "siti"
-      },
-      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": false,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": true,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": false,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": false
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": false,
-        "bblr": true,
-        "ibu_pendek": false,
-        "mpasi_tidak_adekuat": false,
-        "panjang_lahir_pendek_iugr": false,
-        "prematur": false,
-        "wash_buruk": false
-      },
-      "score": 3,
-      "timestamp": 1759650042445
-    },
-    "-OarswQaxIXKw1e9wnmc": {
-      "category": "Sedang",
-      "mother": {
-        "name": "Sdfghvtes2",
-        "name_lower": "sdfghvtes2"
-      },
-      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": false,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": true,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": false,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": true
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": false,
-        "bblr": false,
-        "ibu_pendek": false,
-        "mpasi_tidak_adekuat": false,
-        "panjang_lahir_pendek_iugr": true,
-        "prematur": true,
-        "wash_buruk": false
-      },
-      "score": 6,
-      "timestamp": 1759726782245
-    },
-    "-Oau3y4K3o9Mer8TdPUx": {
-      "category": "Sedang",
-      "mother": {
-        "name": "Tes3",
-        "name_lower": "tes3"
-      },
-      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": true,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": false,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": true,
-        "pendidikan_ibu_rendah": false,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": false
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": false,
-        "bblr": true,
-        "ibu_pendek": false,
-        "mpasi_tidak_adekuat": false,
-        "panjang_lahir_pendek_iugr": true,
-        "prematur": false,
-        "wash_buruk": false
-      },
-      "score": 6,
-      "timestamp": 1759763489156
-    },
-    "-Ob8wID4GsWvAJcAnBPE": {
-      "category": "Rendah",
-      "mother": {
-        "name": "Tes 5",
-        "name_lower": "tes 5"
-      },
-      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": false,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": false,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": true,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": true
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": false,
-        "bblr": false,
-        "ibu_pendek": false,
-        "mpasi_tidak_adekuat": false,
-        "panjang_lahir_pendek_iugr": true,
-        "prematur": false,
-        "wash_buruk": false
-      },
-      "score": 4,
-      "timestamp": 1760029651892
-    },
-    "-ObCZBZ_1KS8seN5Uy0B": {
-      "category": "Rendah",
-      "mother": {
-        "name": "Tes data2",
-        "name_lower": "tes data2",
-        "ownerId": "-OarOcae-7ANBpxVQ7hg"
-      },
-      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": false,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": false,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": true,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": true
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": false,
-        "bblr": false,
-        "ibu_pendek": false,
-        "mpasi_tidak_adekuat": true,
-        "panjang_lahir_pendek_iugr": false,
-        "prematur": false,
-        "wash_buruk": false
-      },
-      "score": 4,
-      "timestamp": 1760090442072
-    },
-    "-SrsCalcIdRendahAlpha": {
-      "category": "Rendah",
-      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": false,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": false,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": false,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": true
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": false,
-        "bblr": false,
-        "ibu_pendek": true,
-        "mpasi_tidak_adekuat": false,
-        "panjang_lahir_pendek_iugr": false,
-        "prematur": false,
-        "wash_buruk": false
-      },
-      "score": 3,
-      "timestamp": 1700000000000
-    },
-    "-SrsCalcIdSedangBeta": {
-      "category": "Sedang",
-      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
-      "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": true,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": true,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": false,
-        "pola_asuh_tidak_adekuat": false,
-        "usia_ibu_remaja": true
-      },
-      "risk_factors_weight2": {
-        "asi_non_eksklusif": true,
-        "bblr": true,
-        "ibu_pendek": false,
-        "mpasi_tidak_adekuat": false,
-        "panjang_lahir_pendek_iugr": false,
-        "prematur": false,
-        "wash_buruk": false
-      },
-      "score": 7,
-      "timestamp": 1700000060000
-    },
-    "-SrsCalcIdTinggiGamma": {
+    "-Dummy_Srs_Ani": {
       "category": "Tinggi",
+      "mother": {
+        "name": "Ani Suryani",
+        "name_lower": "ani suryani",
+        "ownerId": "-Dummy_Ibu_Ani"
+      },
       "recommendation": "Kunjungan rumah mingguan, konseling menyusui & MP-ASI, paket PMT protein hewani, perbaikan WASH prioritas, rujuk bila ada infeksi.",
       "risk_factors_weight1": {
-        "anak_laki": false,
-        "art_banyak": true,
-        "ayah_pendek": false,
-        "diare_berulang_infeksi": false,
-        "imunisasi_tidak_lengkap": false,
-        "lila_kurang": true,
-        "pajanan_pestisida": false,
-        "pendapatan_rendah": false,
-        "pendidikan_ibu_rendah": true,
-        "pola_asuh_tidak_adekuat": false,
+        "pendapatan_rendah": true,
         "usia_ibu_remaja": true
       },
       "risk_factors_weight2": {
         "asi_non_eksklusif": true,
         "bblr": true,
+        "prematur": true,
+        "wash_buruk": true
+      },
+      "score": 10,
+      "timestamp": 1728885100000
+    },
+    "-Dummy_Srs_Eka": {
+      "category": "Rendah",
+      "mother": {
+        "name": "Eka Fitriani",
+        "name_lower": "eka fitriani",
+        "ownerId": "-Dummy_Ibu_Eka"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": true
+      },
+      "risk_factors_weight2": {
+        "bblr": false
+      },
+      "score": 1,
+      "timestamp": 1728885200000
+    },
+    "-Dummy_Srs_Siti": {
+      "category": "Sedang",
+      "mother": {
+        "name": "Siti Aminah",
+        "name_lower": "siti aminah",
+        "ownerId": "-Dummy_Ibu_Siti"
+      },
+      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+      "risk_factors_weight1": {
+        "diare_berulang_infeksi": true,
+        "pendidikan_ibu_rendah": true
+      },
+      "risk_factors_weight2": {
+        "ibu_pendek": true,
+        "mpasi_tidak_adekuat": true
+      },
+      "score": 6,
+      "timestamp": 1728885000000
+    },
+    "-ObkAvyxBkn8We-qAAUL": {
+      "category": "Rendah",
+      "mother": {
+        "name": "Septi Amelia Putri",
+        "name_lower": "septi amelia putri",
+        "ownerId": "-Obk3OEwfOaX91QviZib"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": true,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": false
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
         "ibu_pendek": true,
         "mpasi_tidak_adekuat": false,
         "panjang_lahir_pendek_iugr": false,
         "prematur": false,
         "wash_buruk": false
       },
-      "score": 11,
-      "timestamp": 1700000120000
+      "score": 3,
+      "timestamp": 1760671286567
+    },
+    "-Oblg7CAx8Sv2CthWv8G": {
+      "category": "Rendah",
+      "mother": {
+        "name": "Ami Mutia",
+        "name_lower": "ami mutia",
+        "ownerId": "-OblDHHllbIGdfS6XXfv"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": true,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": true
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 2,
+      "timestamp": 1760696501462
+    },
+    "-OblhqUC8uKkx8YGgtj1": {
+      "category": "Rendah",
+      "mother": {
+        "name": "Fitria Nengsih",
+        "name_lower": "fitria nengsih",
+        "ownerId": "-OblCgJpw_rp7udNPoiP"
+      },
+      "recommendation": "Intervensi universal & pemantauan rutin (posyandu/MT).",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": false,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": false
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": false,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": false,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 0,
+      "timestamp": 1760696954004
+    },
+    "-ObmHCZ13D-m0sr4KOy5": {
+      "category": "Sedang",
+      "mother": {
+        "name": "Rizki Nuratul Aini",
+        "name_lower": "rizki nuratul aini",
+        "ownerId": "-ObmG_bSMcmRV1FgeUq1"
+      },
+      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": true,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": false
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": true,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": true,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 5,
+      "timestamp": 1760706485525
+    },
+    "-ObmHL0n04QtvTBrTmLv": {
+      "category": "Sedang",
+      "mother": {
+        "name": "Rizki Nuratul Aini",
+        "name_lower": "rizki nuratul aini",
+        "ownerId": "-ObmG_bSMcmRV1FgeUq1"
+      },
+      "recommendation": "Kelas ibu & caregiver, monitoring bulanan, paket edukasi MP-ASI, cek & lengkapi imunisasi.",
+      "risk_factors_weight1": {
+        "anak_laki": false,
+        "art_banyak": false,
+        "ayah_pendek": false,
+        "diare_berulang_infeksi": false,
+        "imunisasi_tidak_lengkap": false,
+        "lila_kurang": true,
+        "pajanan_pestisida": false,
+        "pendapatan_rendah": false,
+        "pendidikan_ibu_rendah": false,
+        "pola_asuh_tidak_adekuat": false,
+        "usia_ibu_remaja": false
+      },
+      "risk_factors_weight2": {
+        "asi_non_eksklusif": false,
+        "bblr": false,
+        "ibu_pendek": true,
+        "mpasi_tidak_adekuat": false,
+        "panjang_lahir_pendek_iugr": true,
+        "prematur": false,
+        "wash_buruk": false
+      },
+      "score": 5,
+      "timestamp": 1760706519936
     }
   }
 }

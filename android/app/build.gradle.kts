@@ -1,3 +1,6 @@
+// Tambahkan impor ini di baris paling atas
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -8,8 +11,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Tambahkan kode ini untuk memuat key.properties
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+}
+
 android {
-    namespace = "com.example.stunting_application"
+    namespace = "com.aranus.sigenting"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,21 +32,33 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    // Tambahkan blok signingConfigs ini
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     defaultConfig {
-        applicationId = "com.example.stunting_application"
+        applicationId = "com.aranus.sigenting"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
         // Nama launcher (pastikan Manifest pakai android:label="@string/app_name")
-        resValue("string", "app_name", "SITUNTAS")
+        resValue("string", "app_name", "SIGENTING")
     }
 
     buildTypes {
         release {
-            // ganti ke signingConfig release milikmu untuk rilis sebenarnya
-            signingConfig = signingConfigs.getByName("debug")
+            // INI PERUBAHAN PENTING: Ubah "debug" menjadi "release"
+            signingConfig = signingConfigs.getByName("release")
         }
         debug { }
     }
@@ -45,3 +67,4 @@ android {
 flutter {
     source = "../.."
 }
+
