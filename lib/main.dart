@@ -141,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             SizedBox(height: 8),
             Text(
-              "Sistem Deteksi Stunting Tuntas",
+              "Sistem Deteksi Stunting",
               style: TextStyle(fontSize: 18, color: Colors.white70),
             ),
           ],
@@ -414,7 +414,7 @@ class HomePage extends StatelessWidget {
                 padding: EdgeInsets.all(screenWidth * 0.03),
                 width: double.infinity,
                 child: const Text(
-                  "ﾂｩ 2025 SIGENTING - Sistem Deteksi Stunting Tuntas",
+                  "ﾂｩ 2025 SIGENTING - Sistem Deteksi Stunting",
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
